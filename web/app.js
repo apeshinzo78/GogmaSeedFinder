@@ -252,7 +252,7 @@ const detailPredictionSection = document.querySelector(".detail-prediction-secti
 const tabButtons = [...document.querySelectorAll("[data-tab]")];
 const tabViews = [...document.querySelectorAll("[data-tab-view]")];
 
-const suggestedWorkers = Math.min(8, Math.max(1, navigator.hardwareConcurrency ?? 4));
+const suggestedWorkers = Math.min(16, Math.max(1, navigator.hardwareConcurrency ?? 4));
 workerInput.value = String(suggestedWorkers);
 populateSelect(weaponSelect, WEAPON_TYPES, 8);
 populateSelect(attributeSelect, ATTRIBUTES, 1);
