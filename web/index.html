@@ -167,7 +167,17 @@
             <div><p class="step">COUNTER RANGE</p><h3 id="counter-range-guide-title">復元ボーナスカウンターはセーブごとに異なります</h3><p>実測サンプルの <code>475–485</code> は全ユーザー共通ではありません。これまでこのセーブデータで復元ボーナスを抽選した、おおよその累計回数が含まれるように探索範囲を設定してください。</p></div>
             <div class="counter-range-planner">
               <label><span>推定した現在値</span><input id="counter-estimate" type="number" min="0" max="4294967295" value="480" /></label>
-              <label><span>前後に探す幅</span><select id="counter-radius"><option value="5" selected>±5（11候補・推奨）</option><option value="25">±25（51候補）</option><option value="50">±50（101候補）</option><option value="250">±250（501候補・長時間）</option></select></label>
+              <label>
+                <span>前後に探す幅</span>
+                <select id="counter-radius">
+                  <option value="5" selected>±5（11候補）</option>
+                  <option value="25">±25（51候補）</option>
+                  <option value="50">±50（101候補）</option>
+                  <option value="250">±250（501候補・長時間）</option>
+                  <option value="500">±500（1,001候補・非常に長時間）</option>
+                  <option value="1000">±1000（2,001候補・非常に長時間）</option>
+                </select>
+              </label>
               <button id="apply-counter-estimate" class="secondary small-button" type="button">探索範囲に反映</button>
             </div>
             <p id="counter-range-summary" class="counter-range-summary" aria-live="polite"></p>

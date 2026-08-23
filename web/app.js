@@ -532,11 +532,15 @@ function updateCounterRangeSummary() {
   }
 
   const candidateCount = end - start + 1;
-  const suffix = candidateCount > 101
-    ? "候補数が多いため長時間かかります。推定値の前後を狭く分けて試してください。"
-    : candidateCount > 25
-      ? "端末によっては数分かかります。"
-      : "最初に試す範囲として適切です。";
+  const suffix = candidateCount > 1001
+    ? "非常に長時間かかります。端末やブラウザによっては完了が難しい場合があります。"
+    : candidateCount > 501
+      ? "非常に長時間かかります。可能なら推定値を見直して範囲を分割してください。"
+      : candidateCount > 101
+        ? "候補数が多いため長時間かかります。"
+        : candidateCount > 25
+          ? "端末によっては数分かかります。"
+          : "狭い探索範囲です。推定値に自信がある場合に使用してください。";
   counterRangeSummary.textContent = `現在の探索範囲: ${start.toLocaleString("ja-JP")}〜${end.toLocaleString("ja-JP")}（${candidateCount.toLocaleString("ja-JP")}候補）。${suffix}`;
   counterRangeSummary.className = `counter-range-summary${candidateCount > 25 ? " warning" : ""}`;
 }

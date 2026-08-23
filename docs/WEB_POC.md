@@ -146,7 +146,8 @@ kept its horizontal/vertical scrollbars inside the bounded comparison area.
   recorded live fixtures and is not a universal preset. The Web UI calls this
   out prominently and can build a narrow range around a user-entered estimate;
   heavy users should move that estimate upward instead of searching one huge
-  range.
+  range. Radius presets extend through `±1000`, with stronger runtime warnings
+  for the `1001`- and `2001`-candidate ranges.
 - The seed range is still entered manually in the same collapsed settings.
 - Screenshot/OCR input is not implemented.
 - Only bounded Gogma counter ranges are supported.
