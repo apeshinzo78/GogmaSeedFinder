@@ -1,0 +1,277 @@
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="color-scheme" content="dark" />
+    <title>Gogma Seed Finder</title>
+    <link rel="icon" href="./favicon.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <main class="shell">
+      <header class="hero">
+        <p class="eyebrow">Monster Hunter Wilds · Browser tool</p>
+        <h1>Gogma Seed Finder</h1>
+        <p class="lead">
+          基準seedと2つのカウンターを特定し、武器種・属性ごとの未来を端末内だけで予測します。
+        </p>
+      </header>
+
+      <section class="notice" aria-label="現在の制限">
+        <span class="notice-mark">β</span>
+        <p>
+          現在は手入力版です。ゲーム画面と同じ名称を選んでください。
+          入力した検索データが外部へ送信されることはありません。
+        </p>
+      </section>
+
+      <section class="save-state-panel" aria-labelledby="save-state-title">
+        <div class="save-state-heading">
+          <div>
+            <p class="step">CURRENT SAVE STATE</p>
+            <h2 id="save-state-title">現在のセーブ状態</h2>
+          </div>
+          <p id="save-state-summary" class="status-pill">未特定</p>
+        </div>
+        <div class="save-state-values">
+          <article>
+            <span>基準seed</span>
+            <strong id="state-base-seed">未特定</strong>
+            <small id="state-base-seed-status">検索または手入力が必要</small>
+          </article>
+          <article class="bonus-counter-state">
+            <span>復元ボーナスカウンター</span>
+            <strong id="state-bonus-counter">未特定</strong>
+            <small id="state-bonus-counter-status">検索または手入力が必要</small>
+          </article>
+          <article class="skill-counter-state">
+            <span>スキルカウンター</span>
+            <strong id="state-skill-counter">未特定</strong>
+            <small id="state-skill-counter-status">スキル結果から特定</small>
+          </article>
+        </div>
+        <details class="state-code-details">
+          <summary>セーブ状態コードで引き継ぐ</summary>
+          <p>
+            状態コードは基準seedと特定済みカウンターをまとめた、このツール専用の引き継ぎコードです。
+          </p>
+          <div class="continuation-controls">
+            <label>
+              <span>セーブ状態コード</span>
+              <input id="continuation-code" type="text" placeholder="GSF2-B86315169-G487-S188" />
+            </label>
+            <button id="open-continuation" class="secondary" type="button">状態を読み込む</button>
+          </div>
+          <p id="continuation-message" class="continuation-message" aria-live="polite"></p>
+          <p id="continuation-error" class="error" role="alert" hidden></p>
+        </details>
+      </section>
+
+      <nav class="app-tabs" aria-label="機能を選択">
+        <button type="button" class="tab-button active" data-tab="guide" aria-selected="true"><span>01</span>使い方</button>
+        <button type="button" class="tab-button" data-tab="search" aria-selected="false"><span>02</span>seed・復元カウンター検索</button>
+        <button type="button" class="tab-button" data-tab="skill-search" aria-selected="false"><span>03</span>スキルカウンター特定</button>
+        <button type="button" class="tab-button" data-tab="bonus-future" aria-selected="false"><span>04</span>復元ボーナス未来予測</button>
+        <button type="button" class="tab-button" data-tab="skill-future" aria-selected="false"><span>05</span>スキル未来予測</button>
+      </nav>
+
+      <div class="tab-view active" data-tab-view="guide">
+        <section class="panel guide-panel" aria-labelledby="guide-title">
+          <div class="section-heading guide-heading">
+            <div><p class="step">HOW IT WORKS</p><h2 id="guide-title">基準seedと2つのカウンター</h2></div>
+            <p class="guide-summary">セーブ固有seed＋2つの保存位置</p>
+          </div>
+          <p class="guide-intro">
+            基準seedはセーブデータ固有の値です。復元ボーナスとスキルは同じ基準seedを使いますが、
+            現在位置は別々のカウンターとしてセーブデータに保存されます。
+          </p>
+          <figure class="seed-stream-figure" aria-labelledby="seed-stream-caption">
+            <div class="seed-source-node">
+              <span>このセーブデータに固有・保存される値</span>
+              <strong>基準seed（1つ）</strong>
+              <small>武器種・属性を組み合わせて抽選結果を決定</small>
+            </div>
+            <div class="seed-branch" aria-hidden="true"><span></span></div>
+            <div class="seed-stream-grid">
+              <article class="seed-stream-card bonus-stream-card">
+                <p class="stream-label">復元ボーナス抽選列</p>
+                <strong>復元ボーナスカウンター</strong>
+                <p class="saved-counter"><span>セーブデータに保存</span><code>復元専用の現在位置</code></p>
+                <p>復元ボーナスを1回抽選すると、このカウンターだけが1つ進みます。</p>
+                <div class="stream-sequence" aria-label="復元ボーナスの順番">
+                  <span>復元A</span><i aria-hidden="true">→</i><span>復元B</span><i aria-hidden="true">→</i><span>復元C</span>
+                </div>
+              </article>
+              <article class="seed-stream-card skill-stream-card">
+                <p class="stream-label">シリーズ・グループスキル抽選列</p>
+                <strong>スキルカウンター</strong>
+                <p class="saved-counter"><span>セーブデータに保存</span><code>スキル専用の現在位置</code></p>
+                <p>スキルを1回再付与すると、このカウンターだけが1つ進みます。</p>
+                <div class="stream-sequence" aria-label="スキルの順番">
+                  <span>スキルA</span><i aria-hidden="true">→</i><span>スキルB</span><i aria-hidden="true">→</i><span>スキルC</span>
+                </div>
+              </article>
+            </div>
+            <figcaption id="seed-stream-caption">
+              武器種・属性を変えると結果は変わりますが、カウンターは全武器で共有されます。
+              リセット抽選とスキル抽選は、同じ武器種・属性なら武器個体が違っても同じ結果です。同じ構成での再復元は各武器の現在5枠構成も使います。
+            </figcaption>
+          </figure>
+          <div class="guide-workflows" aria-label="使用手順">
+            <article><p class="workflow-number">01</p><div><h3>基準seedと復元カウンター</h3><ol><li>巨戟復元強化の直前でセーブします。</li><li>復元ボーナスを連続6回記録します。</li><li>セーブせず終了し、検索タブへ入力します。</li></ol></div></article>
+            <article><p class="workflow-number">02</p><div><h3>スキルカウンター</h3><ol><li>同じ元セーブをロードします。</li><li>スキル再付与を連続2回以上記録します。</li><li>セーブせず終了し、特定タブへ入力します。</li></ol></div></article>
+            <article><p class="workflow-number">03</p><div><h3>構成決定からEX厳選へ</h3><ol><li>火太刀、龍太刀などの武器を登録します。</li><li>リセット結果から希望構成を選び、「この構成でEX厳選へ」を押します。</li><li>既に持っているEX未厳選武器は、武器ごとに現在の5枠構成を登録します。</li><li>採用してセーブした位置を新しい0地点にします。</li></ol></div></article>
+          </div>
+          <p class="guide-warning">観測中にセーブするとカウンターが進みます。確認後は必ずセーブせず終了してください。</p>
+        </section>
+      </div>
+
+      <div class="tab-view" data-tab-view="search" hidden>
+        <form id="search-form" class="panel">
+          <div class="section-heading">
+            <div><p class="step">FIND BASE STATE</p><h2>基準seed＋復元ボーナスカウンター検索</h2></div>
+            <div class="sample-actions">
+              <button type="button" id="load-sample" class="text-button">スラアク実測</button>
+              <button type="button" id="load-bow-sample" class="text-button">弓実測</button>
+              <button type="button" id="load-heavy-bowgun-sample" class="text-button">ヘビィ実測</button>
+            </div>
+          </div>
+          <p class="prediction-intro">セーブ地点から連続して確認した復元ボーナスを入力し、基準seedとその時点の復元ボーナスカウンターを同時に検索します。</p>
+          <div class="field-grid basic-grid">
+            <label><span>観測した武器種</span><select id="weapon-type" required></select></label>
+            <label><span>観測した武器の属性</span><select id="attribute-force" required></select></label>
+          </div>
+          <p id="bonus-pool-note" class="pool-note"></p>
+          <details class="advanced">
+            <summary>復元ボーナスカウンターの探索範囲・実行設定</summary>
+            <p class="advanced-note">ここで指定するのはカウンター候補の探索範囲です。正確な現在値は検索結果から決まります。</p>
+            <div class="field-grid advanced-grid compact-grid">
+              <label><span>カウンター候補（開始）</span><input id="counter-start" type="number" min="0" value="475" required /></label>
+              <label><span>カウンター候補（終了）</span><input id="counter-end" type="number" min="0" value="485" required /></label>
+              <label><span>seed候補（開始）</span><input id="seed-start" type="number" min="0" max="99999999" value="0" required /></label>
+              <label><span>seed候補（終了）</span><input id="seed-end" type="number" min="0" max="99999999" value="99999999" required /></label>
+              <label><span>並列Worker数</span><input id="worker-count" type="number" min="1" max="16" value="4" required /></label>
+            </div>
+          </details>
+          <div class="section-heading observations-heading">
+            <div><p class="step">OBSERVATIONS</p><h2>連続した復元ボーナス結果</h2></div>
+            <p class="heading-note">1段＝1回、左から5枠</p>
+          </div>
+          <div id="observation-rows" class="observation-rows"></div>
+          <div class="observation-controls">
+            <button type="button" id="add-observation" class="secondary small-button">抽選結果を1回追加</button>
+            <button type="button" id="remove-observation" class="text-button">最後の1回を削除</button>
+          </div>
+          <p id="form-error" class="error" role="alert" hidden></p>
+          <div class="actions"><button id="start-button" class="primary" type="submit">基準seedとカウンターを検索</button><button id="cancel-button" class="secondary" type="button" disabled>中止</button></div>
+        </form>
+        <section id="progress-panel" class="panel results-panel" aria-live="polite">
+          <div class="section-heading"><div><p class="step">RESULT</p><h2>検索結果</h2></div><p id="status-text" class="status-pill">待機中</p></div>
+          <div class="progress-track" aria-hidden="true"><div id="progress-bar" class="progress-bar"></div></div>
+          <div class="metrics">
+            <div><span>進捗</span><strong id="progress-value">0.00%</strong></div><div><span>確認seed</span><strong id="checked-value">0</strong></div><div><span>経過時間</span><strong id="elapsed-value">0.0秒</strong></div><div><span>候補</span><strong id="candidate-value">0</strong></div>
+          </div>
+          <div id="empty-result" class="empty-result">入力を確認して検索を開始してください。</div><ol id="candidate-list" class="candidate-list"></ol>
+        </section>
+      </div>
+
+      <div class="tab-view" data-tab-view="skill-search" hidden>
+        <section class="panel" aria-labelledby="skill-search-title">
+          <div class="section-heading"><div><p class="step">FIND SKILL COUNTER</p><h2 id="skill-search-title">スキルカウンター特定</h2></div><p id="skill-status" class="status-pill">観測結果を入力してください</p></div>
+          <p class="prediction-intro">現在の基準seedを使い、セーブ地点から連続して確認したシリーズ・グループスキルからスキルカウンターを特定します。復元ボーナスカウンターは変化しません。</p>
+          <div class="dependency-state"><span>使用する基準seed</span><strong id="skill-search-base-seed">未特定</strong></div>
+          <div class="field-grid skill-settings">
+            <label><span>観測した武器種</span><select id="skill-weapon-type"></select></label><label><span>観測した属性</span><select id="skill-attribute-force"></select></label>
+          </div>
+          <div class="section-heading skill-observation-heading"><div><h3>連続したスキル再付与結果</h3><p>左がシリーズ、右がグループです。</p></div></div>
+          <div id="skill-observation-rows" class="skill-observation-rows"></div>
+          <div class="observation-controls"><button type="button" id="add-skill-observation" class="secondary small-button">スキル結果を1回追加</button><button type="button" id="remove-skill-observation" class="text-button">最後の1回を削除</button></div>
+          <details class="advanced skill-advanced"><summary>スキルカウンターの探索範囲</summary><p class="advanced-note">通常は変更不要です。候補0件の場合に範囲を広げます。</p><div class="field-grid advanced-grid compact-grid"><label><span>カウンター候補（開始）</span><input id="skill-counter-start" type="number" min="0" value="0" /></label><label><span>カウンター候補（終了）</span><input id="skill-counter-end" type="number" min="0" value="1000" /></label></div></details>
+          <div class="actions skill-actions"><button id="find-skill-position" class="primary" type="button">スキルカウンターを特定</button></div><p id="skill-error" class="error" role="alert" hidden></p>
+        </section>
+      </div>
+
+      <div class="tab-view" data-tab-view="bonus-future" hidden>
+        <section id="prediction-panel" class="panel prediction-panel">
+          <div class="section-heading"><div><p id="bonus-future-kicker" class="step">RESET BONUSES FUTURE</p><h2>復元ボーナス未来予測</h2></div><p id="comparison-status" class="status-pill">状態と予測対象を設定してください</p></div>
+          <section class="prediction-state-editor bonus-state-editor" aria-labelledby="bonus-state-title">
+            <div><p class="step">PREDICTION ORIGIN</p><h3 id="bonus-state-title">予測の基準状態</h3></div>
+            <div class="prediction-state-grid">
+              <label><span>基準seed</span><input id="bonus-state-base-seed" type="number" min="0" max="99999999" placeholder="未特定" /></label>
+              <label><span>復元ボーナスカウンター</span><input id="bonus-state-counter" type="number" min="0" max="4294967295" placeholder="未特定" /></label>
+              <label class="preserved-state"><span>スキルカウンター</span><input id="bonus-state-skill-counter" type="text" value="未特定" readonly /><small>復元抽選では変化しません</small></label>
+              <button id="apply-bonus-state" class="primary" type="button">この状態で予測</button>
+            </div><p id="bonus-state-message" class="continuation-message" aria-live="polite"></p><p id="bonus-state-error" class="error" role="alert" hidden></p>
+          </section>
+          <section class="bonus-operation-section" aria-labelledby="bonus-operation-title">
+            <div><p class="step">LOTTERY METHOD</p><h3 id="bonus-operation-title">ゲーム内で行う再復元</h3><p>まずリセットで希望の構成を探し、その構成を引き継いでEX厳選へ進めます。</p></div>
+            <fieldset id="bonus-operation-selector" class="bonus-operation-selector">
+              <legend class="sr-only">再復元の方法</legend>
+              <label class="operation-card"><input id="bonus-operation-reset" type="radio" name="bonus-operation" value="reset" checked /><span><strong>ボーナスをリセットして再復元</strong><small>全候補から5枠の構成を抽選</small></span></label>
+              <label class="operation-card"><input id="bonus-operation-keep" type="radio" name="bonus-operation" value="keep" /><span><strong>ボーナスを同じ構成で再復元</strong><small>5枠の系統を維持してII・III・EX等を抽選</small></span></label>
+            </fieldset>
+            <div id="keep-layout-panel" class="keep-layout-panel" hidden>
+              <div class="keep-layout-heading"><div><h4>EX未厳選武器ごとの現在構成</h4><p>登録した各武器について、ゲーム画面の左から順に5枠の系統を選びます。II・III・EXの入力は不要です。</p></div><span id="keep-layout-source" class="status-pill">武器ごとに構成を入力</span></div>
+              <div id="keep-layout-inputs" class="keep-layout-inputs"></div>
+              <p class="keep-layout-note">同じ武器種・属性でも、別の武器プロファイルとして複数登録できます。弓には斬れ味・装填系、ボウガンには属性系の構成を使用できません。</p>
+              <p id="keep-layout-error" class="error" role="alert" hidden></p>
+            </div>
+          </section>
+          <section class="comparison-section" aria-labelledby="comparison-title">
+            <div class="section-heading comparison-heading"><div><p class="step">REGISTERED TARGETS</p><h2 id="comparison-title">登録した武器種・属性を一覧比較</h2></div></div>
+            <p class="prediction-intro">リセット抽選は武器種・属性が同じなら同じ結果です。同じ構成でのEX厳選では、同じ武器種・属性の別武器も表示名を付けて複数登録できます。</p>
+            <div class="field-grid comparison-settings target-registration-grid">
+              <label><span>表示名（任意）</span><input id="comparison-target-label" type="text" maxlength="24" placeholder="例：火太刀" /></label><label><span>武器種</span><select id="comparison-weapon-type"></select></label><label><span>属性</span><select id="comparison-attribute-force"></select></label><label><span>表示する回数</span><input id="comparison-count" type="number" min="1" max="500" value="100" /></label>
+            </div>
+            <div class="comparison-actions"><button id="add-comparison-target" class="secondary small-button" type="button">この組み合わせを登録</button><button id="clear-comparison-targets" class="text-button" type="button">登録をすべて削除</button></div>
+            <div id="comparison-target-list" class="comparison-target-list" aria-live="polite"></div><p id="comparison-error" class="error" role="alert" hidden></p>
+            <div class="bonus-ex-filter-settings"><div><h3>EX数で絞り込む</h3><p>いずれかの登録武器が最低EX数を満たす行だけ表示します。</p></div><label><span>最低EX数</span><select id="bonus-ex-filter-count"><option value="1">1個以上</option><option value="2">2個以上</option><option value="3" selected>3個以上</option><option value="4">4個以上</option><option value="5">5個</option></select></label><label class="checkbox-label bonus-ex-filter-toggle"><input id="bonus-ex-filter-enabled" type="checkbox" /><span>条件に合う行だけ表示</span></label></div>
+            <p class="adoption-note">「この位置を新しい0にする」は、ゲーム内でその結果まで進めてセーブした場合に使用してください。リセット結果の「この構成でEX厳選へ」は、保存後カウンターと5枠構成をまとめて引き継ぎます。</p>
+            <div id="comparison-table-wrap" class="prediction-table-wrap" hidden><table class="prediction-table comparison-table"><thead><tr id="comparison-header-row"></tr></thead><tbody id="comparison-rows"></tbody></table></div>
+          </section>
+          <section class="detail-prediction-section" aria-labelledby="detail-prediction-title">
+            <div class="section-heading"><div><p class="step">DETAIL FILTER</p><h2 id="detail-prediction-title">1条件を詳しく絞り込む</h2></div><p id="prediction-status" class="status-pill">状態待ち</p></div>
+            <div class="prediction-source" aria-label="予測の起点"><div><span>基準seed</span><strong id="prediction-seed">—</strong></div><div><span>現在地点</span><strong id="prediction-origin">0</strong></div></div>
+            <div class="field-grid prediction-settings"><label><span>予測する武器種</span><select id="prediction-weapon-type"></select></label><label><span>予測する属性</span><select id="prediction-attribute-force"></select></label><label><span>表示する回数</span><input id="prediction-count" type="number" min="1" max="1000" value="100" /></label></div>
+            <p id="prediction-pool-note" class="pool-note"></p>
+            <div class="prediction-filter-heading"><div><h3>希望ボーナス</h3><p>欲しいボーナスを順不同で指定します。</p></div><label class="checkbox-label"><input id="prediction-matches-only" type="checkbox" checked /><span>一致結果だけ表示</span></label></div>
+            <div id="prediction-filters" class="prediction-filter-grid"></div><p id="prediction-error" class="error" role="alert" hidden></p>
+            <div class="prediction-table-wrap"><table class="prediction-table"><thead><tr><th>何回先</th><th>保存後の状態</th><th>1枠目</th><th>2枠目</th><th>3枠目</th><th>4枠目</th><th>5枠目</th></tr></thead><tbody id="prediction-rows"></tbody></table></div>
+          </section>
+        </section>
+      </div>
+
+      <div class="tab-view" data-tab-view="skill-future" hidden>
+        <section class="panel skill-prediction-section" aria-labelledby="skill-prediction-title">
+          <div class="section-heading skill-section-heading"><div><p class="step">SKILLS FUTURE</p><h2 id="skill-prediction-title">スキル未来予測</h2></div><p id="skill-future-status" class="status-pill">状態と予測対象を設定してください</p></div>
+          <section class="prediction-state-editor skill-state-editor" aria-labelledby="skill-state-title">
+            <div><p class="step">PREDICTION ORIGIN</p><h3 id="skill-state-title">予測の基準状態</h3></div>
+            <div class="prediction-state-grid">
+              <label><span>基準seed</span><input id="skill-state-base-seed" type="number" min="0" max="99999999" placeholder="未特定" /></label><label><span>スキルカウンター</span><input id="skill-state-counter" type="number" min="0" max="4294967295" placeholder="未特定" /></label><label class="preserved-state"><span>復元ボーナスカウンター</span><input id="skill-state-bonus-counter" type="text" value="未特定" readonly /><small>スキル抽選では変化しません</small></label><button id="apply-skill-state" class="primary" type="button">この状態で予測</button>
+            </div><p id="skill-state-message" class="continuation-message" aria-live="polite"></p><p id="skill-state-error" class="error" role="alert" hidden></p>
+          </section>
+          <section class="comparison-section" aria-labelledby="skill-targets-title">
+            <div class="section-heading comparison-heading"><div><p class="step">REGISTERED TARGETS</p><h2 id="skill-targets-title">登録した武器種・属性を一覧比較</h2></div></div>
+            <div class="field-grid comparison-settings target-registration-grid">
+              <label><span>表示名（任意）</span><input id="skill-target-label" type="text" maxlength="24" placeholder="例：火太刀" /></label><label><span>武器種</span><select id="skill-target-weapon-type"></select></label><label><span>属性</span><select id="skill-target-attribute-force"></select></label><label><span>表示する回数</span><input id="skill-prediction-count" type="number" min="1" max="1000" value="100" /></label>
+            </div>
+            <div class="comparison-actions"><button id="add-skill-target" class="secondary small-button" type="button">この組み合わせを登録</button><button id="clear-skill-targets" class="text-button" type="button">登録をすべて削除</button></div>
+            <div id="skill-target-list" class="comparison-target-list" aria-live="polite"></div><p id="skill-target-error" class="error" role="alert" hidden></p>
+          </section>
+          <div class="skill-highlight-settings"><div><h3>当たり強調</h3><p>グループスキルの「ヌシの魂」は常に強調します。</p></div><fieldset><legend>強調するシリーズスキル</legend><label><input type="checkbox" name="desired-series" value="11" checked /> 黒蝕竜の力</label><label><input type="checkbox" name="desired-series" value="6" /> 雷顎竜の闘志</label><label><input type="checkbox" name="desired-series" value="5" /> 兇爪竜の力</label><label><input type="checkbox" name="desired-series" value="18" /> 巨戟龍の黙示録</label></fieldset></div>
+          <section class="skill-filter-settings" aria-labelledby="skill-filter-title">
+            <div><h3 id="skill-filter-title">条件一致だけ表示</h3><p>各武器の同じ結果セル内で判定し、いずれかの武器が一致した行を残します。</p></div>
+            <label><span>グループスキル</span><select id="skill-filter-group"></select></label>
+            <label><span>条件</span><select id="skill-filter-operator"><option value="and" selected>AND（両方一致）</option><option value="or">OR（どちらか一致）</option></select></label>
+            <label><span>シリーズスキル</span><select id="skill-filter-series"></select></label>
+            <label class="checkbox-label skill-filter-toggle"><input id="skill-filter-enabled" type="checkbox" /><span>条件に合う行だけ表示</span></label>
+          </section>
+          <p class="adoption-note">スキル結果を採用してセーブした場合は、その行を新しい0地点にできます。復元ボーナスカウンターは維持されます。</p>
+          <div id="skill-table-wrap" class="prediction-table-wrap" hidden><table class="prediction-table skill-prediction-table"><thead><tr id="skill-prediction-header-row"></tr></thead><tbody id="skill-prediction-rows"></tbody></table></div>
+        </section>
+      </div>
+    </main>
+    <script type="module" src="./app.js"></script>
+  </body>
+</html>

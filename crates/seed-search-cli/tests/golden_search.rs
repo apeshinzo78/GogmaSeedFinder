@@ -1,4 +1,7 @@
-use seed_search_cli::{CompiledSkillSearch, SeedRange, SkillSearchCriteria};
+use seed_search_cli::{
+    CompiledSkillCounterSearch, CompiledSkillSearch, SeedRange, SkillCounterRange,
+    SkillCounterSearchCriteria, SkillSearchCriteria,
+};
 use serde::Deserialize;
 
 #[derive(Debug, Deserialize)]
@@ -80,4 +83,33 @@ fn four_rolls_rediscover_upstream_sample_in_a_local_range() {
         .expect("local golden search must succeed");
 
     assert_eq!(candidates, vec![sample.base_seed]);
+}
+
+#[test]
+fn known_seed_and_four_rolls_rediscover_the_skill_counter() {
+    let fixture = load_fixture();
+    let sample = fixture
+        .cases
+        .iter()
+        .find(|case| case.name == "upstream_sample")
+        .expect("fixture must contain upstream_sample");
+    let compiled = CompiledSkillCounterSearch::new(SkillCounterSearchCriteria {
+        base_seed: sample.base_seed,
+        weapon_type: sample.weapon_type,
+        attribute_force: sample.attribute_force,
+        counter_gate: sample.counter_gate,
+        counter_range: SkillCounterRange {
+            start: 180,
+            end: 190,
+        },
+        observations: sample
+            .rolls
+            .iter()
+            .take(4)
+            .map(|roll| roll.table_index)
+            .collect(),
+    })
+    .expect("skill counter criteria must be valid");
+
+    assert_eq!(compiled.matching_counters(), vec![sample.skill_counter]);
 }

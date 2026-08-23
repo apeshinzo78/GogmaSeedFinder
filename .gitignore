@@ -6,6 +6,8 @@
 node_modules/
 dist/
 pkg/
+!/web/pkg/
+!/web/pkg/**
 .vite/
 
 # Local data and generated search output

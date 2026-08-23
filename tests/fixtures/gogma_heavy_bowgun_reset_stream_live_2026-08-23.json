@@ -1,0 +1,77 @@
+{
+  "schemaVersion": 1,
+  "source": {
+    "game": "Monster Hunter Wilds",
+    "liveObservationDate": "2026-08-23",
+    "weaponName": "戦慄のヘルシャフェン",
+    "weaponTypeName": "Heavy Bowgun",
+    "attributeName": "Ice",
+    "activeSkills": ["Leviathan's Fury", "Scaling Prowess"],
+    "method": "Six consecutive Reset Bonuses previews recorded with Steam F12; the game was closed without saving",
+    "knownSaveState": "baseSeed and counterGate inherited from the previously exported live save; the observed rolls uniquely reproduce gogmaCounter 480 with the Heavy Bowgun candidate pool",
+    "screenshots": [
+      { "fileName": "20260823215430_1.jpg", "role": "pre-roll Ice Heavy Bowgun", "sha256": "35825A89038246A23BD2B62CCA6F048141EBDA932FF29A915EEA006341480C6E" },
+      { "fileName": "20260823215621_1.jpg", "role": "roll 1", "sha256": "75DB873E5FD488CBBB0F7A892567574081D19719A0C7942ABF5DA0A11833D31F" },
+      { "fileName": "20260823215630_1.jpg", "role": "roll 2", "sha256": "81269E46D01896CEE2B1F7A4DB81C6CE0A9431A1A69C61144CC24904134DBF10" },
+      { "fileName": "20260823215634_1.jpg", "role": "roll 3", "sha256": "81F37BFAAC0D60B16EABF9D3D5850AC359087017843A272B107D9E93C5EBEDFA" },
+      { "fileName": "20260823215638_1.jpg", "role": "roll 4", "sha256": "AD2BB6F6178A77F6CE6F76AE2735BF9EC97CC283F829E9D7D5B4F38B05859F36" },
+      { "fileName": "20260823215642_1.jpg", "role": "roll 5", "sha256": "7503CA425FD26FC3058975016886BD50F3E1A18E7E08EB7670479AA9B111A0BE" },
+      { "fileName": "20260823215647_1.jpg", "role": "roll 6", "sha256": "551871DF8FDBC449488698A04C30FDC6B066977C0BD0EBC36A9B98714FE03EF2" }
+    ]
+  },
+  "cases": [
+    {
+      "name": "live_game_ice_heavy_bowgun_reset",
+      "baseSeed": 86315169,
+      "weaponType": 12,
+      "attributeForce": 3,
+      "gogmaCounter": 480,
+      "counterGate": 200,
+      "effectiveSeed": 92908769,
+      "initializedState": {
+        "x": 1102340271,
+        "y": 3203724785,
+        "z": 2152508027,
+        "w": 2996160567
+      },
+      "counterState": {
+        "x": 113595293,
+        "y": 1700663022,
+        "z": 1723231278,
+        "w": 3699042368
+      },
+      "rolls": [
+        {
+          "bonusIds": [13, 6, 8, 12, 6],
+          "bonusNames": ["Affinity Boost III", "Sharpness Boost", "Attack Boost II", "Attack Boost III", "Sharpness Boost"],
+          "observedJapaneseNames": ["会心率強化Ⅲ", "装填数強化", "基礎攻撃力強化Ⅱ", "基礎攻撃力強化Ⅲ", "装填数強化"]
+        },
+        {
+          "bonusIds": [13, 10, 12, 15, 6],
+          "bonusNames": ["Affinity Boost III", "Sharpness/Ammo Boost EX", "Attack Boost III", "Attack Boost EX", "Sharpness Boost"],
+          "observedJapaneseNames": ["会心率強化Ⅲ", "斬れ味・装填強化ＥＸ", "基礎攻撃力強化Ⅲ", "基礎攻撃力強化ＥＸ", "装填数強化"]
+        },
+        {
+          "bonusIds": [9, 15, 9, 16, 6],
+          "bonusNames": ["Affinity Boost II", "Attack Boost EX", "Affinity Boost II", "Affinity Boost EX", "Sharpness Boost"],
+          "observedJapaneseNames": ["会心率強化Ⅱ", "基礎攻撃力強化ＥＸ", "会心率強化Ⅱ", "会心率強化ＥＸ", "装填数強化"]
+        },
+        {
+          "bonusIds": [12, 16, 6, 8, 9],
+          "bonusNames": ["Attack Boost III", "Affinity Boost EX", "Sharpness Boost", "Attack Boost II", "Affinity Boost II"],
+          "observedJapaneseNames": ["基礎攻撃力強化Ⅲ", "会心率強化ＥＸ", "装填数強化", "基礎攻撃力強化Ⅱ", "会心率強化Ⅱ"]
+        },
+        {
+          "bonusIds": [12, 13, 15, 6, 9],
+          "bonusNames": ["Attack Boost III", "Affinity Boost III", "Attack Boost EX", "Sharpness Boost", "Affinity Boost II"],
+          "observedJapaneseNames": ["基礎攻撃力強化Ⅲ", "会心率強化Ⅲ", "基礎攻撃力強化ＥＸ", "装填数強化", "会心率強化Ⅱ"]
+        },
+        {
+          "bonusIds": [15, 9, 6, 16, 12],
+          "bonusNames": ["Attack Boost EX", "Affinity Boost II", "Sharpness Boost", "Affinity Boost EX", "Attack Boost III"],
+          "observedJapaneseNames": ["基礎攻撃力強化ＥＸ", "会心率強化Ⅱ", "装填数強化", "会心率強化ＥＸ", "基礎攻撃力強化Ⅲ"]
+        }
+      ]
+    }
+  ]
+}

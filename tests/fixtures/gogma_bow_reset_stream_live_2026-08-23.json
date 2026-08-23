@@ -1,0 +1,77 @@
+{
+  "schemaVersion": 1,
+  "source": {
+    "game": "Monster Hunter Wilds",
+    "liveObservationDate": "2026-08-23",
+    "weaponName": "亡国のクピドバイン",
+    "weaponTypeName": "Bow",
+    "attributeName": "Thunder",
+    "activeSkills": ["Leviathan's Fury", "Scaling Prowess"],
+    "method": "Six consecutive Reset Bonuses previews recorded with Steam F12; the game was closed without saving",
+    "knownSaveState": "baseSeed and counterGate inherited from the previously exported live save; the observed rolls uniquely reproduce gogmaCounter 480 with the Bow candidate pool",
+    "screenshots": [
+      { "fileName": "20260823213424_1.jpg", "role": "pre-roll Thunder Bow", "sha256": "BEDF13266323429442C34CBEB0B6E526FAB7BC5379A3FA87A861925AB2F369F6" },
+      { "fileName": "20260823213607_1.jpg", "role": "roll 1", "sha256": "A9B1B6EEB9C664AD1A41B62537814BFE12542E624EAC44A9381870C0B9CCB4DB" },
+      { "fileName": "20260823213613_1.jpg", "role": "roll 2", "sha256": "1C173A309DFFD2977D0A581348029C409AF8A7730FAD0700E4DCE24A874A9C67" },
+      { "fileName": "20260823213621_1.jpg", "role": "roll 3", "sha256": "543AE90862392997478DE428D87D1E368DC4779E096251658790850628E08D49" },
+      { "fileName": "20260823213626_1.jpg", "role": "roll 4", "sha256": "D830728B0757AA7A9BA051D884D2F6DB9ABD56568E40D2FAD170B4A0C4C11625" },
+      { "fileName": "20260823213629_1.jpg", "role": "roll 5", "sha256": "CA4A9962278BD6CF0EE393ADFEF62FB53063A2F1F8B8F44C3B6A94450151B7EC" },
+      { "fileName": "20260823213633_1.jpg", "role": "roll 6", "sha256": "77A7267DECD9B7D9BA1E81E09AAF136B36D655500C950C0B90991336EA83D083" }
+    ]
+  },
+  "cases": [
+    {
+      "name": "live_game_thunder_bow_reset",
+      "baseSeed": 86315169,
+      "weaponType": 11,
+      "attributeForce": 4,
+      "gogmaCounter": 480,
+      "counterGate": 200,
+      "effectiveSeed": 92907768,
+      "initializedState": {
+        "x": 4087120356,
+        "y": 3220647461,
+        "z": 3240766420,
+        "w": 2665724331
+      },
+      "counterState": {
+        "x": 515475976,
+        "y": 452189587,
+        "z": 3407049461,
+        "w": 2021909791
+      },
+      "rolls": [
+        {
+          "bonusIds": [13, 14, 15, 12, 15],
+          "bonusNames": ["Affinity Boost III", "Element Boost EX", "Attack Boost EX", "Attack Boost III", "Attack Boost EX"],
+          "observedJapaneseNames": ["会心率強化Ⅲ", "属性強化ＥＸ", "基礎攻撃力強化ＥＸ", "基礎攻撃力強化Ⅲ", "基礎攻撃力強化ＥＸ"]
+        },
+        {
+          "bonusIds": [9, 13, 14, 16, 15],
+          "bonusNames": ["Affinity Boost II", "Affinity Boost III", "Element Boost EX", "Affinity Boost EX", "Attack Boost EX"],
+          "observedJapaneseNames": ["会心率強化Ⅱ", "会心率強化Ⅲ", "属性強化ＥＸ", "会心率強化ＥＸ", "基礎攻撃力強化ＥＸ"]
+        },
+        {
+          "bonusIds": [11, 13, 12, 14, 14],
+          "bonusNames": ["Element Boost II", "Affinity Boost III", "Attack Boost III", "Element Boost EX", "Element Boost EX"],
+          "observedJapaneseNames": ["属性強化Ⅱ", "会心率強化Ⅲ", "基礎攻撃力強化Ⅲ", "属性強化ＥＸ", "属性強化ＥＸ"]
+        },
+        {
+          "bonusIds": [11, 13, 15, 14, 9],
+          "bonusNames": ["Element Boost II", "Affinity Boost III", "Attack Boost EX", "Element Boost EX", "Affinity Boost II"],
+          "observedJapaneseNames": ["属性強化Ⅱ", "会心率強化Ⅲ", "基礎攻撃力強化ＥＸ", "属性強化ＥＸ", "会心率強化Ⅱ"]
+        },
+        {
+          "bonusIds": [11, 15, 13, 13, 12],
+          "bonusNames": ["Element Boost II", "Attack Boost EX", "Affinity Boost III", "Affinity Boost III", "Attack Boost III"],
+          "observedJapaneseNames": ["属性強化Ⅱ", "基礎攻撃力強化ＥＸ", "会心率強化Ⅲ", "会心率強化Ⅲ", "基礎攻撃力強化Ⅲ"]
+        },
+        {
+          "bonusIds": [12, 16, 12, 15, 9],
+          "bonusNames": ["Attack Boost III", "Affinity Boost EX", "Attack Boost III", "Attack Boost EX", "Affinity Boost II"],
+          "observedJapaneseNames": ["基礎攻撃力強化Ⅲ", "会心率強化ＥＸ", "基礎攻撃力強化Ⅲ", "基礎攻撃力強化ＥＸ", "会心率強化Ⅱ"]
+        }
+      ]
+    }
+  ]
+}

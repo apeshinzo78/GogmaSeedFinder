@@ -1,0 +1,138 @@
+{
+  "schemaVersion": 1,
+  "source": {
+    "project": "Gogma Artian Roll Planner",
+    "version": "0.9.3",
+    "archiveSha256": "9B44C2C9AB46A3D79E72280C8C583F2BA5B2303FC3C0984F40522FB023F81DA9",
+    "generator": "GARP.lua initialize_gogma_rng/select_weighted_gogma_bonus/simulate_gogma_roll",
+    "liveObservationDate": "2026-08-23",
+    "observationRecorder": "Artian Reroll Tracker 4.2.4"
+  },
+  "cases": [
+    {
+      "name": "live_game_fire_switch_axe_reset",
+      "baseSeed": 86315169,
+      "weaponType": 8,
+      "attributeForce": 1,
+      "gogmaCounter": 480,
+      "counterGate": 200,
+      "effectiveSeed": 92912775,
+      "initializedState": {
+        "x": 4078182687,
+        "y": 3265350337,
+        "z": 4046266523,
+        "w": 2319409306
+      },
+      "counterState": {
+        "x": 3258117228,
+        "y": 3848277071,
+        "z": 954823301,
+        "w": 192999389
+      },
+      "rolls": [
+        {
+          "bonusIds": [11, 12, 15, 14, 11],
+          "bonusNames": [
+            "Element Boost II",
+            "Attack Boost III",
+            "Attack Boost EX",
+            "Element Boost EX",
+            "Element Boost II"
+          ],
+          "observedJapaneseNames": [
+            "属性強化Ⅱ",
+            "基礎攻撃力強化Ⅲ",
+            "基礎攻撃力強化ＥＸ",
+            "属性強化ＥＸ",
+            "属性強化Ⅱ"
+          ]
+        },
+        {
+          "bonusIds": [9, 14, 8, 16, 11],
+          "bonusNames": [
+            "Affinity Boost II",
+            "Element Boost EX",
+            "Attack Boost II",
+            "Affinity Boost EX",
+            "Element Boost II"
+          ],
+          "observedJapaneseNames": [
+            "会心率強化Ⅱ",
+            "属性強化ＥＸ",
+            "基礎攻撃力強化Ⅱ",
+            "会心率強化ＥＸ",
+            "属性強化Ⅱ"
+          ]
+        },
+        {
+          "bonusIds": [6, 13, 10, 11, 8],
+          "bonusNames": [
+            "Sharpness Boost",
+            "Affinity Boost III",
+            "Sharpness/Ammo Boost EX",
+            "Element Boost II",
+            "Attack Boost II"
+          ],
+          "observedJapaneseNames": [
+            "斬れ味・装填強化Ⅰ",
+            "会心率強化Ⅲ",
+            "斬れ味・装填強化ＥＸ",
+            "属性強化Ⅱ",
+            "基礎攻撃力強化Ⅱ"
+          ]
+        },
+        {
+          "bonusIds": [8, 12, 6, 15, 10],
+          "bonusNames": [
+            "Attack Boost II",
+            "Attack Boost III",
+            "Sharpness Boost",
+            "Attack Boost EX",
+            "Sharpness/Ammo Boost EX"
+          ],
+          "observedJapaneseNames": [
+            "基礎攻撃力強化Ⅱ",
+            "基礎攻撃力強化Ⅲ",
+            "斬れ味・装填強化Ⅰ",
+            "基礎攻撃力強化ＥＸ",
+            "斬れ味・装填強化ＥＸ"
+          ]
+        },
+        {
+          "bonusIds": [15, 8, 8, 6, 16],
+          "bonusNames": [
+            "Attack Boost EX",
+            "Attack Boost II",
+            "Attack Boost II",
+            "Sharpness Boost",
+            "Affinity Boost EX"
+          ],
+          "observedJapaneseNames": [
+            "基礎攻撃力強化ＥＸ",
+            "基礎攻撃力強化Ⅱ",
+            "基礎攻撃力強化Ⅱ",
+            "斬れ味・装填強化Ⅰ",
+            "会心率強化ＥＸ"
+          ]
+        },
+        {
+          "bonusIds": [14, 8, 11, 15, 10],
+          "bonusNames": [
+            "Element Boost EX",
+            "Attack Boost II",
+            "Element Boost II",
+            "Attack Boost EX",
+            "Sharpness/Ammo Boost EX"
+          ],
+          "observedJapaneseNames": [
+            "属性強化ＥＸ",
+            "基礎攻撃力強化Ⅱ",
+            "属性強化Ⅱ",
+            "基礎攻撃力強化ＥＸ",
+            "斬れ味・装填強化ＥＸ"
+          ]
+        }
+      ]
+    }
+  ]
+}
