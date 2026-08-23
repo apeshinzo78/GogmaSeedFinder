@@ -72,8 +72,16 @@ pub struct RngState {
 }
 
 impl RngState {
+    const ZERO: Self = Self {
+        x: 0,
+        y: 0,
+        z: 0,
+        w: 0,
+    };
+
     /// Builds the four-word state using the game's 100-round initializer.
     #[must_use]
+    #[inline]
     pub fn initialize(seed: u32) -> Self {
         let mut seed_state = seed;
         let mut state = Self {
@@ -106,6 +114,7 @@ impl RngState {
     }
 
     /// Advances the generator once and returns the new `w` word.
+    #[inline]
     pub fn step(&mut self) -> u32 {
         let t = self.x ^ self.x.wrapping_shl(15);
         let next_w = self.w ^ (self.w >> 21) ^ t ^ (t >> 4);
@@ -119,9 +128,106 @@ impl RngState {
     }
 
     /// Advances the generator by an exact number of state transitions.
+    #[inline]
     pub fn advance(&mut self, steps: u64) {
         for _ in 0..steps {
             self.step();
+        }
+    }
+}
+
+/// Precomputed linear transform that advances [`RngState`] by a fixed number
+/// of transitions.
+///
+/// The xorshift transition is linear over `GF(2)`. Building this transform is
+/// more expensive than a few direct calls to [`RngState::step`], but applying
+/// it avoids replaying a potentially large saved counter for every seed in a
+/// brute-force search.
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct RngJump {
+    columns: [RngState; 128],
+}
+
+impl RngJump {
+    /// Precomputes the transform for exactly `steps` state transitions.
+    #[must_use]
+    pub fn new(mut steps: u64) -> Self {
+        let mut result = Self::identity();
+        let mut power = Self::one_step();
+
+        while steps != 0 {
+            if steps & 1 != 0 {
+                result = Self::compose(&power, &result);
+            }
+            steps >>= 1;
+            if steps != 0 {
+                power = Self::compose(&power, &power);
+            }
+        }
+
+        result
+    }
+
+    /// Applies the precomputed transition count to one RNG state.
+    #[must_use]
+    #[inline]
+    pub fn apply(&self, state: RngState) -> RngState {
+        let words = [state.x, state.y, state.z, state.w];
+        let mut output = RngState::ZERO;
+
+        for (word_index, mut bits) in words.into_iter().enumerate() {
+            while bits != 0 {
+                let bit_index = usize::try_from(bits.trailing_zeros()).unwrap_or_default();
+                let column = self.columns[word_index * 32 + bit_index];
+                output.x ^= column.x;
+                output.y ^= column.y;
+                output.z ^= column.z;
+                output.w ^= column.w;
+                bits &= bits - 1;
+            }
+        }
+
+        output
+    }
+
+    fn identity() -> Self {
+        Self {
+            columns: std::array::from_fn(Self::basis_state),
+        }
+    }
+
+    fn one_step() -> Self {
+        let identity = Self::identity();
+        Self {
+            columns: std::array::from_fn(|index| {
+                let mut state = identity.columns[index];
+                state.step();
+                state
+            }),
+        }
+    }
+
+    fn basis_state(column: usize) -> RngState {
+        let word_index = column / 32;
+        let bit_index = column % 32;
+        let bit = 1_u32 << bit_index;
+        let mut state = RngState::ZERO;
+
+        match word_index {
+            0 => state.x = bit,
+            1 => state.y = bit,
+            2 => state.z = bit,
+            3 => state.w = bit,
+            _ => unreachable!("a 128-column transform has exactly four words"),
+        }
+
+        state
+    }
+
+    /// Returns `after(before(state))`.
+    fn compose(after: &Self, before: &Self) -> Self {
+        Self {
+            columns: std::array::from_fn(|index| after.apply(before.columns[index])),
         }
     }
 }
@@ -265,6 +371,7 @@ impl SkillStream {
 
 /// Combines save seed, zero-based weapon type, and attribute-force value.
 #[must_use]
+#[inline]
 pub fn effective_skill_seed(base_seed: u32, weapon_type: u32, attribute_force: u32) -> u32 {
     base_seed
         .wrapping_add(weapon_type.wrapping_mul(1000))
@@ -339,5 +446,25 @@ mod tests {
             effective_skill_seed(u32::MAX, u32::MAX, u32::MAX),
             0xff53_6f73
         );
+    }
+
+    #[test]
+    fn jump_ahead_matches_repeated_steps() {
+        let seeds = [0, 1, 0x00ac_9365, 3_058_368, u32::MAX];
+        let step_counts = [0, 1, 2, 10, 100, 1_861, 123_451];
+
+        for steps in step_counts {
+            let jump = RngJump::new(steps);
+            for seed in seeds {
+                let initial = RngState::initialize(seed);
+                let mut repeated = initial;
+                repeated.advance(steps);
+                assert_eq!(
+                    jump.apply(initial),
+                    repeated,
+                    "jump differs for seed {seed} after {steps} steps"
+                );
+            }
+        }
     }
 }

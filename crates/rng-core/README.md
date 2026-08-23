@@ -7,6 +7,7 @@ Current scope:
 - 32-bit seed composition
 - 100-round RNG initialization
 - Four-word xorshift transition
+- Linear jump-ahead for fixed counter positions
 - Skill counter and counter-gate behavior
 - 294-entry set/group skill mapping
 - Ten-transition spacing between consecutive skill rolls

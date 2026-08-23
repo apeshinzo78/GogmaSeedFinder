@@ -1,6 +1,6 @@
 # RNG specification
 
-Status: skill-stream core implemented and verified against v0.9.3 golden vectors. Seed inversion is not implemented yet.
+Status: skill-stream core implemented and verified against v0.9.3 golden vectors. Known-counter base-seed inversion is implemented in `seed-search-cli`.
 
 ## Initial scope
 
@@ -71,8 +71,8 @@ The supplied v0.9.3 Lua and the referenced GitHub commit's Lua are content-ident
 ## Next scope
 
 1. Define the PS5 observation format
-2. Implement candidate matching for a known counter
-3. Benchmark a `0..=99,999,999` base-seed scan
-4. Determine how to handle an unknown current counter
+2. Determine how to handle an unknown current counter
+3. Add localized skill-name to table-index conversion
+4. Port the verified search to WebAssembly
 
 Base Artian reinforcements and Gogma amendment bonuses are intentionally deferred until the skill-stream proof of concept succeeds.

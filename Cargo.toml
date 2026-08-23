@@ -1,5 +1,5 @@
 [workspace]
-members = ["crates/rng-core"]
+members = ["crates/rng-core", "crates/seed-search-cli"]
 resolver = "3"
 
 [workspace.package]
