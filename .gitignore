@@ -1,0 +1,29 @@
+# Rust
+/target/
+**/*.rs.bk
+
+# Web
+node_modules/
+dist/
+pkg/
+.vite/
+
+# Local data and generated search output
+/artifacts/
+/benchmarks/output/
+*.local.json
+*.local.csv
+
+# Environment and editor files
+.env
+.env.*
+!.env.example
+.idea/
+.vscode/
+*.swp
+*.tmp
+
+# OS files
+.DS_Store
+Thumbs.db
+Desktop.ini
