@@ -155,6 +155,12 @@ const observationRows = document.querySelector("#observation-rows");
 const removeObservationButton = document.querySelector("#remove-observation");
 const weaponSelect = document.querySelector("#weapon-type");
 const attributeSelect = document.querySelector("#attribute-force");
+const counterStartInput = document.querySelector("#counter-start");
+const counterEndInput = document.querySelector("#counter-end");
+const counterEstimateInput = document.querySelector("#counter-estimate");
+const counterRadiusSelect = document.querySelector("#counter-radius");
+const applyCounterEstimateButton = document.querySelector("#apply-counter-estimate");
+const counterRangeSummary = document.querySelector("#counter-range-summary");
 const bonusPoolNote = document.querySelector("#bonus-pool-note");
 const predictionPanel = document.querySelector("#prediction-panel");
 const predictionStatus = document.querySelector("#prediction-status");
@@ -209,6 +215,11 @@ const stateBaseSeedStatus = document.querySelector("#state-base-seed-status");
 const stateBonusCounterStatus = document.querySelector("#state-bonus-counter-status");
 const stateSkillCounterStatus = document.querySelector("#state-skill-counter-status");
 const saveStateSummary = document.querySelector("#save-state-summary");
+const manualStateBaseSeedInput = document.querySelector("#manual-state-base-seed");
+const manualStateBonusCounterInput = document.querySelector("#manual-state-bonus-counter");
+const applyManualStateButton = document.querySelector("#apply-manual-state");
+const manualStateMessage = document.querySelector("#manual-state-message");
+const manualStateError = document.querySelector("#manual-state-error");
 const skillSearchBaseSeed = document.querySelector("#skill-search-base-seed");
 const bonusStateBaseSeedInput = document.querySelector("#bonus-state-base-seed");
 const bonusStateCounterInput = document.querySelector("#bonus-state-counter");
@@ -270,6 +281,7 @@ let bonusPrediction = persistedAppState.bonusPrediction;
 renderObservationRows(SAMPLE_OBSERVATIONS);
 renderSkillObservationRows(Array.from({ length: 4 }, () => null));
 updateBonusPoolNote();
+updateCounterRangeSummary();
 renderPredictionFilters();
 updatePredictionPoolNote();
 
@@ -307,10 +319,13 @@ document.querySelector("#load-sample").addEventListener("click", () => {
   attributeSelect.value = "1";
   document.querySelector("#counter-start").value = "475";
   document.querySelector("#counter-end").value = "485";
+  counterEstimateInput.value = "480";
+  counterRadiusSelect.value = "5";
   document.querySelector("#seed-start").value = "0";
   document.querySelector("#seed-end").value = "99999999";
   renderObservationRows(SAMPLE_OBSERVATIONS);
   updateBonusPoolNote();
+  updateCounterRangeSummary();
   hideError();
 });
 
@@ -319,10 +334,13 @@ document.querySelector("#load-bow-sample").addEventListener("click", () => {
   attributeSelect.value = "4";
   document.querySelector("#counter-start").value = "475";
   document.querySelector("#counter-end").value = "485";
+  counterEstimateInput.value = "480";
+  counterRadiusSelect.value = "5";
   document.querySelector("#seed-start").value = "0";
   document.querySelector("#seed-end").value = "99999999";
   renderObservationRows(BOW_SAMPLE_OBSERVATIONS);
   updateBonusPoolNote();
+  updateCounterRangeSummary();
   hideError();
 });
 
@@ -331,10 +349,13 @@ document.querySelector("#load-heavy-bowgun-sample").addEventListener("click", ()
   attributeSelect.value = "3";
   document.querySelector("#counter-start").value = "475";
   document.querySelector("#counter-end").value = "485";
+  counterEstimateInput.value = "480";
+  counterRadiusSelect.value = "5";
   document.querySelector("#seed-start").value = "0";
   document.querySelector("#seed-end").value = "99999999";
   renderObservationRows(HEAVY_BOWGUN_SAMPLE_OBSERVATIONS);
   updateBonusPoolNote();
+  updateCounterRangeSummary();
   hideError();
 });
 
@@ -344,6 +365,10 @@ weaponSelect.addEventListener("change", () => {
   updateBonusPoolNote();
   hideError();
 });
+
+applyCounterEstimateButton.addEventListener("click", () => applyEstimatedCounterRange());
+counterStartInput.addEventListener("input", () => updateCounterRangeSummary());
+counterEndInput.addEventListener("input", () => updateCounterRangeSummary());
 
 document.querySelector("#add-observation").addEventListener("click", () => {
   observationRows.append(createObservationRow());
@@ -408,6 +433,7 @@ clearSkillTargetsButton.addEventListener("click", () => {
 
 applyBonusStateButton.addEventListener("click", () => void applyBonusPredictionState());
 applySkillStateButton.addEventListener("click", () => void applySkillPredictionState());
+applyManualStateButton.addEventListener("click", () => applyManualSaveState());
 
 document.querySelector("#bonus-operation-selector").addEventListener("change", () => {
   bonusPrediction.mode = bonusOperationKeep.checked ? "keep" : "reset";
@@ -479,6 +505,40 @@ function readConfig() {
     workerCount: Math.min(requestedWorkers, totalSeeds),
     chunkSize: 50_000,
   };
+}
+
+function applyEstimatedCounterRange() {
+  const estimate = Number(counterEstimateInput.value);
+  const radius = Number(counterRadiusSelect.value);
+  if (!Number.isSafeInteger(estimate) || estimate < 0 || estimate > 0xffffffff) {
+    showError("推定した現在値は0〜4,294,967,295の整数で入力してください。");
+    return;
+  }
+  if (!Number.isSafeInteger(radius) || radius < 0) return;
+
+  counterStartInput.value = String(Math.max(0, estimate - radius));
+  counterEndInput.value = String(Math.min(0xffffffff, estimate + radius));
+  hideError();
+  updateCounterRangeSummary();
+}
+
+function updateCounterRangeSummary() {
+  const start = Number(counterStartInput.value);
+  const end = Number(counterEndInput.value);
+  if (!Number.isSafeInteger(start) || !Number.isSafeInteger(end) || start < 0 || end < start) {
+    counterRangeSummary.textContent = "有効な開始・終了を入力してください。";
+    counterRangeSummary.className = "counter-range-summary warning";
+    return;
+  }
+
+  const candidateCount = end - start + 1;
+  const suffix = candidateCount > 101
+    ? "候補数が多いため長時間かかります。推定値の前後を狭く分けて試してください。"
+    : candidateCount > 25
+      ? "端末によっては数分かかります。"
+      : "最初に試す範囲として適切です。";
+  counterRangeSummary.textContent = `現在の探索範囲: ${start.toLocaleString("ja-JP")}〜${end.toLocaleString("ja-JP")}（${candidateCount.toLocaleString("ja-JP")}候補）。${suffix}`;
+  counterRangeSummary.className = `counter-range-summary${candidateCount > 25 ? " warning" : ""}`;
 }
 
 function readInteger(id, label, minimum, maximum) {
@@ -647,6 +707,8 @@ function renderSaveState() {
   stateSkillCounterStatus.textContent = stateSourceText(saveState.skillSource, "スキル結果から特定");
   saveStateSummary.textContent = knownCount === 3 ? "3値を特定済み" : `${knownCount}/3 特定済み`;
   saveStateSummary.className = `status-pill${knownCount === 3 ? " complete" : ""}`;
+  manualStateBaseSeedInput.value = saveState.baseSeed ?? "";
+  manualStateBonusCounterInput.value = saveState.bonusCounter ?? "";
   skillSearchBaseSeed.textContent = saveState.baseSeed === null
     ? "未特定"
     : saveState.baseSeed.toLocaleString("ja-JP");
@@ -823,6 +885,24 @@ function readStateNumber(input, label, maximum) {
     throw new Error(`${label}は0〜${maximum.toLocaleString("ja-JP")}の整数で入力してください。`);
   }
   return value;
+}
+
+function applyManualSaveState() {
+  manualStateError.hidden = true;
+  manualStateMessage.textContent = "";
+  try {
+    const baseSeed = readStateNumber(manualStateBaseSeedInput, "基準seed", 99_999_999);
+    const bonusCounter = readStateNumber(
+      manualStateBonusCounterInput,
+      "復元ボーナスカウンター",
+      0xffffffff,
+    );
+    setStateFromBonus(baseSeed, bonusCounter, "手入力");
+    manualStateMessage.textContent = "基準seedと復元ボーナスカウンターを現在のセーブ状態に設定しました。";
+  } catch (error) {
+    manualStateError.textContent = error instanceof Error ? error.message : String(error);
+    manualStateError.hidden = false;
+  }
 }
 
 async function applyBonusPredictionState() {
@@ -1342,7 +1422,14 @@ function finishComplete() {
   progressValue.textContent = "100.00%";
   statusText.textContent = "完了";
   statusText.className = "status-pill complete";
-  if (foundCandidates.size === 0) emptyResult.textContent = "一致する候補はありませんでした。";
+  if (foundCandidates.size === 0) {
+    const start = lastSearchConfig?.counterStart;
+    const end = lastSearchConfig?.counterEnd;
+    const range = Number.isSafeInteger(start) && Number.isSafeInteger(end)
+      ? `${start.toLocaleString("ja-JP")}〜${end.toLocaleString("ja-JP")}`
+      : "指定範囲";
+    emptyResult.textContent = `候補を特定できませんでした。入力内容が正しい場合、現在の復元ボーナスカウンターが探索範囲（${range}）の外にある可能性があります。これまでこのセーブデータで復元ボーナスを抽選した、おおよその累計回数が含まれるように範囲を変更して、もう一度お試しください。`;
+  }
   if (foundCandidates.size === 1) {
     const [candidate] = foundCandidates.values();
     void selectCandidate(candidate);

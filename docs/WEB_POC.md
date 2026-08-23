@@ -143,10 +143,15 @@ kept its horizontal/vertical scrollbars inside the bounded comparison area.
   Bowgun path includes a six-roll live sample button.
 - The absolute counter range is hidden under developer-oriented internal
   search settings. The current `475..=485` default is verified only for the
-  recorded live fixtures and is not yet a universal preset.
+  recorded live fixtures and is not a universal preset. The Web UI calls this
+  out prominently and can build a narrow range around a user-entered estimate;
+  heavy users should move that estimate upward instead of searching one huge
+  range.
 - The seed range is still entered manually in the same collapsed settings.
 - Screenshot/OCR input is not implemented.
 - Only bounded Gogma counter ranges are supported.
+- A known base seed and restoration-bonus counter can also be entered directly
+  in the current-save-state panel without running the search again.
 - Keep Bonuses matches the GARP v0.9.3 formula vector but still needs an
   independent live-game observation sequence.
 - Skill prediction matches the upstream v0.9.3 golden vector but has not yet

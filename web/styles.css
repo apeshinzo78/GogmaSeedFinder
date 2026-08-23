@@ -527,6 +527,10 @@ h1 {
   cursor: pointer;
 }
 
+.manual-state-controls {
+  grid-template-columns: repeat(2, minmax(220px, 1fr)) auto;
+}
+
 .continuation-message {
   min-height: 1.4em;
   margin: 12px 0 0;
@@ -602,6 +606,66 @@ h1 {
   margin: 14px 0 0;
   color: var(--muted);
   font-size: 0.8rem;
+}
+
+.counter-range-guide {
+  display: grid;
+  grid-template-columns: minmax(300px, 1.1fr) minmax(480px, 1.6fr);
+  gap: 18px 26px;
+  align-items: end;
+  margin: 20px 0 18px;
+  padding: 18px;
+  border: 1px solid #66572f;
+  border-radius: 12px;
+  background: linear-gradient(135deg, rgb(214 179 92 / 12%), rgb(214 179 92 / 4%));
+}
+
+.counter-range-guide h3 {
+  margin: 0 0 8px;
+  font-family: Georgia, "Yu Mincho", serif;
+  font-size: 1.05rem;
+  font-weight: 500;
+}
+
+.counter-range-guide p:not(.step) {
+  margin: 0;
+  color: #d5cfbd;
+  font-size: 0.76rem;
+  line-height: 1.65;
+}
+
+.counter-range-guide code {
+  color: var(--gold-bright);
+}
+
+.counter-range-planner {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr)) auto;
+  gap: 10px;
+  align-items: end;
+}
+
+.counter-range-planner input,
+.counter-range-planner select {
+  height: 42px;
+  font-size: 0.78rem;
+}
+
+.counter-range-planner button {
+  min-height: 42px;
+  white-space: nowrap;
+}
+
+.counter-range-summary {
+  grid-column: 1 / -1;
+  padding-top: 10px;
+  border-top: 1px solid rgb(214 179 92 / 18%);
+  color: #bdd9b6 !important;
+  font-weight: 800;
+}
+
+.counter-range-summary.warning {
+  color: #f0c27c !important;
 }
 
 .field-grid {
@@ -1988,7 +2052,8 @@ button:disabled {
   .continuation-controls,
   .skill-highlight-settings,
   .skill-filter-settings,
-  .bonus-ex-filter-settings {
+  .bonus-ex-filter-settings,
+  .counter-range-guide {
     grid-template-columns: 1fr;
   }
 
@@ -1996,6 +2061,14 @@ button:disabled {
   .bonus-ex-filter-toggle {
     min-height: 0;
     padding: 6px 0 0;
+  }
+
+  .counter-range-planner {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .counter-range-planner button {
+    grid-column: 1 / -1;
   }
 
   .comparison-heading {
@@ -2123,6 +2196,14 @@ button:disabled {
 
   .prediction-filter-grid {
     grid-template-columns: 1fr;
+  }
+
+  .counter-range-planner {
+    grid-template-columns: 1fr;
+  }
+
+  .counter-range-planner button {
+    grid-column: auto;
   }
 
   .continuation-controls {
