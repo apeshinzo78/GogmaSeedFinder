@@ -46,7 +46,7 @@ cargo clippy --workspace --all-targets -- -D warnings
 
 ## Web prototype
 
-公開版: [Gogma Seed Finder](https://sasa0323.github.io/GogmaSeedFinder/)
+公開版: [Gogma Seed Finder](https://apeshinzo78.github.io/GogmaSeedFinder/)
 
 すべての探索・未来予測は利用者のブラウザ内で実行され、観測結果やseedがサーバーへ送信されることはありません。
 
