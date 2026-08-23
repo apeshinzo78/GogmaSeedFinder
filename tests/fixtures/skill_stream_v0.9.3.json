@@ -1,0 +1,280 @@
+{
+  "schemaVersion": 1,
+  "source": {
+    "project": "Gogma Artian Roll Planner",
+    "version": "0.9.3",
+    "archiveSha256": "9B44C2C9AB46A3D79E72280C8C583F2BA5B2303FC3C0984F40522FB023F81DA9",
+    "webCommit": "c37b67d3d21d6b1c3318c8b6394e1c776dc876c3",
+    "generator": "app.js u32/rngStep/initializeRng/advance/skillFromIndex"
+  },
+  "cases": [
+    {
+      "name": "upstream_sample",
+      "baseSeed": 8524433,
+      "weaponType": 10,
+      "attributeForce": 4,
+      "skillCounter": 186,
+      "counterGate": 200,
+      "effectiveSeed": 3058368,
+      "initializedState": {
+        "x": 187413149,
+        "y": 2330477808,
+        "z": 1388731081,
+        "w": 3485956743
+      },
+      "rolls": [
+        {
+          "tableIndex": 275,
+          "setName": "Soul of the Dark Knight",
+          "groupName": "Lord's Fury"
+        },
+        {
+          "tableIndex": 255,
+          "setName": "Gogmapocalypse",
+          "groupName": "Buttery Leathercraft"
+        },
+        {
+          "tableIndex": 245,
+          "setName": "Seregios's Tenacity",
+          "groupName": "Alluring Pelt"
+        },
+        {
+          "tableIndex": 243,
+          "setName": "Seregios's Tenacity",
+          "groupName": "Scale Layering"
+        },
+        {
+          "tableIndex": 37,
+          "setName": "Xu Wu's Vigor",
+          "groupName": "Lord's Fury"
+        },
+        {
+          "tableIndex": 58,
+          "setName": "Blangonga's Spirit",
+          "groupName": "Flexible Leathercraft"
+        },
+        {
+          "tableIndex": 9,
+          "setName": "Doshaguma's Might",
+          "groupName": "Lord's Fury"
+        },
+        {
+          "tableIndex": 191,
+          "setName": "Guardian Arkveld's Vitality",
+          "groupName": "Lord's Fury"
+        },
+        {
+          "tableIndex": 218,
+          "setName": "Zoh Shia's Pulse",
+          "groupName": "Lord's Favor"
+        },
+        {
+          "tableIndex": 88,
+          "setName": "Fulgur Anjanath's Will",
+          "groupName": "Scaling Prowess"
+        }
+      ]
+    },
+    {
+      "name": "zero_seed",
+      "baseSeed": 0,
+      "weaponType": 0,
+      "attributeForce": 0,
+      "skillCounter": 0,
+      "counterGate": 200,
+      "effectiveSeed": 11309925,
+      "initializedState": {
+        "x": 26541426,
+        "y": 2045168005,
+        "z": 148739841,
+        "w": 1104137873
+      },
+      "rolls": [
+        {
+          "tableIndex": 168,
+          "setName": "Arkveld's Hunger",
+          "groupName": "Neopteron Alert"
+        },
+        {
+          "tableIndex": 62,
+          "setName": "Blangonga's Spirit",
+          "groupName": "Fortifying Pelt"
+        },
+        {
+          "tableIndex": 276,
+          "setName": "Soul of the Dark Knight",
+          "groupName": "Guardian's Pulse"
+        },
+        {
+          "tableIndex": 208,
+          "setName": "Mizutsune's Prowess",
+          "groupName": "Imparted Wisdom"
+        },
+        {
+          "tableIndex": 38,
+          "setName": "Xu Wu's Vigor",
+          "groupName": "Guardian's Pulse"
+        },
+        {
+          "tableIndex": 177,
+          "setName": "Arkveld's Hunger",
+          "groupName": "Lord's Fury"
+        },
+        {
+          "tableIndex": 16,
+          "setName": "Rathalos's Flare",
+          "groupName": "Flexible Leathercraft"
+        },
+        {
+          "tableIndex": 37,
+          "setName": "Xu Wu's Vigor",
+          "groupName": "Lord's Fury"
+        },
+        {
+          "tableIndex": 181,
+          "setName": "Arkveld's Hunger",
+          "groupName": "Lord's Soul"
+        },
+        {
+          "tableIndex": 114,
+          "setName": "Rey Dau's Voltage",
+          "groupName": "Flexible Leathercraft"
+        }
+      ]
+    },
+    {
+      "name": "upper_seed",
+      "baseSeed": 99999999,
+      "weaponType": 13,
+      "attributeForce": 9,
+      "skillCounter": 12345,
+      "counterGate": 200,
+      "effectiveSeed": 89817269,
+      "initializedState": {
+        "x": 4093031952,
+        "y": 2384114329,
+        "z": 3017590117,
+        "w": 3854820235
+      },
+      "rolls": [
+        {
+          "tableIndex": 125,
+          "setName": "Rey Dau's Voltage",
+          "groupName": "Lord's Soul"
+        },
+        {
+          "tableIndex": 15,
+          "setName": "Rathalos's Flare",
+          "groupName": "Neopteron Camouflage"
+        },
+        {
+          "tableIndex": 121,
+          "setName": "Rey Dau's Voltage",
+          "groupName": "Lord's Fury"
+        },
+        {
+          "tableIndex": 60,
+          "setName": "Blangonga's Spirit",
+          "groupName": "Scaling Prowess"
+        },
+        {
+          "tableIndex": 118,
+          "setName": "Rey Dau's Voltage",
+          "groupName": "Fortifying Pelt"
+        },
+        {
+          "tableIndex": 81,
+          "setName": "Ebony Odogaron's Power",
+          "groupName": "Guardian's Protection"
+        },
+        {
+          "tableIndex": 92,
+          "setName": "Fulgur Anjanath's Will",
+          "groupName": "Lord's Favor"
+        },
+        {
+          "tableIndex": 45,
+          "setName": "Gravios's Protection",
+          "groupName": "Buttery Leathercraft"
+        },
+        {
+          "tableIndex": 176,
+          "setName": "Arkveld's Hunger",
+          "groupName": "Lord's Favor"
+        },
+        {
+          "tableIndex": 227,
+          "setName": "Leviathan's Fury",
+          "groupName": "Buttery Leathercraft"
+        }
+      ]
+    },
+    {
+      "name": "gate_ignores_counter",
+      "baseSeed": 42424242,
+      "weaponType": 6,
+      "attributeForce": 5,
+      "skillCounter": 999999,
+      "counterGate": 53,
+      "effectiveSeed": 36437058,
+      "initializedState": {
+        "x": 657015351,
+        "y": 2943841142,
+        "z": 2024735700,
+        "w": 2831674238
+      },
+      "rolls": [
+        {
+          "tableIndex": 172,
+          "setName": "Arkveld's Hunger",
+          "groupName": "Scaling Prowess"
+        },
+        {
+          "tableIndex": 267,
+          "setName": "Soul of the Dark Knight",
+          "groupName": "Neopteron Camouflage"
+        },
+        {
+          "tableIndex": 19,
+          "setName": "Rathalos's Flare",
+          "groupName": "Scale Layering"
+        },
+        {
+          "tableIndex": 256,
+          "setName": "Gogmapocalypse",
+          "groupName": "Scaling Prowess"
+        },
+        {
+          "tableIndex": 151,
+          "setName": "Jin Dahaad's Revolt",
+          "groupName": "Guardian's Protection"
+        },
+        {
+          "tableIndex": 63,
+          "setName": "Blangonga's Spirit",
+          "groupName": "Alluring Pelt"
+        },
+        {
+          "tableIndex": 53,
+          "setName": "Gravios's Protection",
+          "groupName": "Guardian's Protection"
+        },
+        {
+          "tableIndex": 87,
+          "setName": "Fulgur Anjanath's Will",
+          "groupName": "Buttery Leathercraft"
+        },
+        {
+          "tableIndex": 251,
+          "setName": "Seregios's Tenacity",
+          "groupName": "Lord's Soul"
+        },
+        {
+          "tableIndex": 110,
+          "setName": "Uth Duna's Cover",
+          "groupName": "Imparted Wisdom"
+        }
+      ]
+    }
+  ]
+}

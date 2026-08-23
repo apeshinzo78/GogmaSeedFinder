@@ -6,7 +6,7 @@ Monster Hunter Wildsのゴグマ／アーティア抽選結果からRNG状態を
 
 ## Status
 
-初期リポジトリを作成した段階です。乱数実装、seed探索、Webアプリはまだ未実装です。
+ゴグマのセット／グループスキル抽選について、Rust版`rng-core`と上流v0.9.3由来のgolden testを実装済みです。seed探索、通常アーティア強化、ゴグマボーナス、Webアプリはまだ未実装です。
 
 ## Planned architecture
 
@@ -19,11 +19,18 @@ Monster Hunter Wildsのゴグマ／アーティア抽選結果からRNG状態を
 
 ## Development order
 
-1. ゴグマのセット／グループスキル抽選をRustへ移植する
-2. Lua版と連続結果が一致するgolden testを作る
+1. ゴグマのセット／グループスキル抽選をRustへ移植する（完了）
+2. Lua版と連続結果が一致するgolden testを作る（完了）
 3. 既知seedを再発見するCLIを作る
 4. 必要な観測数と探索時間を測定する
 5. 成立後にWebAssemblyとWeb UIを追加する
+
+## Verification
+
+```powershell
+cargo test --workspace --all-targets
+cargo clippy --workspace --all-targets -- -D warnings
+```
 
 ## Attribution
 
