@@ -51,6 +51,7 @@
             <small id="state-skill-counter-status">スキル結果から特定</small>
           </article>
         </div>
+        <p class="storage-note"><strong>メモ推奨</strong><span>基準seedと2つのカウンターはこのブラウザに自動保存されます。ブラウザのデータ削除や端末変更に備え、セーブ状態コードも別途控えてください。</span></p>
         <details class="state-code-details state-manual-details">
           <summary>基準seed・各カウンターを手入力で設定</summary>
           <p>
@@ -222,8 +223,8 @@
             </div>
             <p id="counter-range-summary" class="counter-range-summary" aria-live="polite"></p>
           </section>
-          <details class="advanced">
-            <summary>復元ボーナスカウンターの探索範囲・実行設定</summary>
+          <section class="advanced visible-advanced" aria-labelledby="search-settings-title">
+            <h3 id="search-settings-title" class="advanced-heading">復元ボーナスカウンターの探索範囲・実行設定</h3>
             <p class="advanced-note">開始・終了は手動でも変更できます。正確な現在値は検索結果から決まります。範囲幅を広げると探索時間もほぼ比例して増えます。</p>
             <div class="field-grid advanced-grid compact-grid">
               <label><span>復元カウンター（開始）</span><input id="counter-start" type="number" min="0" value="475" required /></label>
@@ -232,7 +233,7 @@
               <label><span>seed候補（終了）</span><input id="seed-end" type="number" min="0" max="99999999" value="99999999" required /></label>
               <label><span>並列Worker数</span><input id="worker-count" type="number" min="1" max="16" value="4" required /></label>
             </div>
-          </details>
+          </section>
           <div class="section-heading observations-heading">
             <div><p class="step">OBSERVATIONS</p><h2>連続した復元ボーナス結果</h2></div>
             <p class="heading-note">1回につき5枠（狭い画面では上から1〜5枠）</p>

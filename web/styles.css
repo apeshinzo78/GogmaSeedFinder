@@ -167,6 +167,25 @@ h1 {
   color: #9fc499;
 }
 
+.storage-note {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  margin: 14px 0 0;
+  padding: 10px 12px;
+  border: 1px solid #4d4939;
+  border-radius: 9px;
+  background: rgb(13 14 11 / 38%);
+  color: #aaa998;
+  font-size: 0.74rem;
+  line-height: 1.6;
+}
+
+.storage-note strong {
+  flex: 0 0 auto;
+  color: var(--gold-bright);
+}
+
 .bonus-counter-state {
   border-top: 2px solid #7195a5 !important;
 }
@@ -982,6 +1001,17 @@ small {
   cursor: pointer;
   font-size: 0.88rem;
   font-weight: 700;
+}
+
+.advanced-heading {
+  margin: 0;
+  color: #d8d4c3;
+  font-size: 0.98rem;
+  font-weight: 800;
+}
+
+.visible-advanced {
+  margin-bottom: 30px;
 }
 
 .advanced-grid {
