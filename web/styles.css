@@ -743,13 +743,6 @@ h1 {
   font-style: normal;
 }
 
-.selection-guide-note {
-  margin: 13px 0 0;
-  color: var(--muted);
-  font-size: 0.7rem;
-  line-height: 1.6;
-}
-
 .guide-warning {
   margin: 18px 0 0;
   padding: 12px 14px;
