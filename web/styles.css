@@ -1416,6 +1416,11 @@ button:disabled {
   background: #171814;
 }
 
+.keep-layout-card.incomplete {
+  border-color: #a8664c;
+  background: rgb(154 77 48 / 8%);
+}
+
 .keep-layout-card-heading {
   display: flex;
   gap: 12px;
@@ -1434,6 +1439,11 @@ button:disabled {
   font-size: 0.67rem;
 }
 
+.keep-layout-card-heading .keep-layout-warning {
+  color: #ffb18f;
+  font-weight: 800;
+}
+
 .keep-layout-slots {
   display: grid;
   grid-template-columns: repeat(5, minmax(0, 1fr));
@@ -1447,6 +1457,11 @@ button:disabled {
 .keep-layout-slots select {
   padding-right: 22px;
   font-size: 0.72rem;
+}
+
+.keep-layout-slots select.unselected {
+  border-color: #a8664c;
+  color: #ffcfb9;
 }
 
 .keep-transition-button {

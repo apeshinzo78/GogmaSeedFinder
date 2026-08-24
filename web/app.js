@@ -761,6 +761,7 @@ function renderKeepLayoutInputs() {
   }
 
   let readyCount = 0;
+  let incompleteCount = 0;
   const cards = comparisonTargets.map((target) => {
     const card = document.createElement("section");
     const heading = document.createElement("div");
@@ -768,12 +769,23 @@ function renderKeepLayoutInputs() {
     const source = document.createElement("span");
     const slots = document.createElement("div");
     const categories = normalizeKeepCategories(target.keepCategories);
+    const problem = keepLayoutProblem(target);
+    const hasUnselectedSlot = categories.some((category) => category === null);
     target.keepCategories = categories;
-    card.className = "keep-layout-card";
+    card.className = `keep-layout-card${problem ? " incomplete" : ""}`;
     heading.className = "keep-layout-card-heading";
     slots.className = "keep-layout-slots";
     name.textContent = comparisonTargetName(target);
-    source.textContent = target.keepSource ? `${target.keepSource}から設定` : "現在構成を入力";
+    if (hasUnselectedSlot) {
+      incompleteCount += 1;
+      source.textContent = "5枠すべて選択してください";
+      source.className = "keep-layout-warning";
+    } else if (problem) {
+      source.textContent = problem;
+      source.className = "keep-layout-warning";
+    } else {
+      source.textContent = target.keepSource ? `${target.keepSource}から設定` : "現在構成を入力";
+    }
     heading.append(name, source);
 
     const options = keepCategoriesForWeapon(target.weaponType);
@@ -787,6 +799,8 @@ function renderKeepLayoutInputs() {
       placeholder.textContent = "系統を選択";
       placeholder.selected = categories[slotIndex] === null;
       select.append(placeholder);
+      select.classList.toggle("unselected", categories[slotIndex] === null);
+      select.setAttribute("aria-invalid", String(categories[slotIndex] === null));
       for (const [category, categoryName] of options) {
         const option = document.createElement("option");
         option.value = String(category);
@@ -804,13 +818,17 @@ function renderKeepLayoutInputs() {
       label.append(text, select);
       slots.append(label);
     }
-    if (keepLayoutProblem(target) === null) readyCount += 1;
+    if (problem === null) readyCount += 1;
     card.append(heading, slots);
     return card;
   });
   keepLayoutInputs.replaceChildren(...cards);
   keepLayoutSource.textContent = `${readyCount}/${comparisonTargets.length} 構成入力済み`;
   keepLayoutSource.className = `status-pill${readyCount === comparisonTargets.length ? " complete" : ""}`;
+  if (incompleteCount > 0) {
+    keepLayoutError.textContent = `${incompleteCount}件の武器に未選択の枠があります。各武器の5枠をすべて選択してください。`;
+    keepLayoutError.hidden = false;
+  }
 }
 
 function keepCategoriesForWeapon(weaponType) {
