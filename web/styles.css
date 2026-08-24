@@ -448,6 +448,7 @@ h1 {
 .stream-current strong,
 .stream-result-heading strong {
   margin: 0;
+  color: #f6f0df;
   font-size: 0.78rem;
 }
 
