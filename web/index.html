@@ -52,10 +52,10 @@
           </article>
         </div>
         <details class="state-code-details state-manual-details">
-          <summary>基準seed・復元ボーナスカウンターを手入力で設定</summary>
+          <summary>基準seed・各カウンターを手入力で設定</summary>
           <p>
             すでに値が分かっている場合は、検索せずに現在のセーブ状態へ設定できます。
-            基準seedを変更した場合、別管理のスキルカウンターは未特定へ戻ります。
+            分からないカウンターは空欄のままにできます。
           </p>
           <div class="continuation-controls manual-state-controls">
             <label>
@@ -64,7 +64,11 @@
             </label>
             <label>
               <span>復元ボーナスカウンター</span>
-              <input id="manual-state-bonus-counter" type="number" min="0" max="4294967295" placeholder="0〜4,294,967,295" />
+              <input id="manual-state-bonus-counter" type="number" min="0" max="4294967295" placeholder="未特定なら空欄" />
+            </label>
+            <label>
+              <span>スキルカウンター</span>
+              <input id="manual-state-skill-counter" type="number" min="0" max="4294967295" placeholder="未特定なら空欄" />
             </label>
             <button id="apply-manual-state" class="secondary" type="button">現在の状態に設定</button>
           </div>
@@ -108,34 +112,42 @@
           </p>
           <figure class="seed-stream-figure" aria-labelledby="seed-stream-caption">
             <div class="seed-source-node">
-              <span>このセーブデータに固有・保存される値</span>
-              <strong>基準seed（1つ）</strong>
-              <small>武器種・属性を組み合わせて抽選結果を決定</small>
+              <span>このセーブデータに固有・保存される共通キー</span>
+              <strong>基準seed 86,315,169（例）</strong>
+              <small>武器種・属性を組み合わせて、その組み合わせ専用の抽選列を作ります</small>
             </div>
             <div class="seed-branch" aria-hidden="true"><span></span></div>
             <div class="seed-stream-grid">
               <article class="seed-stream-card bonus-stream-card">
                 <p class="stream-label">復元ボーナス抽選列</p>
                 <strong>復元ボーナスカウンター</strong>
-                <p class="saved-counter"><span>セーブデータに保存</span><code>復元専用の現在位置</code></p>
+                <p class="saved-counter"><span>セーブデータに保存</span><code>現在位置 480（例）</code></p>
                 <p>復元ボーナスを1回抽選すると、このカウンターだけが1つ進みます。</p>
-                <div class="stream-sequence" aria-label="復元ボーナスの順番">
-                  <span>復元A</span><i aria-hidden="true">→</i><span>復元B</span><i aria-hidden="true">→</i><span>復元C</span>
+                <div class="stream-progress" aria-label="復元ボーナスカウンターが進む例">
+                  <div class="stream-current"><span>セーブ時点</span><strong>カウンター 480</strong></div>
+                  <p class="stream-arrow"><span>1回抽選</span><i aria-hidden="true">↓</i></p>
+                  <div class="stream-example-result"><strong>保存後 481</strong><div class="example-bonus-row"><span class="attack">基礎攻撃力強化Ⅲ</span><span class="affinity">会心率強化Ⅱ</span><span class="element">属性強化ＥＸ</span><span class="sharpness">斬れ味・装填強化Ⅰ</span><span class="affinity">会心率強化Ⅱ</span></div></div>
+                  <p class="stream-arrow"><span>さらに1回抽選</span><i aria-hidden="true">↓</i></p>
+                  <div class="stream-example-result compact-result"><strong>保存後 482</strong><small>次の復元ボーナス結果へ</small></div>
                 </div>
               </article>
               <article class="seed-stream-card skill-stream-card">
                 <p class="stream-label">シリーズ・グループスキル抽選列</p>
                 <strong>スキルカウンター</strong>
-                <p class="saved-counter"><span>セーブデータに保存</span><code>スキル専用の現在位置</code></p>
+                <p class="saved-counter"><span>セーブデータに保存</span><code>現在位置 33（例）</code></p>
                 <p>スキルを1回再付与すると、このカウンターだけが1つ進みます。</p>
-                <div class="stream-sequence" aria-label="スキルの順番">
-                  <span>スキルA</span><i aria-hidden="true">→</i><span>スキルB</span><i aria-hidden="true">→</i><span>スキルC</span>
+                <div class="stream-progress" aria-label="スキルカウンターが進む例">
+                  <div class="stream-current"><span>セーブ時点</span><strong>カウンター 33</strong></div>
+                  <p class="stream-arrow"><span>1回再付与</span><i aria-hidden="true">↓</i></p>
+                  <div class="stream-example-result"><strong>保存後 34</strong><div class="example-skill-pair"><span class="series desired">黒蝕竜の力</span><span class="group jackpot">ヌシの魂</span></div></div>
+                  <p class="stream-arrow"><span>さらに1回再付与</span><i aria-hidden="true">↓</i></p>
+                  <div class="stream-example-result"><strong>保存後 35</strong><div class="example-skill-pair"><span class="series">雷顎竜の闘志</span><span class="group">護竜の守り</span></div></div>
                 </div>
               </article>
             </div>
             <figcaption id="seed-stream-caption">
               武器種・属性を変えると結果は変わりますが、カウンターは全武器で共有されます。
-              リセット抽選とスキル抽選は、同じ武器種・属性なら武器個体が違っても同じ結果です。同じ構成での再復元は各武器の現在5枠構成も使います。
+              表示した結果は仕組みを説明する例です。リセット抽選とスキル抽選は、同じ武器種・属性なら武器個体が違っても同じ結果です。「ボーナスを同じ構成で再復元」は各武器の現在5枠構成も使います。
             </figcaption>
           </figure>
           <div class="guide-workflows" aria-label="使用手順">
@@ -143,6 +155,35 @@
             <article><p class="workflow-number">02</p><div><h3>スキルカウンター</h3><ol><li>同じ元セーブをロードします。</li><li>スキル再付与を連続2回以上記録します。</li><li>セーブせず終了し、特定タブへ入力します。</li></ol></div></article>
             <article><p class="workflow-number">03</p><div><h3>構成決定からEX厳選へ</h3><ol><li>火太刀、龍太刀などの武器を登録します。</li><li>リセット結果から希望構成を選び、「この構成でEX厳選へ」を押します。</li><li>既に持っているEX未厳選武器は、武器ごとに現在の5枠構成を登録します。</li><li>採用してセーブした位置を新しい0地点にします。</li></ol></div></article>
           </div>
+          <section class="efficient-selection-guide" aria-labelledby="efficient-selection-title">
+            <div class="efficient-selection-heading">
+              <p class="step">SAVE MATERIALS</p>
+              <h3 id="efficient-selection-title">複数武器を比較して、必要な回数だけ抽選する</h3>
+              <p>スキルカウンターは全武器で共有されます。先に複数の武器種・属性を登録し、欲しい結果が出る位置をまとめて確認すると、素材を使う順番を決められます。</p>
+            </div>
+            <div class="guide-output-example">
+              <p class="example-caption">スキル未来予測の出力例</p>
+              <div class="guide-example-table-wrap">
+                <table class="guide-example-table">
+                  <thead><tr><th>最初の0から</th><th>龍太刀</th><th>火太刀</th></tr></thead>
+                  <tbody>
+                    <tr><th>20回先</th><td class="example-hit"><span class="series">黒蝕竜の力</span><span class="group">ヌシの魂</span><small>ここで採用・セーブ</small></td><td><span class="muted-result">別の結果</span></td></tr>
+                    <tr><th>44回先</th><td><span class="muted-result">別の結果</span></td><td class="example-hit"><span class="series">雷顎竜の闘志</span><span class="group">ヌシの魂</span><small>次に採用・セーブ</small></td></tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+            <div class="selection-flow" aria-label="素材を節約する厳選手順">
+              <article><span>開始</span><strong>2武器を登録</strong><small>龍太刀・火太刀を同じ0地点から比較</small></article>
+              <i aria-hidden="true">→</i>
+              <article><span>20回進める</span><strong>龍太刀を採用</strong><small>黒蝕竜の力＋ヌシの魂でセーブ</small></article>
+              <i aria-hidden="true">→</i>
+              <article><span>新しい0地点</span><strong>「ここを0にする」</strong><small>最初の44回先は、ここから24回先</small></article>
+              <i aria-hidden="true">→</i>
+              <article><span>24回進める</span><strong>火太刀を採用</strong><small>雷顎竜の闘志＋ヌシの魂でセーブ</small></article>
+            </div>
+            <p class="selection-guide-note">「雷顎竜の闘志」はシリーズスキル、「ヌシの魂」はグループスキルです。表の回数は説明用です。</p>
+          </section>
           <p class="guide-warning">観測中にセーブするとカウンターが進みます。確認後は必ずセーブせず終了してください。</p>
         </section>
       </div>
@@ -195,7 +236,7 @@
           </details>
           <div class="section-heading observations-heading">
             <div><p class="step">OBSERVATIONS</p><h2>連続した復元ボーナス結果</h2></div>
-            <p class="heading-note">1段＝1回、左から5枠</p>
+            <p class="heading-note">1回につき5枠（狭い画面では上から1〜5枠）</p>
           </div>
           <div id="observation-rows" class="observation-rows"></div>
           <div class="observation-controls">
@@ -259,7 +300,7 @@
           </section>
           <section class="comparison-section" aria-labelledby="comparison-title">
             <div class="section-heading comparison-heading"><div><p class="step">REGISTERED TARGETS</p><h2 id="comparison-title">登録した武器種・属性を一覧比較</h2></div></div>
-            <p class="prediction-intro">リセット抽選は武器種・属性が同じなら同じ結果です。同じ構成でのEX厳選では、同じ武器種・属性の別武器も表示名を付けて複数登録できます。</p>
+            <p class="prediction-intro">リセット抽選は武器種・属性が同じなら同じ結果です。「ボーナスを同じ構成で再復元」でEXを厳選する場合は、同じ武器種・属性の別武器も表示名を付けて複数登録できます。</p>
             <div class="field-grid comparison-settings target-registration-grid">
               <label><span>表示名（任意）</span><input id="comparison-target-label" type="text" maxlength="24" placeholder="例：火太刀" /></label><label><span>武器種</span><select id="comparison-weapon-type"></select></label><label><span>属性</span><select id="comparison-attribute-force"></select></label><label><span>表示する回数</span><input id="comparison-count" type="number" min="1" max="500" value="100" /></label>
             </div>
@@ -310,6 +351,9 @@
           <div id="skill-table-wrap" class="prediction-table-wrap" hidden><table class="prediction-table skill-prediction-table"><thead><tr id="skill-prediction-header-row"></tr></thead><tbody id="skill-prediction-rows"></tbody></table></div>
         </section>
       </div>
+      <footer class="site-footer">
+        <p>不具合や分かりにくい点があれば、<a href="https://github.com/apeshinzo78/GogmaSeedFinder/issues" target="_blank" rel="noreferrer">GitHub Issues</a> でお知らせください。</p>
+      </footer>
     </main>
     <script type="module" src="./app.js"></script>
   </body>

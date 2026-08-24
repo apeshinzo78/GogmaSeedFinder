@@ -217,6 +217,7 @@ const stateSkillCounterStatus = document.querySelector("#state-skill-counter-sta
 const saveStateSummary = document.querySelector("#save-state-summary");
 const manualStateBaseSeedInput = document.querySelector("#manual-state-base-seed");
 const manualStateBonusCounterInput = document.querySelector("#manual-state-bonus-counter");
+const manualStateSkillCounterInput = document.querySelector("#manual-state-skill-counter");
 const applyManualStateButton = document.querySelector("#apply-manual-state");
 const manualStateMessage = document.querySelector("#manual-state-message");
 const manualStateError = document.querySelector("#manual-state-error");
@@ -713,6 +714,7 @@ function renderSaveState() {
   saveStateSummary.className = `status-pill${knownCount === 3 ? " complete" : ""}`;
   manualStateBaseSeedInput.value = saveState.baseSeed ?? "";
   manualStateBonusCounterInput.value = saveState.bonusCounter ?? "";
+  manualStateSkillCounterInput.value = saveState.skillCounter ?? "";
   skillSearchBaseSeed.textContent = saveState.baseSeed === null
     ? "未特定"
     : saveState.baseSeed.toLocaleString("ja-JP");
@@ -891,18 +893,36 @@ function readStateNumber(input, label, maximum) {
   return value;
 }
 
+function readOptionalStateNumber(input, label, maximum) {
+  if (input.value.trim() === "") return null;
+  return readStateNumber(input, label, maximum);
+}
+
 function applyManualSaveState() {
   manualStateError.hidden = true;
   manualStateMessage.textContent = "";
   try {
     const baseSeed = readStateNumber(manualStateBaseSeedInput, "基準seed", 99_999_999);
-    const bonusCounter = readStateNumber(
+    const bonusCounter = readOptionalStateNumber(
       manualStateBonusCounterInput,
       "復元ボーナスカウンター",
       0xffffffff,
     );
-    setStateFromBonus(baseSeed, bonusCounter, "手入力");
-    manualStateMessage.textContent = "基準seedと復元ボーナスカウンターを現在のセーブ状態に設定しました。";
+    const skillCounter = readOptionalStateNumber(
+      manualStateSkillCounterInput,
+      "スキルカウンター",
+      0xffffffff,
+    );
+    saveState = {
+      baseSeed,
+      bonusCounter,
+      skillCounter,
+      baseSource: "手入力",
+      bonusSource: bonusCounter === null ? null : "手入力",
+      skillSource: skillCounter === null ? null : "手入力",
+    };
+    renderSaveState();
+    manualStateMessage.textContent = "入力した値を現在のセーブ状態に設定しました。空欄のカウンターは未特定として扱います。";
   } catch (error) {
     manualStateError.textContent = error instanceof Error ? error.message : String(error);
     manualStateError.hidden = false;
@@ -1218,7 +1238,7 @@ function updatePredictionPoolNote() {
   const weaponType = Number(predictionWeaponSelect.value);
   if (bonusPrediction.mode === "keep") {
     predictionPoolNote.textContent =
-      "同じ構成で再復元は、登録武器ごとの5枠系統を維持したままII・III・EX等だけを再抽選します。";
+      "「ボーナスを同じ構成で再復元」は、登録武器ごとの5枠系統を維持したままII・III・EX等だけを再抽選します。";
     return;
   }
   if (weaponType === BOW_WEAPON_TYPE) {
@@ -1287,7 +1307,11 @@ function renumberObservationRows() {
   rows.forEach((row, rollIndex) => {
     row.querySelector(".roll-number").textContent = `抽選 ${rollIndex + 1}`;
     row.querySelectorAll(".slot-label").forEach((label, slotIndex) => {
-      label.textContent = `抽選${rollIndex + 1}の${slotIndex + 1}枠目`;
+      label.textContent = `${slotIndex + 1}枠目`;
+      label.parentElement.querySelector("select").setAttribute(
+        "aria-label",
+        `抽選${rollIndex + 1}の${slotIndex + 1}枠目`,
+      );
     });
   });
   removeObservationButton.disabled = rows.length <= 1;
@@ -1564,7 +1588,7 @@ async function refreshPredictions() {
   if (bonusPrediction.mode === "keep") {
     predictionRolls = [];
     predictionRows.replaceChildren();
-    predictionStatus.textContent = "同じ構成の未来は武器一覧で比較します";
+    predictionStatus.textContent = "「ボーナスを同じ構成で再復元」の未来は武器一覧で比較します";
     predictionStatus.className = "status-pill";
     return;
   }
@@ -1695,7 +1719,7 @@ async function beginKeepOptimization(target, bonusIds, completedRolls) {
   renderBonusOperation();
   renderPredictionFilters();
   updatePredictionPoolNote();
-  bonusStateMessage.textContent = `${comparisonTargetName(profile)}の${completedRolls}回先を採用した状態へ進み、同じ構成でのEX厳選に切り替えました。`;
+  bonusStateMessage.textContent = `${comparisonTargetName(profile)}の${completedRolls}回先を採用した状態へ進み、「ボーナスを同じ構成で再復元」のEX厳選に切り替えました。`;
   await Promise.all([refreshPredictions(), refreshComparisonPredictions()]);
   setActiveTab("bonus-future");
 }
@@ -1923,7 +1947,7 @@ function registerTarget(target, showError, allowDuplicateCombination) {
     (existing) => comparisonCombinationKey(existing) === comparisonCombinationKey(target),
   );
   if (duplicateCombination.length > 0 && !allowDuplicateCombination) {
-    showError("この武器種・属性は登録済みです。EX未厳選の別武器は『同じ構成で再復元』を選んでから登録してください。");
+    showError("この武器種・属性は登録済みです。EX未厳選の別武器は「ボーナスを同じ構成で再復元」を選んでから登録してください。");
     return false;
   }
   if (duplicateCombination.length > 0 && !target.label) {

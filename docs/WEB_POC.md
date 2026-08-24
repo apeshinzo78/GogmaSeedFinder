@@ -21,8 +21,13 @@ versioned save-state code, so a save made after that row can be reopened as a
 new relative origin and recalculated for a different weapon or attribute.
 
 The page has five task tabs and a persistent panel for the base seed, bonus
-counter, and skill counter. Up to sixteen weapon profiles can be registered and
-stored in local storage. The future-prediction panels use nearly the full
+counter, and skill counter. All three values can be entered manually; an
+unknown counter may remain blank. The guide uses real bonus and skill names to
+show that one common base seed feeds two independently saved counter positions.
+It also includes a two-weapon example in which a result at original position 20
+is saved as the new zero before continuing to the original position 44. Up to
+sixteen weapon profiles can be registered and stored in local storage. The
+future-prediction panels use nearly the full
 viewport width. The bonus comparison table renders each weapon's five slots in
 one vertical column with compact labels such as `攻EX`, `会EX`, `属II`, `斬EX`,
 and `装EX`. The bonus table can keep only rows where at least one registered
