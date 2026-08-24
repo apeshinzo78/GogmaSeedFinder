@@ -439,13 +439,14 @@ h1 {
 }
 
 .stream-current span,
-.stream-example-result > strong {
+.stream-result-heading span {
   color: var(--gold-bright);
   font-size: 0.7rem;
   font-weight: 900;
 }
 
-.stream-current strong {
+.stream-current strong,
+.stream-result-heading strong {
   margin: 0;
   font-size: 0.78rem;
 }
@@ -467,25 +468,12 @@ h1 {
   font-style: normal;
 }
 
-.stream-example-result > strong {
-  display: block;
-  margin: 0 0 7px;
-}
-
-.stream-example-result.compact-result {
+.stream-result-heading {
   display: flex;
-  gap: 12px;
+  gap: 10px;
   align-items: center;
   justify-content: space-between;
-}
-
-.stream-example-result.compact-result > strong {
-  margin: 0;
-}
-
-.stream-example-result small {
-  color: var(--muted);
-  font-size: 0.66rem;
+  margin-bottom: 7px;
 }
 
 .example-bonus-row {
