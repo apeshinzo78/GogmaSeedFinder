@@ -47,7 +47,7 @@ const GOGMA_BONUSES = [
   [11, "属性強化Ⅱ"],
   [14, "属性強化ＥＸ"],
   [6, "斬れ味強化"],
-  [10, "斬れ味・装填強化ＥＸ"],
+  [10, "斬れ味強化ＥＸ"],
 ];
 
 const GOGMA_BONUS_CATEGORIES = [
@@ -1209,7 +1209,7 @@ function gogmaBonusesForWeapon(weaponType) {
   if (BOWGUN_WEAPON_TYPES.has(weaponType)) {
     return GOGMA_BONUSES.filter(([id]) => !ELEMENT_BONUS_IDS.has(id)).map(([id, name]) => {
       if (id === 6) return [id, "装填数強化 +1"];
-      if (id === 10) return [id, "斬れ味・装填強化ＥＸ +2"];
+      if (id === 10) return [id, "装填強化ＥＸ"];
       return [id, name];
     });
   }
