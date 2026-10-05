@@ -1661,7 +1661,7 @@ function renderPredictionFilters(values = []) {
     : gogmaBonusesForWeapon(weaponType, attributeForce);
 
   predictionFilterDescription.textContent = ignoreTier
-    ? "「ボーナスをリセットして再復元」で欲しい系統構成を探します。例：攻撃×4＋斬れ味×1"
+    ? "「ボーナスをリセットして再復元」で欲しい系統構成を順不同で探します。例：攻撃×4＋斬れ味×1"
     : "Ⅱ・Ⅲ・EXまで含めて、欲しいボーナスを順不同で指定します。";
 
   predictionFilters.replaceChildren(
