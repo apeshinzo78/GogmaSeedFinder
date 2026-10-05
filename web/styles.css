@@ -1543,6 +1543,14 @@ button:disabled {
   font-size: 0.78rem;
 }
 
+.prediction-filter-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px 20px;
+  align-items: center;
+  justify-content: flex-end;
+}
+
 .checkbox-label {
   display: flex;
   gap: 8px;
@@ -2533,6 +2541,11 @@ button:disabled {
   .prediction-filter-heading {
     align-items: flex-start;
     flex-direction: column;
+  }
+
+  .prediction-filter-actions {
+    align-items: flex-start;
+    justify-content: flex-start;
   }
 
   .prediction-filter-grid {

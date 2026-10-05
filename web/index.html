@@ -315,7 +315,7 @@
             <div class="prediction-source" aria-label="予測の起点"><div><span>基準seed</span><strong id="prediction-seed">—</strong></div><div><span>現在地点</span><strong id="prediction-origin">0</strong></div></div>
             <div class="field-grid prediction-settings"><label><span>予測する武器種</span><select id="prediction-weapon-type"></select></label><label><span>予測する属性</span><select id="prediction-attribute-force"></select></label><label><span>表示する回数</span><input id="prediction-count" type="number" min="1" max="1000" value="100" /></label></div>
             <p id="prediction-pool-note" class="pool-note"></p>
-            <div class="prediction-filter-heading"><div><h3>希望ボーナス</h3><p>欲しいボーナスを順不同で指定します。</p></div><label class="checkbox-label"><input id="prediction-matches-only" type="checkbox" checked /><span>一致結果だけ表示</span></label></div>
+            <div class="prediction-filter-heading"><div><h3>希望ボーナス</h3><p id="prediction-filter-description">「ボーナスをリセットして再復元」で欲しい系統構成を探します。例：攻撃×4＋斬れ味×1</p></div><div class="prediction-filter-actions"><label class="checkbox-label"><input id="prediction-ignore-tier" type="checkbox" checked /><span>強化段階を区別しない（系統構成で検索）</span></label><label class="checkbox-label"><input id="prediction-matches-only" type="checkbox" checked /><span>一致結果だけ表示</span></label></div></div>
             <div id="prediction-filters" class="prediction-filter-grid"></div><p id="prediction-error" class="error" role="alert" hidden></p>
             <div class="prediction-table-wrap"><table class="prediction-table"><thead><tr><th>何回先</th><th>保存後の状態</th><th>1枠目</th><th>2枠目</th><th>3枠目</th><th>4枠目</th><th>5枠目</th></tr></thead><tbody id="prediction-rows"></tbody></table></div>
           </section>

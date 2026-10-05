@@ -171,7 +171,9 @@ const predictionAttributeSelect = document.querySelector("#prediction-attribute-
 const predictionCountInput = document.querySelector("#prediction-count");
 const predictionPoolNote = document.querySelector("#prediction-pool-note");
 const predictionFilters = document.querySelector("#prediction-filters");
+const predictionIgnoreTier = document.querySelector("#prediction-ignore-tier");
 const predictionMatchesOnly = document.querySelector("#prediction-matches-only");
+const predictionFilterDescription = document.querySelector("#prediction-filter-description");
 const predictionError = document.querySelector("#prediction-error");
 const predictionRows = document.querySelector("#prediction-rows");
 const comparisonStatus = document.querySelector("#comparison-status");
@@ -406,6 +408,14 @@ predictionWeaponSelect.addEventListener("change", () => {
 
 predictionAttributeSelect.addEventListener("change", () => void refreshPredictions());
 predictionCountInput.addEventListener("change", () => void refreshPredictions());
+predictionIgnoreTier.addEventListener("change", () => {
+  const currentFilters = snapshotPredictionFilters();
+  const nextFilters = predictionIgnoreTier.checked
+    ? currentFilters.map((value) => value === null ? null : bonusCategoryId(value))
+    : [];
+  renderPredictionFilters(nextFilters);
+  renderPredictionTable();
+});
 predictionMatchesOnly.addEventListener("change", () => renderPredictionTable());
 predictionFilters.addEventListener("change", () => renderPredictionTable());
 
@@ -1565,7 +1575,17 @@ async function selectCandidate(candidate) {
 
 function renderPredictionFilters(values = []) {
   const weaponType = Number(predictionWeaponSelect.value);
-  const bonuses = gogmaBonusesForWeapon(weaponType);
+  const ignoreTier = predictionIgnoreTier.checked;
+  const bonuses = ignoreTier
+    ? keepCategoriesForWeapon(weaponType).map(([id, name]) => [
+        id,
+        name === "装填数" ? "装填" : name,
+      ])
+    : gogmaBonusesForWeapon(weaponType);
+
+  predictionFilterDescription.textContent = ignoreTier
+    ? "「ボーナスをリセットして再復元」で欲しい系統構成を探します。例：攻撃×4＋斬れ味×1"
+    : "Ⅱ・Ⅲ・EXまで含めて、欲しいボーナスを順不同で指定します。";
 
   predictionFilters.replaceChildren(
     ...Array.from({ length: 5 }, (_, index) => {
@@ -1783,7 +1803,8 @@ function renderPredictionTable() {
 function rollContainsRequirements(bonusIds, requirements) {
   const remaining = new Map();
   for (const bonusId of bonusIds) {
-    remaining.set(bonusId, (remaining.get(bonusId) ?? 0) + 1);
+    const value = predictionIgnoreTier.checked ? bonusCategoryId(bonusId) : bonusId;
+    remaining.set(value, (remaining.get(value) ?? 0) + 1);
   }
   for (const requiredId of requirements) {
     const count = remaining.get(requiredId) ?? 0;
