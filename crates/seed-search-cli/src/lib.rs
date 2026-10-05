@@ -156,8 +156,11 @@ impl CompiledGogmaSearch {
     /// supplied, or [`SearchError::InvalidGogmaObservation`] for an unsupported
     /// game bonus ID.
     pub fn new(criteria: GogmaSearchCriteria) -> Result<Self, SearchError> {
-        let observations =
-            validate_gogma_observations(criteria.weapon_type, &criteria.observations)?;
+        let observations = validate_gogma_observations(
+            criteria.weapon_type,
+            criteria.attribute_force,
+            &criteria.observations,
+        )?;
 
         let counter_steps = if criteria.counter_gate < GOGMA_COUNTER_GATE_THRESHOLD {
             0
@@ -224,8 +227,11 @@ impl CompiledGogmaCounterSearch {
             });
         }
 
-        let observations =
-            validate_gogma_observations(criteria.weapon_type, &criteria.observations)?;
+        let observations = validate_gogma_observations(
+            criteria.weapon_type,
+            criteria.attribute_force,
+            &criteria.observations,
+        )?;
         let range_start_steps = u64::from(criteria.counter_range.start) * GOGMA_ROLL_STRIDE;
 
         Ok(Self {
@@ -368,6 +374,7 @@ impl CompiledGogmaCounterSearch {
 
 fn validate_gogma_observations(
     weapon_type: u32,
+    attribute_force: u32,
     observations: &[[u8; GOGMA_BONUS_COUNT]],
 ) -> Result<Vec<GogmaRollConstraint>, SearchError> {
     if observations.is_empty() {
@@ -387,7 +394,7 @@ fn validate_gogma_observations(
                         value,
                     })?;
             }
-            GogmaRollConstraint::new(weapon_type, &parsed)
+            GogmaRollConstraint::new(weapon_type, attribute_force, &parsed)
                 .ok_or(SearchError::ImpossibleGogmaObservation { roll_index })
         })
         .collect()

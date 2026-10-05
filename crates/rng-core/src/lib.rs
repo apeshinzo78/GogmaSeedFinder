@@ -277,15 +277,43 @@ pub const GOGMA_BOWGUN_RESET_BONUS_ORDER: [GogmaBonus; 8] = [
     GogmaBonus::SharpnessAmmoBoostEx,
 ];
 
-/// Returns the weighted Reset Bonuses candidate order for one weapon type.
+/// Reset Bonuses candidates for a non-elemental melee weapon.
+pub const GOGMA_NON_ELEMENTAL_RESET_BONUS_ORDER: [GogmaBonus; 8] = [
+    GogmaBonus::AttackBoostIi,
+    GogmaBonus::AttackBoostIii,
+    GogmaBonus::AttackBoostEx,
+    GogmaBonus::AffinityBoostIi,
+    GogmaBonus::AffinityBoostIii,
+    GogmaBonus::AffinityBoostEx,
+    GogmaBonus::SharpnessBoost,
+    GogmaBonus::SharpnessAmmoBoostEx,
+];
+
+/// Reset Bonuses candidates for a non-elemental Bow.
+pub const GOGMA_NON_ELEMENTAL_BOW_RESET_BONUS_ORDER: [GogmaBonus; 6] = [
+    GogmaBonus::AttackBoostIi,
+    GogmaBonus::AttackBoostIii,
+    GogmaBonus::AttackBoostEx,
+    GogmaBonus::AffinityBoostIi,
+    GogmaBonus::AffinityBoostIii,
+    GogmaBonus::AffinityBoostEx,
+];
+
+/// Returns the weighted Reset Bonuses candidate order for one weapon and attribute.
 ///
 /// The zero-based weapon type order is the game's fixed order. Bow is `11`,
-/// Heavy Bowgun is `12`, and Light Bowgun is `13`.
+/// Heavy Bowgun is `12`, and Light Bowgun is `13`. Attribute force `0` is
+/// non-elemental and therefore cannot roll Element bonuses.
 #[must_use]
-pub const fn gogma_reset_bonus_order(weapon_type: u32) -> &'static [GogmaBonus] {
-    match weapon_type {
-        11 => &GOGMA_BOW_RESET_BONUS_ORDER,
-        12 | 13 => &GOGMA_BOWGUN_RESET_BONUS_ORDER,
+pub const fn gogma_reset_bonus_order(
+    weapon_type: u32,
+    attribute_force: u32,
+) -> &'static [GogmaBonus] {
+    match (weapon_type, attribute_force) {
+        (11, 0) => &GOGMA_NON_ELEMENTAL_BOW_RESET_BONUS_ORDER,
+        (11, _) => &GOGMA_BOW_RESET_BONUS_ORDER,
+        (12 | 13, _) => &GOGMA_BOWGUN_RESET_BONUS_ORDER,
+        (_, 0) => &GOGMA_NON_ELEMENTAL_RESET_BONUS_ORDER,
         _ => &GOGMA_RESET_BONUS_ORDER,
     }
 }
@@ -670,8 +698,12 @@ impl GogmaRollConstraint {
     /// Returns `None` if the sequence violates an exact-ID or category maximum
     /// and therefore cannot be produced by the game.
     #[must_use]
-    pub fn new(weapon_type: u32, expected: &[GogmaBonus; GOGMA_BONUS_COUNT]) -> Option<Self> {
-        let bonus_order = gogma_reset_bonus_order(weapon_type);
+    pub fn new(
+        weapon_type: u32,
+        attribute_force: u32,
+        expected: &[GogmaBonus; GOGMA_BONUS_COUNT],
+    ) -> Option<Self> {
+        let bonus_order = gogma_reset_bonus_order(weapon_type, attribute_force);
         let mut slots = [GogmaSlotConstraint {
             modulus: 1,
             start: 0,
@@ -742,8 +774,8 @@ impl GogmaRoll {
     /// The supplied state is copied, so callers can retain it and advance by
     /// [`GOGMA_ROLL_STRIDE`] to inspect a later amendment.
     #[must_use]
-    pub fn reset_from_state(mut state: RngState, weapon_type: u32) -> Self {
-        let bonus_order = gogma_reset_bonus_order(weapon_type);
+    pub fn reset_from_state(mut state: RngState, weapon_type: u32, attribute_force: u32) -> Self {
+        let bonus_order = gogma_reset_bonus_order(weapon_type, attribute_force);
         let mut bonuses = [GogmaBonus::AttackBoostIi; GOGMA_BONUS_COUNT];
 
         for slot in 0..GOGMA_BONUS_COUNT {
@@ -763,9 +795,10 @@ impl GogmaRoll {
     pub fn keep_from_state(
         mut state: RngState,
         weapon_type: u32,
+        attribute_force: u32,
         categories: &[GogmaBonusCategory; GOGMA_BONUS_COUNT],
     ) -> Option<Self> {
-        let bonus_order = gogma_reset_bonus_order(weapon_type);
+        let bonus_order = gogma_reset_bonus_order(weapon_type, attribute_force);
         let mut bonuses = [GogmaBonus::AttackBoostIi; GOGMA_BONUS_COUNT];
 
         for slot in 0..GOGMA_BONUS_COUNT {
@@ -789,9 +822,10 @@ impl GogmaRoll {
     pub fn reset_from_state_matches(
         state: RngState,
         weapon_type: u32,
+        attribute_force: u32,
         expected: &[GogmaBonus; GOGMA_BONUS_COUNT],
     ) -> bool {
-        GogmaRollConstraint::new(weapon_type, expected)
+        GogmaRollConstraint::new(weapon_type, attribute_force, expected)
             .is_some_and(|constraint| constraint.matches_state(state))
     }
 }
@@ -801,6 +835,7 @@ impl GogmaRoll {
 pub struct GogmaStream {
     state: RngState,
     weapon_type: u32,
+    attribute_force: u32,
 }
 
 impl GogmaStream {
@@ -811,6 +846,7 @@ impl GogmaStream {
         Self {
             state,
             weapon_type: params.weapon_type,
+            attribute_force: params.attribute_force,
         }
     }
 
@@ -822,7 +858,7 @@ impl GogmaStream {
     /// Simulates Reset Bonuses at the current amendment counter.
     #[must_use]
     pub fn current_reset_roll(self) -> GogmaRoll {
-        GogmaRoll::reset_from_state(self.state, self.weapon_type)
+        GogmaRoll::reset_from_state(self.state, self.weapon_type, self.attribute_force)
     }
 
     /// Advances to and simulates the next Reset Bonuses amendment.
@@ -875,6 +911,7 @@ impl GogmaStream {
             rolls.push(GogmaRoll::keep_from_state(
                 stream.state,
                 stream.weapon_type,
+                stream.attribute_force,
                 &categories,
             )?);
         }
@@ -1218,8 +1255,8 @@ mod tests {
 
     #[test]
     fn bow_pool_excludes_sharpness_ammo_candidates() {
-        assert_eq!(gogma_reset_bonus_order(11), &GOGMA_BOW_RESET_BONUS_ORDER);
-        assert_eq!(gogma_reset_bonus_order(8), &GOGMA_RESET_BONUS_ORDER);
+        assert_eq!(gogma_reset_bonus_order(11, 4), &GOGMA_BOW_RESET_BONUS_ORDER);
+        assert_eq!(gogma_reset_bonus_order(8, 1), &GOGMA_RESET_BONUS_ORDER);
 
         let params = GogmaStreamParams {
             base_seed: 86_315_169,
@@ -1249,13 +1286,19 @@ mod tests {
             GogmaBonus::AffinityBoostIi,
             GogmaBonus::ElementBoostIi,
         ];
-        assert!(GogmaRollConstraint::new(11, &impossible).is_none());
+        assert!(GogmaRollConstraint::new(11, 4, &impossible).is_none());
     }
 
     #[test]
     fn bowgun_pool_excludes_element_candidates() {
-        assert_eq!(gogma_reset_bonus_order(12), &GOGMA_BOWGUN_RESET_BONUS_ORDER);
-        assert_eq!(gogma_reset_bonus_order(13), &GOGMA_BOWGUN_RESET_BONUS_ORDER);
+        assert_eq!(
+            gogma_reset_bonus_order(12, 3),
+            &GOGMA_BOWGUN_RESET_BONUS_ORDER
+        );
+        assert_eq!(
+            gogma_reset_bonus_order(13, 3),
+            &GOGMA_BOWGUN_RESET_BONUS_ORDER
+        );
 
         for weapon_type in [12, 13] {
             let params = GogmaStreamParams {
@@ -1286,8 +1329,47 @@ mod tests {
                 GogmaBonus::AffinityBoostIi,
                 GogmaBonus::SharpnessBoost,
             ];
-            assert!(GogmaRollConstraint::new(weapon_type, &impossible).is_none());
+            assert!(GogmaRollConstraint::new(weapon_type, 3, &impossible).is_none());
         }
+    }
+
+    #[test]
+    fn non_elemental_pools_exclude_element_candidates() {
+        assert_eq!(
+            gogma_reset_bonus_order(8, 0),
+            &GOGMA_NON_ELEMENTAL_RESET_BONUS_ORDER
+        );
+        assert_eq!(
+            gogma_reset_bonus_order(11, 0),
+            &GOGMA_NON_ELEMENTAL_BOW_RESET_BONUS_ORDER
+        );
+
+        for weapon_type in [8, 11] {
+            let params = GogmaStreamParams {
+                base_seed: 86_315_169,
+                weapon_type,
+                attribute_force: 0,
+                gogma_counter: 480,
+                counter_gate: 200,
+            };
+            for roll in GogmaStream::new(params).future_reset_rolls(1_000) {
+                assert!(
+                    roll.bonuses()
+                        .iter()
+                        .all(|bonus| bonus.category() != GogmaBonusCategory::Element)
+                );
+            }
+        }
+
+        let impossible = [
+            GogmaBonus::ElementBoostIi,
+            GogmaBonus::AttackBoostIii,
+            GogmaBonus::AttackBoostEx,
+            GogmaBonus::AffinityBoostIi,
+            GogmaBonus::SharpnessBoost,
+        ];
+        assert!(GogmaRollConstraint::new(8, 0, &impossible).is_none());
+        assert!(GogmaRollConstraint::new(11, 0, &impossible).is_none());
     }
 
     #[test]

@@ -128,7 +128,8 @@ export function find_skill_counters(base_seed, weapon_type, attribute_force, cou
  * # Errors
  *
  * Returns a JavaScript error when the category layout is malformed,
- * impossible for the weapon type, or the count is outside the Web UI limit.
+ * impossible for the weapon/attribute combination, or the count is outside
+ * the Web UI limit.
  * @param {number} base_seed
  * @param {number} weapon_type
  * @param {number} attribute_force

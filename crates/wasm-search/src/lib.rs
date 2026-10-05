@@ -53,7 +53,8 @@ pub fn predict_gogma_rolls(
 /// # Errors
 ///
 /// Returns a JavaScript error when the category layout is malformed,
-/// impossible for the weapon type, or the count is outside the Web UI limit.
+/// impossible for the weapon/attribute combination, or the count is outside
+/// the Web UI limit.
 #[wasm_bindgen]
 pub fn predict_gogma_keep_rolls(
     base_seed: u32,
@@ -84,7 +85,9 @@ pub fn predict_gogma_keep_rolls(
         counter_gate,
     });
     let rolls = stream.future_keep_rolls(categories, count).ok_or_else(|| {
-        JsValue::from_str("the Keep Bonuses category layout is impossible for this weapon type")
+        JsValue::from_str(
+            "the Keep Bonuses category layout is impossible for this weapon/attribute combination",
+        )
     })?;
     let mut flattened = Vec::with_capacity(count * GOGMA_BONUS_COUNT);
     for roll in rolls {
@@ -396,6 +399,19 @@ mod tests {
                 6, 9, 15, 9, 6, 16, 12,
             ]
         );
+    }
+
+    #[test]
+    fn prediction_api_excludes_element_for_non_elemental_weapons() {
+        for weapon_type in [8, 11] {
+            let flattened = predict_gogma_rolls(86_315_169, weapon_type, 0, 480, 200, 1_000)
+                .expect("Non-elemental prediction must succeed");
+            assert!(
+                flattened
+                    .iter()
+                    .all(|bonus_id| ![11, 14].contains(bonus_id))
+            );
+        }
     }
 
     #[test]

@@ -369,6 +369,13 @@ weaponSelect.addEventListener("change", () => {
   hideError();
 });
 
+attributeSelect.addEventListener("change", () => {
+  const currentValues = snapshotObservationValues();
+  renderObservationRows(currentValues);
+  updateBonusPoolNote();
+  hideError();
+});
+
 applyCounterEstimateButton.addEventListener("click", () => applyEstimatedCounterRange());
 counterStartInput.addEventListener("input", () => updateCounterRangeSummary());
 counterEndInput.addEventListener("input", () => updateCounterRangeSummary());
@@ -406,7 +413,12 @@ predictionWeaponSelect.addEventListener("change", () => {
   void refreshPredictions();
 });
 
-predictionAttributeSelect.addEventListener("change", () => void refreshPredictions());
+predictionAttributeSelect.addEventListener("change", () => {
+  const currentFilters = snapshotPredictionFilters();
+  renderPredictionFilters(currentFilters);
+  updatePredictionPoolNote();
+  void refreshPredictions();
+});
 predictionCountInput.addEventListener("change", () => void refreshPredictions());
 predictionIgnoreTier.addEventListener("change", () => {
   const currentFilters = snapshotPredictionFilters();
@@ -798,7 +810,7 @@ function renderKeepLayoutInputs() {
     }
     heading.append(name, source);
 
-    const options = keepCategoriesForWeapon(target.weaponType);
+    const options = keepCategoriesForWeapon(target.weaponType, target.attributeForce);
     for (let slotIndex = 0; slotIndex < 5; slotIndex += 1) {
       const label = document.createElement("label");
       const text = document.createElement("span");
@@ -841,18 +853,20 @@ function renderKeepLayoutInputs() {
   }
 }
 
-function keepCategoriesForWeapon(weaponType) {
+function keepCategoriesForWeapon(weaponType, attributeForce) {
   if (weaponType === BOW_WEAPON_TYPE) {
-    return GOGMA_BONUS_CATEGORIES.filter(([category]) => category !== 3);
+    return GOGMA_BONUS_CATEGORIES.filter(
+      ([category]) => category !== 3 && !(attributeForce === 0 && category === 2),
+    );
   }
   if (BOWGUN_WEAPON_TYPES.has(weaponType)) {
     return GOGMA_BONUS_CATEGORIES
       .filter(([category]) => category !== 2)
       .map(([category, name]) => [category, category === 3 ? "装填数" : name]);
   }
-  return GOGMA_BONUS_CATEGORIES.map(([category, name]) =>
-    [category, category === 3 ? "斬れ味" : name],
-  );
+  return GOGMA_BONUS_CATEGORIES
+    .filter(([category]) => !(attributeForce === 0 && category === 2))
+    .map(([category, name]) => [category, category === 3 ? "斬れ味" : name]);
 }
 
 function keepLayoutProblem(target) {
@@ -863,6 +877,9 @@ function keepLayoutProblem(target) {
   }
   if (BOWGUN_WEAPON_TYPES.has(target.weaponType) && categories.includes(2)) {
     return "ボウガンには属性系を設定できません。";
+  }
+  if (target.attributeForce === 0 && categories.includes(2)) {
+    return "無属性武器には属性系を設定できません。";
   }
   const count = (category) => categories.filter((value) => value === category).length;
   if (count(2) > 4) return "属性系は合計4枠までです。";
@@ -1209,12 +1226,15 @@ function readSkillObservations() {
 }
 
 function availableGogmaBonuses() {
-  return gogmaBonusesForWeapon(Number(weaponSelect.value));
+  return gogmaBonusesForWeapon(Number(weaponSelect.value), Number(attributeSelect.value));
 }
 
-function gogmaBonusesForWeapon(weaponType) {
+function gogmaBonusesForWeapon(weaponType, attributeForce = null) {
   if (weaponType === BOW_WEAPON_TYPE) {
-    return GOGMA_BONUSES.filter(([id]) => !SHARPNESS_AMMO_BONUS_IDS.has(id));
+    return GOGMA_BONUSES.filter(
+      ([id]) => !SHARPNESS_AMMO_BONUS_IDS.has(id)
+        && !(attributeForce === 0 && ELEMENT_BONUS_IDS.has(id)),
+    );
   }
   if (BOWGUN_WEAPON_TYPES.has(weaponType)) {
     return GOGMA_BONUSES.filter(([id]) => !ELEMENT_BONUS_IDS.has(id)).map(([id, name]) => {
@@ -1223,7 +1243,9 @@ function gogmaBonusesForWeapon(weaponType) {
       return [id, name];
     });
   }
-  return GOGMA_BONUSES;
+  return attributeForce === 0
+    ? GOGMA_BONUSES.filter(([id]) => !ELEMENT_BONUS_IDS.has(id))
+    : GOGMA_BONUSES;
 }
 
 function gogmaBonusName(weaponType, bonusId) {
@@ -1249,9 +1271,11 @@ function compactGogmaBonusName(weaponType, bonusId) {
 
 function updateBonusPoolNote() {
   const weaponType = Number(weaponSelect.value);
+  const attributeForce = Number(attributeSelect.value);
   if (weaponType === BOW_WEAPON_TYPE) {
-    bonusPoolNote.textContent =
-      "弓は攻撃・会心・属性の8候補です。斬れ味・装填系は抽選されません。";
+    bonusPoolNote.textContent = attributeForce === 0
+      ? "無属性の弓は攻撃・会心の6候補です。属性強化と斬れ味・装填系は抽選されません。"
+      : "弓は攻撃・会心・属性の8候補です。斬れ味・装填系は抽選されません。";
     return;
   }
   if (BOWGUN_WEAPON_TYPES.has(weaponType)) {
@@ -1259,19 +1283,23 @@ function updateBonusPoolNote() {
       "ボウガンは攻撃・会心・装填の8候補です。属性強化は抽選されず、装填系は合計2枠までです。";
     return;
   }
-  bonusPoolNote.textContent = "近接武器は攻撃・会心・属性・斬れ味の10候補です。";
+  bonusPoolNote.textContent = attributeForce === 0
+    ? "無属性の近接武器は攻撃・会心・斬れ味の8候補です。属性強化は抽選されません。"
+    : "近接武器は攻撃・会心・属性・斬れ味の10候補です。";
 }
 
 function updatePredictionPoolNote() {
   const weaponType = Number(predictionWeaponSelect.value);
+  const attributeForce = Number(predictionAttributeSelect.value);
   if (bonusPrediction.mode === "keep") {
     predictionPoolNote.textContent =
       "「ボーナスを同じ構成で再復元」は、登録武器ごとの5枠系統を維持したままII・III・EX等だけを再抽選します。";
     return;
   }
   if (weaponType === BOW_WEAPON_TYPE) {
-    predictionPoolNote.textContent =
-      "弓の未来は攻撃・会心・属性の8候補で計算します。斬れ味・装填系は出ません。";
+    predictionPoolNote.textContent = attributeForce === 0
+      ? "無属性の弓は攻撃・会心の6候補で計算します。属性強化と斬れ味・装填系は出ません。"
+      : "弓の未来は攻撃・会心・属性の8候補で計算します。斬れ味・装填系は出ません。";
     return;
   }
   if (BOWGUN_WEAPON_TYPES.has(weaponType)) {
@@ -1279,8 +1307,9 @@ function updatePredictionPoolNote() {
       "ボウガンの未来は攻撃・会心・装填の8候補で計算します。属性強化は出ません。";
     return;
   }
-  predictionPoolNote.textContent =
-    "近接武器の未来は攻撃・会心・属性・斬れ味の10候補で計算します。";
+  predictionPoolNote.textContent = attributeForce === 0
+    ? "無属性の近接武器は攻撃・会心・斬れ味の8候補で計算します。属性強化は出ません。"
+    : "近接武器の未来は攻撃・会心・属性・斬れ味の10候補で計算します。";
 }
 
 function snapshotObservationValues() {
@@ -1575,13 +1604,14 @@ async function selectCandidate(candidate) {
 
 function renderPredictionFilters(values = []) {
   const weaponType = Number(predictionWeaponSelect.value);
+  const attributeForce = Number(predictionAttributeSelect.value);
   const ignoreTier = predictionIgnoreTier.checked;
   const bonuses = ignoreTier
-    ? keepCategoriesForWeapon(weaponType).map(([id, name]) => [
+    ? keepCategoriesForWeapon(weaponType, attributeForce).map(([id, name]) => [
         id,
         name === "装填数" ? "装填" : name,
       ])
-    : gogmaBonusesForWeapon(weaponType);
+    : gogmaBonusesForWeapon(weaponType, attributeForce);
 
   predictionFilterDescription.textContent = ignoreTier
     ? "「ボーナスをリセットして再復元」で欲しい系統構成を探します。例：攻撃×4＋斬れ味×1"
@@ -1594,11 +1624,12 @@ function renderPredictionFilters(values = []) {
       const select = document.createElement("select");
       const placeholder = document.createElement("option");
       const selectedId = values[index] ?? null;
+      const selectedIdIsAvailable = bonuses.some(([id]) => id === selectedId);
 
       text.textContent = `希望 ${index + 1}`;
       placeholder.value = "";
       placeholder.textContent = "指定なし";
-      placeholder.selected = selectedId === null;
+      placeholder.selected = selectedId === null || !selectedIdIsAvailable;
       select.append(placeholder);
 
       for (const [id, name] of bonuses) {

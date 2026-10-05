@@ -56,7 +56,8 @@ export function find_skill_counters(base_seed: number, weapon_type: number, attr
  * # Errors
  *
  * Returns a JavaScript error when the category layout is malformed,
- * impossible for the weapon type, or the count is outside the Web UI limit.
+ * impossible for the weapon/attribute combination, or the count is outside
+ * the Web UI limit.
  */
 export function predict_gogma_keep_rolls(base_seed: number, weapon_type: number, attribute_force: number, gogma_counter: number, counter_gate: number, count: number, slot_categories: Uint8Array): Uint8Array;
 

@@ -276,6 +276,43 @@ fn bowguns_reject_an_element_observation() {
 }
 
 #[test]
+fn non_elemental_weapons_reject_an_element_observation() {
+    for weapon_type in [8, 11] {
+        let observations = vec![[11, 12, 15, 9, 8]];
+        let known_counter_error = CompiledGogmaSearch::new(GogmaSearchCriteria {
+            weapon_type,
+            attribute_force: 0,
+            gogma_counter: 480,
+            counter_gate: 200,
+            observations: observations.clone(),
+        })
+        .expect_err("Non-elemental weapons must not accept an Element bonus");
+
+        assert_eq!(
+            known_counter_error,
+            SearchError::ImpossibleGogmaObservation { roll_index: 0 }
+        );
+
+        let counter_range_error = CompiledGogmaCounterSearch::new(GogmaCounterSearchCriteria {
+            weapon_type,
+            attribute_force: 0,
+            counter_gate: 200,
+            counter_range: GogmaCounterRange {
+                start: 475,
+                end: 485,
+            },
+            observations,
+        })
+        .expect_err("Counter-range search must reject an impossible Element bonus");
+
+        assert_eq!(
+            counter_range_error,
+            SearchError::ImpossibleGogmaObservation { roll_index: 0 }
+        );
+    }
+}
+
+#[test]
 fn unknown_counter_search_rediscovers_the_live_seed_and_counter() {
     let fixture = load_fixture();
     let case = &fixture.cases[0];
