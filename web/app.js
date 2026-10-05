@@ -391,6 +391,8 @@ removeObservationButton.addEventListener("click", () => {
   renumberObservationRows();
 });
 
+observationRows.addEventListener("change", () => hideError());
+
 form.addEventListener("submit", (event) => {
   event.preventDefault();
   try {
@@ -515,6 +517,7 @@ function readConfig() {
   if (seedStart > seedEnd) throw new Error("seed開始は終了以下にしてください。");
 
   const observations = readObservations();
+  validateGogmaObservations(weaponType, attributeForce, observations);
   const totalSeeds = seedEnd - seedStart + 1;
   return {
     weaponType,
@@ -1388,6 +1391,46 @@ function readObservations() {
   );
 }
 
+function validateGogmaObservations(weaponType, attributeForce, observations) {
+  const availableIds = new Set(
+    gogmaBonusesForWeapon(weaponType, attributeForce).map(([id]) => id),
+  );
+
+  for (let offset = 0; offset < observations.length; offset += 5) {
+    const rollIndex = offset / 5;
+    const roll = observations.slice(offset, offset + 5);
+    const exactCounts = new Map();
+
+    for (const [slotIndex, bonusId] of roll.entries()) {
+      if (!availableIds.has(bonusId)) {
+        const bonusName = GOGMA_BONUSES.find(([id]) => id === bonusId)?.[1] ?? `ID ${bonusId}`;
+        throw new Error(
+          `抽選${rollIndex + 1}の${slotIndex + 1}枠目「${bonusName}」は、選択した武器種・属性では抽選されません。武器種・属性と入力内容を確認してください。`,
+        );
+      }
+      exactCounts.set(bonusId, (exactCounts.get(bonusId) ?? 0) + 1);
+    }
+
+    for (const [bonusId, count] of exactCounts) {
+      if (count > 2) {
+        throw new Error(
+          `抽選${rollIndex + 1}の「${gogmaBonusName(weaponType, bonusId)}」が${count}枠あります。同一ボーナスは最大2枠です。入力内容を確認してください。`,
+        );
+      }
+    }
+
+    const sharpnessAmmoCount = roll.filter((bonusId) =>
+      SHARPNESS_AMMO_BONUS_IDS.has(bonusId)
+    ).length;
+    if (sharpnessAmmoCount > 2) {
+      const categoryName = BOWGUN_WEAPON_TYPES.has(weaponType) ? "装填系" : "斬れ味系";
+      throw new Error(
+        `抽選${rollIndex + 1}の${categoryName}ボーナスが${sharpnessAmmoCount}枠あります。${categoryName}は合計2枠までです。入力内容を確認してください。`,
+      );
+    }
+  }
+}
+
 function beginSearch(config) {
   stopWorkers();
   hideError();
@@ -1533,7 +1576,11 @@ function finishCancelled() {
 
 function finishWithError(message) {
   cancelled = true;
-  showError(`探索を開始できませんでした: ${message}`);
+  const impossibleObservation = /Gogma observation (\d+) violates the game's bonus limits/.exec(message);
+  const detail = impossibleObservation
+    ? `抽選${impossibleObservation[1]}の5枠がゲーム内の復元ボーナス上限に合いません。入力内容を確認してください。`
+    : message;
+  showError(`探索を開始できませんでした: ${detail}`);
   statusText.textContent = "エラー";
   statusText.className = "status-pill";
   cleanupAfterRun();
