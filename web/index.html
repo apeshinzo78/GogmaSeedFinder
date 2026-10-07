@@ -341,12 +341,16 @@
           </section>
           <div class="skill-highlight-settings"><div><h3>当たり強調</h3><p>グループスキルの「ヌシの魂」は常に強調します。</p></div><fieldset><legend>強調するシリーズスキル</legend><label><input type="checkbox" name="desired-series" value="11" checked /> 黒蝕竜の力</label><label><input type="checkbox" name="desired-series" value="6" /> 雷顎竜の闘志</label><label><input type="checkbox" name="desired-series" value="5" /> 兇爪竜の力</label><label><input type="checkbox" name="desired-series" value="18" /> 巨戟龍の黙示録</label></fieldset></div>
           <section class="skill-filter-settings" aria-labelledby="skill-filter-title">
-            <div><h3 id="skill-filter-title">条件一致だけ表示</h3><p>各武器の同じ結果セル内で判定し、いずれかの武器が一致した行を残します。</p></div>
+            <div class="skill-filter-intro"><h3 id="skill-filter-title">条件一致だけ表示</h3><p>シリーズの複数選択はORで判定します。いずれかの武器が条件に一致した行を残します。</p></div>
             <label><span>グループスキル</span><select id="skill-filter-group"></select></label>
-            <label><span>条件</span><select id="skill-filter-operator"><option value="and" selected>AND（両方一致）</option><option value="or">OR（どちらか一致）</option></select></label>
-            <label><span>シリーズスキル</span><select id="skill-filter-series"></select></label>
+            <label><span>シリーズ群との条件</span><select id="skill-filter-operator"><option value="and" selected>AND（両方一致）</option><option value="or">OR（どちらか一致）</option></select></label>
+            <fieldset class="skill-filter-series"><legend>シリーズスキル（複数選択はOR）</legend><div id="skill-filter-series-options" class="skill-filter-series-options"></div></fieldset>
             <label class="checkbox-label skill-filter-toggle"><input id="skill-filter-enabled" type="checkbox" /><span>条件に合う行だけ表示</span></label>
           </section>
+          <div class="skill-export-actions">
+            <button id="export-skill-csv" class="secondary small-button" type="button" disabled>表示中の結果をCSV出力</button>
+            <p id="skill-export-status" aria-live="polite">フィルターがONの場合は、現在表示中の行だけを出力します。</p>
+          </div>
           <p class="adoption-note">スキル結果を採用してセーブした場合は、その行を新しい0地点にできます。復元ボーナスカウンターは維持されます。</p>
           <div id="skill-table-wrap" class="prediction-table-wrap" hidden><table class="prediction-table skill-prediction-table"><thead><tr id="skill-prediction-header-row"></tr></thead><tbody id="skill-prediction-rows"></tbody></table></div>
         </section>

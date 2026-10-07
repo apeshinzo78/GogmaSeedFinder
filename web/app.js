@@ -200,7 +200,9 @@ const skillPredictionCountInput = document.querySelector("#skill-prediction-coun
 const skillFilterEnabled = document.querySelector("#skill-filter-enabled");
 const skillFilterGroupSelect = document.querySelector("#skill-filter-group");
 const skillFilterOperatorSelect = document.querySelector("#skill-filter-operator");
-const skillFilterSeriesSelect = document.querySelector("#skill-filter-series");
+const skillFilterSeriesOptions = document.querySelector("#skill-filter-series-options");
+const exportSkillCsvButton = document.querySelector("#export-skill-csv");
+const skillExportStatus = document.querySelector("#skill-export-status");
 const skillObservationRows = document.querySelector("#skill-observation-rows");
 const addSkillObservationButton = document.querySelector("#add-skill-observation");
 const removeSkillObservationButton = document.querySelector("#remove-skill-observation");
@@ -272,11 +274,7 @@ populateSelect(
   [[-1, "指定しない"], ...prioritizedSkillOptions(GROUP_SKILLS, PRIORITY_GROUP_SKILL_INDICES)],
   LORDS_SOUL_GROUP_INDEX,
 );
-populateSelect(
-  skillFilterSeriesSelect,
-  [[-1, "指定しない"], ...prioritizedSkillOptions(SERIES_SKILLS, PRIORITY_SERIES_SKILL_INDICES)],
-  11,
-);
+renderSkillFilterSeriesOptions(new Set([11]));
 const persistedAppState = loadPersistedAppState();
 let saveState = persistedAppState.saveState;
 let comparisonTargets = persistedAppState.targets;
@@ -497,8 +495,10 @@ skillAttributeSelect.addEventListener("change", () => resetSkillSearchFeedback()
 skillPredictionCountInput.addEventListener("change", () => {
   if (selectedSkillCounter !== null) void refreshSkillPredictions();
 });
-[skillFilterEnabled, skillFilterGroupSelect, skillFilterOperatorSelect, skillFilterSeriesSelect]
+[skillFilterEnabled, skillFilterGroupSelect, skillFilterOperatorSelect]
   .forEach((control) => control.addEventListener("change", () => renderSkillPredictionTable()));
+skillFilterSeriesOptions.addEventListener("change", () => renderSkillPredictionTable());
+exportSkillCsvButton.addEventListener("click", () => exportVisibleSkillPredictionsCsv());
 document.querySelectorAll('input[name="desired-series"]').forEach((checkbox) => {
   checkbox.addEventListener("change", () => renderSkillPredictionTable());
 });
@@ -598,6 +598,23 @@ function prioritizedSkillOptions(labels, priorityIndices) {
     ...priorityIndices.map((index) => [index, labels[index]]),
     ...labels.flatMap((label, index) => priority.has(index) ? [] : [[index, label]]),
   ];
+}
+
+function renderSkillFilterSeriesOptions(selectedIndices = new Set()) {
+  skillFilterSeriesOptions.replaceChildren(
+    ...prioritizedSkillOptions(SERIES_SKILLS, PRIORITY_SERIES_SKILL_INDICES).map(([index, label]) => {
+      const optionLabel = document.createElement("label");
+      const checkbox = document.createElement("input");
+      const text = document.createElement("span");
+      checkbox.type = "checkbox";
+      checkbox.name = "skill-filter-series";
+      checkbox.value = String(index);
+      checkbox.checked = selectedIndices.has(index);
+      text.textContent = label;
+      optionLabel.append(checkbox, text);
+      return optionLabel;
+    }),
+  );
 }
 
 function loadPersistedAppState() {
@@ -2489,21 +2506,42 @@ function selectedSkillFilter() {
     enabled: skillFilterEnabled.checked,
     groupIndex: Number(skillFilterGroupSelect.value),
     operator: skillFilterOperatorSelect.value,
-    seriesIndex: Number(skillFilterSeriesSelect.value),
+    seriesIndices: new Set(
+      [...skillFilterSeriesOptions.querySelectorAll('input[name="skill-filter-series"]:checked')]
+        .map((checkbox) => Number(checkbox.value)),
+    ),
   };
 }
 
 function skillRollMatchesFilter(roll, filter) {
   const hasGroup = filter.groupIndex >= 0;
-  const hasSeries = filter.seriesIndex >= 0;
+  const hasSeries = filter.seriesIndices.size > 0;
   const groupMatches = hasGroup && roll.groupIndex === filter.groupIndex;
-  const seriesMatches = hasSeries && roll.seriesIndex === filter.seriesIndex;
+  const seriesMatches = hasSeries && filter.seriesIndices.has(roll.seriesIndex);
 
   if (!hasGroup) return !hasSeries || seriesMatches;
   if (!hasSeries) return groupMatches;
   return filter.operator === "and"
     ? groupMatches && seriesMatches
     : groupMatches || seriesMatches;
+}
+
+function skillPredictionVisibility(filter = selectedSkillFilter()) {
+  if (skillPredictionRollSets.length === 0) {
+    return { count: 0, matchingRowCount: 0, visibleIndices: [] };
+  }
+
+  const count = skillPredictionRollSets[0].rolls.length;
+  const allIndices = Array.from({ length: count }, (_, index) => index);
+  const rowMatchesFilter = (index) => skillPredictionRollSets.some((target) =>
+    skillRollMatchesFilter(target.rolls[index], filter)
+  );
+  const matchingIndices = allIndices.filter(rowMatchesFilter);
+  return {
+    count,
+    matchingRowCount: matchingIndices.length,
+    visibleIndices: filter.enabled ? matchingIndices : allIndices,
+  };
 }
 
 function renderSkillPredictionTable() {
@@ -2513,18 +2551,11 @@ function renderSkillPredictionTable() {
   const skillFilter = selectedSkillFilter();
   const isHit = (roll) =>
     desiredSeries.has(roll.seriesIndex) || roll.groupIndex === LORDS_SOUL_GROUP_INDEX;
-  const count = skillPredictionRollSets[0].rolls.length;
-  const rowMatchesFilter = (index) => skillPredictionRollSets.some((target) =>
-    skillRollMatchesFilter(target.rolls[index], skillFilter)
-  );
+  const { count, matchingRowCount, visibleIndices } = skillPredictionVisibility(skillFilter);
   const hitCount = skillPredictionRollSets.reduce(
     (total, target) => total + target.rolls.filter(isHit).length,
     0,
   );
-  const matchingRowCount = Array.from({ length: count }, (_, index) => index)
-    .filter(rowMatchesFilter).length;
-  const visibleIndices = Array.from({ length: count }, (_, index) => index)
-    .filter((index) => !skillFilter.enabled || rowMatchesFilter(index));
 
   const filterStatus = skillFilter.enabled
     ? `・条件一致${matchingRowCount.toLocaleString("ja-JP")}行`
@@ -2532,6 +2563,10 @@ function renderSkillPredictionTable() {
   skillFutureStatus.textContent = `${skillPredictionRollSets.length.toLocaleString("ja-JP")}件 × ${count.toLocaleString("ja-JP")}回・当たり${hitCount.toLocaleString("ja-JP")}セル${filterStatus}`;
   skillFutureStatus.className = "status-pill complete";
   skillTableWrap.hidden = false;
+  exportSkillCsvButton.disabled = visibleIndices.length === 0;
+  skillExportStatus.textContent = skillFilter.enabled
+    ? `条件一致で現在表示中の${visibleIndices.length.toLocaleString("ja-JP")}行をCSVへ出力します。`
+    : `現在表示中の${visibleIndices.length.toLocaleString("ja-JP")}行をCSVへ出力します。`;
 
   const offsetHeader = document.createElement("th");
   const stateHeader = document.createElement("th");
@@ -2564,6 +2599,49 @@ function renderSkillPredictionTable() {
   skillPredictionRows.replaceChildren(
     ...visibleIndices.map((index) => createSkillPredictionRow(index, desiredSeries)),
   );
+}
+
+function exportVisibleSkillPredictionsCsv() {
+  const { visibleIndices } = skillPredictionVisibility();
+  if (visibleIndices.length === 0 || skillPredictionRollSets.length === 0) {
+    showSkillTargetError("CSVへ出力できるスキル未来予測の結果がありません。");
+    return;
+  }
+
+  hideSkillTargetError();
+  const headers = [
+    "何回先",
+    "カウンター位置",
+    "武器種",
+    "属性",
+    "シリーズスキル",
+    "グループスキル",
+  ];
+  const rows = visibleIndices.flatMap((index) => skillPredictionRollSets.map((target) => {
+    const roll = target.rolls[index];
+    return [
+      index + 1,
+      saveState.skillCounter + index + 1,
+      optionName(WEAPON_TYPES, target.weaponType),
+      optionName(ATTRIBUTES, target.attributeForce),
+      SERIES_SKILLS[roll.seriesIndex] ?? `シリーズ ${roll.seriesIndex}`,
+      GROUP_SKILLS[roll.groupIndex] ?? `グループ ${roll.groupIndex}`,
+    ];
+  }));
+  const escapeCsvCell = (value) => `"${String(value).replace(/"/g, '""')}"`;
+  const csv = [headers, ...rows]
+    .map((row) => row.map(escapeCsvCell).join(","))
+    .join("\r\n");
+  const blob = new Blob(["\uFEFF", csv], { type: "text/csv;charset=utf-8" });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = `gogma-skill-future-seed-${saveState.baseSeed}-counter-${saveState.skillCounter}.csv`;
+  document.body.append(link);
+  link.click();
+  link.remove();
+  URL.revokeObjectURL(url);
+  skillExportStatus.textContent = `${visibleIndices.length.toLocaleString("ja-JP")}行・${rows.length.toLocaleString("ja-JP")}件をCSVへ出力しました。`;
 }
 
 function createSkillPredictionRow(index, desiredSeries) {
@@ -2603,6 +2681,8 @@ function clearSkillPredictionResults() {
   skillPredictionHeaderRow.replaceChildren();
   skillPredictionRows.replaceChildren();
   skillTableWrap.hidden = true;
+  exportSkillCsvButton.disabled = true;
+  skillExportStatus.textContent = "予測結果を表示するとCSVへ出力できます。";
 }
 
 function resetSkillSearchFeedback() {

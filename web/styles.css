@@ -2094,7 +2094,7 @@ button:disabled {
 
 .skill-filter-settings {
   display: grid;
-  grid-template-columns: minmax(220px, 1.2fr) repeat(3, minmax(170px, 1fr)) auto;
+  grid-template-columns: minmax(230px, 0.9fr) minmax(170px, 0.65fr) minmax(190px, 0.7fr) minmax(360px, 1.4fr) auto;
   gap: 14px;
   align-items: end;
   margin: -14px 0 32px;
@@ -2130,10 +2130,78 @@ button:disabled {
   font-size: 0.76rem;
 }
 
+.skill-filter-series {
+  min-width: 0;
+  margin: 0;
+  padding: 9px 11px 11px;
+  border: 1px solid #484a40;
+  border-radius: 9px;
+}
+
+.skill-filter-series legend {
+  padding: 0 5px;
+  color: #d6d3c5;
+  font-size: 0.72rem;
+  font-weight: 800;
+}
+
+.skill-filter-series-options {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 7px 12px;
+  max-height: 112px;
+  overflow-y: auto;
+  scrollbar-color: #8d793f #1c1d18;
+}
+
+.skill-filter-series-options label {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  min-width: 0;
+  color: #e5e0d0;
+  font-size: 0.72rem;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.skill-filter-series-options input[type="checkbox"] {
+  flex: 0 0 auto;
+  width: 16px;
+  height: 16px;
+  accent-color: var(--gold);
+}
+
 .skill-filter-toggle {
   min-height: 42px;
   padding: 0 4px;
   white-space: nowrap;
+}
+
+.skill-export-actions {
+  display: flex;
+  gap: 14px;
+  align-items: center;
+  margin: -18px 0 28px;
+}
+
+.skill-export-actions p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.72rem;
+  line-height: 1.5;
+}
+
+@media (max-width: 1200px) {
+  .skill-filter-settings {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    align-items: start;
+  }
+
+  .skill-filter-intro,
+  .skill-filter-series {
+    grid-column: 1 / -1;
+  }
 }
 
 .skill-observation-heading {
@@ -2401,6 +2469,20 @@ button:disabled {
   .bonus-ex-filter-toggle {
     min-height: 0;
     padding: 6px 0 0;
+  }
+
+  .skill-filter-intro,
+  .skill-filter-series {
+    grid-column: auto;
+  }
+
+  .skill-filter-series-options {
+    grid-template-columns: 1fr;
+  }
+
+  .skill-export-actions {
+    align-items: flex-start;
+    flex-direction: column;
   }
 
   .counter-range-planner {
