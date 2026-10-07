@@ -2612,22 +2612,27 @@ function exportVisibleSkillPredictionsCsv() {
   const headers = [
     "何回先",
     "カウンター位置",
-    "武器種",
-    "属性",
-    "シリーズスキル",
-    "グループスキル",
+    ...skillPredictionRollSets.flatMap((target) => {
+      const weapon = optionName(WEAPON_TYPES, target.weaponType);
+      const attribute = optionName(ATTRIBUTES, target.attributeForce);
+      const targetName = `${comparisonTargetName(target)}（${weapon}・${attribute}）`;
+      return [
+        `${targetName} シリーズスキル`,
+        `${targetName} グループスキル`,
+      ];
+    }),
   ];
-  const rows = visibleIndices.flatMap((index) => skillPredictionRollSets.map((target) => {
-    const roll = target.rolls[index];
-    return [
-      index + 1,
-      saveState.skillCounter + index + 1,
-      optionName(WEAPON_TYPES, target.weaponType),
-      optionName(ATTRIBUTES, target.attributeForce),
-      SERIES_SKILLS[roll.seriesIndex] ?? `シリーズ ${roll.seriesIndex}`,
-      GROUP_SKILLS[roll.groupIndex] ?? `グループ ${roll.groupIndex}`,
-    ];
-  }));
+  const rows = visibleIndices.map((index) => [
+    index + 1,
+    saveState.skillCounter + index + 1,
+    ...skillPredictionRollSets.flatMap((target) => {
+      const roll = target.rolls[index];
+      return [
+        SERIES_SKILLS[roll.seriesIndex] ?? `シリーズ ${roll.seriesIndex}`,
+        GROUP_SKILLS[roll.groupIndex] ?? `グループ ${roll.groupIndex}`,
+      ];
+    }),
+  ]);
   const escapeCsvCell = (value) => `"${String(value).replace(/"/g, '""')}"`;
   const csv = [headers, ...rows]
     .map((row) => row.map(escapeCsvCell).join(","))
@@ -2641,7 +2646,7 @@ function exportVisibleSkillPredictionsCsv() {
   link.click();
   link.remove();
   URL.revokeObjectURL(url);
-  skillExportStatus.textContent = `${visibleIndices.length.toLocaleString("ja-JP")}行・${rows.length.toLocaleString("ja-JP")}件をCSVへ出力しました。`;
+  skillExportStatus.textContent = `${rows.length.toLocaleString("ja-JP")}行・${headers.length.toLocaleString("ja-JP")}列をCSVへ出力しました。`;
 }
 
 function createSkillPredictionRow(index, desiredSeries) {
