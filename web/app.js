@@ -2487,8 +2487,8 @@ async function refreshSkillPredictions() {
 
 function readSkillPredictionCount() {
   const value = Number(skillPredictionCountInput.value);
-  if (!Number.isSafeInteger(value) || value < 1 || value > 1_000) {
-    throw new Error("スキルの表示回数は1〜1,000の整数で入力してください。");
+  if (!Number.isSafeInteger(value) || value < 1 || value > 10_000) {
+    throw new Error("スキルの表示回数は1〜10,000の整数で入力してください。");
   }
   return value;
 }

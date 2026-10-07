@@ -10,7 +10,7 @@ use seed_search_cli::{
 };
 use wasm_bindgen::prelude::*;
 
-const MAX_PREDICTION_ROLLS: u32 = 1_000;
+const MAX_PREDICTION_ROLLS: u32 = 10_000;
 
 /// Generates flattened five-slot Reset Bonuses predictions beginning at the
 /// supplied saved counter.
@@ -101,7 +101,7 @@ fn validate_prediction_count(count: u32) -> Result<usize, &'static str> {
         return Err("prediction count must be at least one");
     }
     if count > MAX_PREDICTION_ROLLS {
-        return Err("prediction count must not exceed 1000");
+        return Err("prediction count must not exceed 10000");
     }
 
     usize::try_from(count).map_err(|_| "prediction count is outside the usize range")
@@ -453,8 +453,9 @@ mod tests {
             Err("prediction count must be at least one")
         );
         assert_eq!(
-            validate_prediction_count(1_001),
-            Err("prediction count must not exceed 1000")
+            validate_prediction_count(10_001),
+            Err("prediction count must not exceed 10000")
         );
+        assert_eq!(validate_prediction_count(10_000), Ok(10_000));
     }
 }
