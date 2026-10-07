@@ -189,6 +189,8 @@ const comparisonError = document.querySelector("#comparison-error");
 const comparisonTableWrap = document.querySelector("#comparison-table-wrap");
 const comparisonHeaderRow = document.querySelector("#comparison-header-row");
 const comparisonRows = document.querySelector("#comparison-rows");
+const exportBonusCsvButton = document.querySelector("#export-bonus-csv");
+const bonusExportStatus = document.querySelector("#bonus-export-status");
 const continuationCodeInput = document.querySelector("#continuation-code");
 const openContinuationButton = document.querySelector("#open-continuation");
 const continuationMessage = document.querySelector("#continuation-message");
@@ -443,6 +445,7 @@ clearComparisonTargetsButton.addEventListener("click", () => {
 comparisonCountInput.addEventListener("change", () => void refreshComparisonPredictions());
 [bonusExFilterEnabled, bonusExFilterCountSelect]
   .forEach((control) => control.addEventListener("change", () => renderComparisonTable()));
+exportBonusCsvButton.addEventListener("click", () => exportVisibleBonusPredictionsCsv());
 
 addSkillTargetButton.addEventListener("click", () => void addSkillTarget());
 clearSkillTargetsButton.addEventListener("click", () => {
@@ -1776,8 +1779,8 @@ async function refreshPredictions() {
 
 function readPredictionCount() {
   const value = Number(predictionCountInput.value);
-  if (!Number.isSafeInteger(value) || value < 1 || value > 1_000) {
-    throw new Error("表示する回数は1〜1,000の整数で入力してください。");
+  if (!Number.isSafeInteger(value) || value < 1 || value > 10_000) {
+    throw new Error("表示する回数は1〜10,000の整数で入力してください。");
   }
   return value;
 }
@@ -2139,6 +2142,28 @@ function comparisonTargetName(target) {
   return `${attribute}${weapon}`;
 }
 
+function predictionCsvTargetName(target) {
+  const weapon = optionName(WEAPON_TYPES, target.weaponType);
+  const attribute = optionName(ATTRIBUTES, target.attributeForce);
+  return `${comparisonTargetName(target)}（${weapon}・${attribute}）`;
+}
+
+function downloadCsv(filename, headers, rows) {
+  const escapeCell = (value) => `"${String(value).replace(/"/g, '""')}"`;
+  const csv = [headers, ...rows]
+    .map((row) => row.map(escapeCell).join(","))
+    .join("\r\n");
+  const blob = new Blob(["\uFEFF", csv], { type: "text/csv;charset=utf-8" });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = filename;
+  document.body.append(link);
+  link.click();
+  link.remove();
+  URL.revokeObjectURL(url);
+}
+
 function renderComparisonTargets() {
   const createItems = (targets) => targets.map((target) => {
       const item = document.createElement("span");
@@ -2170,8 +2195,8 @@ function renderComparisonTargets() {
 
 function readComparisonCount() {
   const value = Number(comparisonCountInput.value);
-  if (!Number.isSafeInteger(value) || value < 1 || value > 500) {
-    throw new Error("比較表の表示回数は1〜500の整数で入力してください。");
+  if (!Number.isSafeInteger(value) || value < 1 || value > 10_000) {
+    throw new Error("比較表の表示回数は1〜10,000の整数で入力してください。");
   }
   return value;
 }
@@ -2218,11 +2243,28 @@ async function refreshComparisonPredictions() {
   }
 }
 
+function comparisonPredictionVisibility() {
+  if (comparisonRollSets.length === 0) {
+    return { count: 0, minimumExCount: Number(bonusExFilterCountSelect.value), visibleIndices: [] };
+  }
+
+  const count = comparisonRollSets[0].rolls.length;
+  const minimumExCount = Number(bonusExFilterCountSelect.value);
+  const rowMeetsExThreshold = (index) => comparisonRollSets.some((target) =>
+    target.rolls[index].filter((bonusId) => EX_BONUS_IDS.has(bonusId)).length >= minimumExCount
+  );
+  const visibleIndices = Array.from({ length: count }, (_, index) => index)
+    .filter((index) => !bonusExFilterEnabled.checked || rowMeetsExThreshold(index));
+  return { count, minimumExCount, visibleIndices };
+}
+
 function renderComparisonTable() {
   if (!selectedCandidate || comparisonRollSets.length === 0) {
     comparisonHeaderRow.replaceChildren();
     comparisonRows.replaceChildren();
     comparisonTableWrap.hidden = true;
+    exportBonusCsvButton.disabled = true;
+    bonusExportStatus.textContent = "予測結果を表示するとCSVへ出力できます。";
     updateComparisonStatus();
     return;
   }
@@ -2244,13 +2286,7 @@ function renderComparisonTable() {
     }),
   );
 
-  const count = comparisonRollSets[0].rolls.length;
-  const minimumExCount = Number(bonusExFilterCountSelect.value);
-  const rowMeetsExThreshold = (index) => comparisonRollSets.some((target) =>
-    target.rolls[index].filter((bonusId) => EX_BONUS_IDS.has(bonusId)).length >= minimumExCount
-  );
-  const visibleIndices = Array.from({ length: count }, (_, index) => index)
-    .filter((index) => !bonusExFilterEnabled.checked || rowMeetsExThreshold(index));
+  const { count, minimumExCount, visibleIndices } = comparisonPredictionVisibility();
   comparisonRows.replaceChildren(
     ...visibleIndices.map((index) => createComparisonRow(index)),
   );
@@ -2264,6 +2300,10 @@ function renderComparisonTable() {
     comparisonRows.replaceChildren(row);
   }
   comparisonTableWrap.hidden = false;
+  exportBonusCsvButton.disabled = visibleIndices.length === 0;
+  bonusExportStatus.textContent = bonusExFilterEnabled.checked
+    ? `EX条件一致で現在表示中の${visibleIndices.length.toLocaleString("ja-JP")}行をCSVへ出力します。`
+    : `現在表示中の${visibleIndices.length.toLocaleString("ja-JP")}行をCSVへ出力します。`;
   const unit = bonusPrediction.mode === "keep" ? "武器" : "条件";
   const prefix = bonusPrediction.mode === "keep" ? "EX厳選・" : "";
   const filterStatus = bonusExFilterEnabled.checked
@@ -2271,6 +2311,36 @@ function renderComparisonTable() {
     : "";
   comparisonStatus.textContent = `${prefix}${comparisonRollSets.length.toLocaleString("ja-JP")}${unit} × ${count.toLocaleString("ja-JP")}回${filterStatus}`;
   comparisonStatus.className = "status-pill complete";
+}
+
+function exportVisibleBonusPredictionsCsv() {
+  const { visibleIndices } = comparisonPredictionVisibility();
+  if (visibleIndices.length === 0 || comparisonRollSets.length === 0) {
+    showComparisonError("CSVへ出力できる復元ボーナス未来予測の結果がありません。");
+    return;
+  }
+
+  hideComparisonError();
+  const headers = [
+    "何回先",
+    "カウンター位置",
+    ...comparisonRollSets.flatMap((target) => Array.from({ length: 5 }, (_, index) =>
+      `${predictionCsvTargetName(target)} ${index + 1}枠目`
+    )),
+  ];
+  const rows = visibleIndices.map((index) => [
+    index + 1,
+    saveState.bonusCounter + index + 1,
+    ...comparisonRollSets.flatMap((target) => target.rolls[index].map((bonusId) =>
+      gogmaBonusName(target.weaponType, bonusId)
+    )),
+  ]);
+  downloadCsv(
+    `gogma-bonus-${bonusPrediction.mode}-future-seed-${saveState.baseSeed}-counter-${saveState.bonusCounter}.csv`,
+    headers,
+    rows,
+  );
+  bonusExportStatus.textContent = `${rows.length.toLocaleString("ja-JP")}行・${headers.length.toLocaleString("ja-JP")}列をCSVへ出力しました。`;
 }
 
 function createComparisonRow(index) {
@@ -2613,9 +2683,7 @@ function exportVisibleSkillPredictionsCsv() {
     "何回先",
     "カウンター位置",
     ...skillPredictionRollSets.flatMap((target) => {
-      const weapon = optionName(WEAPON_TYPES, target.weaponType);
-      const attribute = optionName(ATTRIBUTES, target.attributeForce);
-      const targetName = `${comparisonTargetName(target)}（${weapon}・${attribute}）`;
+      const targetName = predictionCsvTargetName(target);
       return [
         `${targetName} シリーズスキル`,
         `${targetName} グループスキル`,
@@ -2633,19 +2701,11 @@ function exportVisibleSkillPredictionsCsv() {
       ];
     }),
   ]);
-  const escapeCsvCell = (value) => `"${String(value).replace(/"/g, '""')}"`;
-  const csv = [headers, ...rows]
-    .map((row) => row.map(escapeCsvCell).join(","))
-    .join("\r\n");
-  const blob = new Blob(["\uFEFF", csv], { type: "text/csv;charset=utf-8" });
-  const url = URL.createObjectURL(blob);
-  const link = document.createElement("a");
-  link.href = url;
-  link.download = `gogma-skill-future-seed-${saveState.baseSeed}-counter-${saveState.skillCounter}.csv`;
-  document.body.append(link);
-  link.click();
-  link.remove();
-  URL.revokeObjectURL(url);
+  downloadCsv(
+    `gogma-skill-future-seed-${saveState.baseSeed}-counter-${saveState.skillCounter}.csv`,
+    headers,
+    rows,
+  );
   skillExportStatus.textContent = `${rows.length.toLocaleString("ja-JP")}行・${headers.length.toLocaleString("ja-JP")}列をCSVへ出力しました。`;
 }
 

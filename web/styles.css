@@ -2178,14 +2178,14 @@ button:disabled {
   white-space: nowrap;
 }
 
-.skill-export-actions {
+.prediction-export-actions {
   display: flex;
   gap: 14px;
   align-items: center;
   margin: -18px 0 28px;
 }
 
-.skill-export-actions p {
+.prediction-export-actions p {
   margin: 0;
   color: var(--muted);
   font-size: 0.72rem;
@@ -2480,7 +2480,7 @@ button:disabled {
     grid-template-columns: 1fr;
   }
 
-  .skill-export-actions {
+  .prediction-export-actions {
     align-items: flex-start;
     flex-direction: column;
   }
