@@ -41,8 +41,40 @@ textarea {
 }
 
 .hero {
-  max-width: 760px;
+  display: flex;
+  gap: 28px;
+  align-items: flex-start;
+  justify-content: space-between;
   margin-bottom: 32px;
+}
+
+.hero-copy {
+  max-width: 760px;
+}
+
+.language-picker {
+  display: grid;
+  flex: 0 0 auto;
+  gap: 6px;
+  min-width: 150px;
+}
+
+.language-picker span {
+  color: var(--muted);
+  font-size: 0.7rem;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.language-picker select {
+  min-height: 42px;
+  padding: 8px 34px 8px 12px;
+  border: 1px solid #4d4939;
+  border-radius: 9px;
+  background: #171813;
+  color: #f6f0df;
+  cursor: pointer;
 }
 
 .eyebrow,
@@ -2355,6 +2387,15 @@ button:disabled {
   .shell {
     width: min(100% - 20px, 640px);
     padding-top: 42px;
+  }
+
+  .hero {
+    display: grid;
+    gap: 20px;
+  }
+
+  .language-picker {
+    width: min(100%, 240px);
   }
 
   .field-grid,

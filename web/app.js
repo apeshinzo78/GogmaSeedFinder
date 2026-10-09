@@ -4,6 +4,7 @@ import initWasm, {
   predict_gogma_rolls,
   predict_skill_rolls,
 } from "./pkg/gogma_wasm_search.js";
+import { localizedTargetName, t } from "./i18n.js";
 
 const WEAPON_TYPES = [
   [0, "大剣"],
@@ -764,10 +765,10 @@ function renderSaveState() {
 
   bonusStateBaseSeedInput.value = saveState.baseSeed ?? "";
   bonusStateCounterInput.value = saveState.bonusCounter ?? "";
-  bonusStateSkillCounterInput.value = saveState.skillCounter ?? "未特定";
+  bonusStateSkillCounterInput.value = saveState.skillCounter ?? t("未特定");
   skillStateBaseSeedInput.value = saveState.baseSeed ?? "";
   skillStateCounterInput.value = saveState.skillCounter ?? "";
-  skillStateBonusCounterInput.value = saveState.bonusCounter ?? "未特定";
+  skillStateBonusCounterInput.value = saveState.bonusCounter ?? t("未特定");
   predictionSeed.textContent = saveState.baseSeed === null
     ? "—"
     : saveState.baseSeed.toLocaleString("ja-JP");
@@ -1388,7 +1389,7 @@ function renumberObservationRows() {
       label.textContent = `${slotIndex + 1}枠目`;
       label.parentElement.querySelector("select").setAttribute(
         "aria-label",
-        `抽選${rollIndex + 1}の${slotIndex + 1}枠目`,
+        t(`抽選${rollIndex + 1}の${slotIndex + 1}枠目`),
       );
     });
   });
@@ -1980,7 +1981,7 @@ function createSavedStateCell(kind, completedRolls, keepTransition = null, compa
     codeButton.type = "button";
     codeButton.className = "continuation-code-button";
     codeButton.textContent = compact ? "コード" : code;
-    codeButton.title = `セーブ状態コードをコピー: ${code}`;
+    codeButton.title = t(`セーブ状態コードをコピー: ${code}`);
     codeButton.addEventListener("click", () => void useContinuationCode(code));
     actions.append(codeButton);
   }
@@ -2136,14 +2137,13 @@ function comparisonTargetName(target) {
   if (target.label) return target.label;
   const weapon = optionName(WEAPON_TYPES, target.weaponType);
   const attributeName = optionName(ATTRIBUTES, target.attributeForce);
-  const attribute = attributeName === "無属性" ? attributeName : attributeName.replace("属性", "");
-  return `${attribute}${weapon}`;
+  return localizedTargetName(weapon, attributeName);
 }
 
 function predictionCsvTargetName(target) {
   const weapon = optionName(WEAPON_TYPES, target.weaponType);
   const attribute = optionName(ATTRIBUTES, target.attributeForce);
-  return `${comparisonTargetName(target)}（${weapon}・${attribute}）`;
+  return `${comparisonTargetName(target)} (${t(weapon)} / ${t(attribute)})`;
 }
 
 function downloadCsv(filename, headers, rows) {
@@ -2171,7 +2171,7 @@ function renderComparisonTargets() {
       text.textContent = comparisonTargetName(target);
       removeButton.type = "button";
       removeButton.textContent = "×";
-      removeButton.setAttribute("aria-label", `${comparisonTargetName(target)}を比較対象から削除`);
+      removeButton.setAttribute("aria-label", t(`${comparisonTargetName(target)}を比較対象から削除`));
       removeButton.addEventListener("click", () => {
         comparisonTargets = comparisonTargets.filter(
           (candidate) => comparisonTargetKey(candidate) !== comparisonTargetKey(target),
@@ -2320,17 +2320,17 @@ function exportVisibleBonusPredictionsCsv() {
 
   hideComparisonError();
   const headers = [
-    "何回先",
-    "カウンター位置",
+    t("何回先"),
+    t("カウンター位置"),
     ...comparisonRollSets.flatMap((target) => Array.from({ length: 5 }, (_, index) =>
-      `${predictionCsvTargetName(target)} ${index + 1}枠目`
+      `${predictionCsvTargetName(target)} ${t(`${index + 1}枠目`)}`
     )),
   ];
   const rows = visibleIndices.map((index) => [
     index + 1,
     saveState.bonusCounter + index + 1,
     ...comparisonRollSets.flatMap((target) => target.rolls[index].map((bonusId) =>
-      gogmaBonusName(target.weaponType, bonusId)
+      t(gogmaBonusName(target.weaponType, bonusId))
     )),
   ]);
   downloadCsv(
@@ -2670,13 +2670,13 @@ function exportVisibleSkillPredictionsCsv() {
 
   hideSkillTargetError();
   const headers = [
-    "何回先",
-    "カウンター位置",
+    t("何回先"),
+    t("カウンター位置"),
     ...skillPredictionRollSets.flatMap((target) => {
       const targetName = predictionCsvTargetName(target);
       return [
-        `${targetName} シリーズスキル`,
-        `${targetName} グループスキル`,
+        `${targetName} ${t("シリーズスキル")}`,
+        `${targetName} ${t("グループスキル")}`,
       ];
     }),
   ];
@@ -2686,8 +2686,8 @@ function exportVisibleSkillPredictionsCsv() {
     ...skillPredictionRollSets.flatMap((target) => {
       const roll = target.rolls[index];
       return [
-        SERIES_SKILLS[roll.seriesIndex] ?? `シリーズ ${roll.seriesIndex}`,
-        GROUP_SKILLS[roll.groupIndex] ?? `グループ ${roll.groupIndex}`,
+        t(SERIES_SKILLS[roll.seriesIndex] ?? `シリーズ ${roll.seriesIndex}`),
+        t(GROUP_SKILLS[roll.groupIndex] ?? `グループ ${roll.groupIndex}`),
       ];
     }),
   ]);
