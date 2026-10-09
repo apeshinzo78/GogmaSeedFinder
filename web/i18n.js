@@ -86,6 +86,15 @@ const OFFICIAL_TERMS = {
 };
 
 const UI_TEXT = {
+  "武器の属性": ["Weapon element", "武器屬性"],
+  "内部位置の開始": ["Starting internal position", "內部位置開始值"],
+  "内部位置の終了": ["Ending internal position", "內部位置結束值"],
+  "seed開始": ["Starting seed", "seed開始值"],
+  "seed終了": ["Ending seed", "seed結束值"],
+  "セーブ状態": ["Save State", "存檔狀態"],
+  "スキル内部位置の開始": ["Starting Skill Counter candidate", "技能內部位置開始值"],
+  "スキル内部位置の終了": ["Ending Skill Counter candidate", "技能內部位置結束值"],
+  "基準seedとスキルカウンターを入力してください": ["Enter the base seed and Skill Counter", "請輸入基準seed與技能計數器"],
   "巨戟アーティア武器の抽選結果を予測します。": ["Predict Gogma Artian weapon lottery results.", "預測巨戟機械武器的抽選結果。"],
   "現在の制限": ["Current limitations", "目前限制"],
   "現在は手入力版です。ゲーム画面と同じ名称を選んでください。 入力した検索データが外部へ送信されることはありません。": ["This version uses manual input. Select the same names shown in the game. Your search data never leaves this device.", "目前為手動輸入版。請選擇與遊戲畫面相同的名稱。輸入的搜尋資料不會傳送至外部。"],
@@ -455,7 +464,9 @@ function translateTemplate(source, locale, fallback = source) {
   if ((match = source.match(/^再付与(\d+)のグループスキル$/))) return en ? `Reset ${match[1]} Group Skill` : `第${match[1]}次重新附加的團體技能`;
   if ((match = source.match(/^希望 (\d+)$/))) return en ? `Desired ${match[1]}` : `目標 ${match[1]}`;
   if ((match = source.match(/^(\d+)回先$/))) return en ? `${match[1]} rolls ahead` : `${match[1]}次後`;
-  if ((match = source.match(/^(\d+)候補$/))) return en ? `${match[1]} candidates` : `${match[1]}個候選`;
+  if ((match = source.match(/^([\d,]+)候補$/))) return en ? `${match[1]} candidates` : `${match[1]}個候選`;
+  if ((match = source.match(/^候補 ([\d,]+)$/))) return en ? `Candidate ${match[1]}` : `候選 ${match[1]}`;
+  if ((match = source.match(/^抽選(\d+)の(\d+)枠目$/))) return en ? `Roll ${match[1]}, slot ${match[2]}` : `抽選${match[1]}的第${match[2]}格`;
   if ((match = source.match(/^(\d+)回を表示$/))) return en ? `Showing ${match[1]} rolls` : `顯示${match[1]}次`;
   if ((match = source.match(/^(\d+)回中 (\d+)回一致$/))) return en ? `${match[2]} of ${match[1]} rolls match` : `${match[1]}次中有${match[2]}次符合`;
   if ((match = source.match(/^([\d,]+)行・([\d,]+)列をCSVへ出力しました。$/))) return en ? `Exported ${match[1]} rows and ${match[2]} columns to CSV.` : `已將${match[1]}列、${match[2]}欄匯出為CSV。`;
@@ -465,14 +476,60 @@ function translateTemplate(source, locale, fallback = source) {
   if ((match = source.match(/^現在表示中の([\d,]+)行をCSVへ出力します。$/))) return en ? `Export the ${match[1]} visible rows to CSV.` : `將目前顯示的${match[1]}列匯出為CSV。`;
   if ((match = source.match(/^EX条件一致で現在表示中の([\d,]+)行をCSVへ出力します。$/))) return en ? `Export the ${match[1]} visible EX-matching rows to CSV.` : `將目前顯示且符合EX條件的${match[1]}列匯出為CSV。`;
   if ((match = source.match(/^条件一致で現在表示中の([\d,]+)行をCSVへ出力します。$/))) return en ? `Export the ${match[1]} visible matching rows to CSV.` : `將目前顯示且符合條件的${match[1]}列匯出為CSV。`;
-  if ((match = source.match(/^([\d,]+)条件 × ([\d,]+)回$/))) return en ? `${match[1]} target × ${match[2]} rolls` : `${match[1]}個條件 × ${match[2]}次`;
-  if ((match = source.match(/^([\d,]+)武器 × ([\d,]+)回$/))) return en ? `${match[1]} weapons × ${match[2]} rolls` : `${match[1]}把武器 × ${match[2]}次`;
+  if ((match = source.match(/^(EX厳選・)?([\d,]+)(条件|武器) × ([\d,]+)回(?:・EX(\d+)個以上 ([\d,]+)行)?$/))) {
+    const prefix = match[1] ? en ? "EX farming · " : "EX嚴選・" : "";
+    const unit = match[3] === "武器" ? en ? "weapons" : "把武器" : en ? "targets" : "個條件";
+    const filter = match[5] === undefined
+      ? ""
+      : en ? ` · ${match[6]} rows with at least ${match[5]} EX bonuses` : `・${match[6]}列達到至少${match[5]}個EX`;
+    return en
+      ? `${prefix}${match[2]} ${unit} × ${match[4]} rolls${filter}`
+      : `${prefix}${match[2]}${unit} × ${match[4]}次${filter}`;
+  }
+  if ((match = source.match(/^EXが(\d+)個以上の結果は表示範囲内にありません。表示回数を増やすか最低EX数を下げてください。$/))) return en ? `No results in the displayed range have at least ${match[1]} EX bonuses. Increase the number of rolls or lower the minimum EX count.` : `顯示範圍內沒有至少${match[1]}個EX的結果。請增加顯示次數或降低最低EX數量。`;
+  if ((match = source.match(/^([\d,]+)件・基準seedと復元カウンター待ち$/))) return en ? `${match[1]} targets · waiting for base seed and Bonus Counter` : `${match[1]}個目標・等待基準seed與復原計數器`;
+  if ((match = source.match(/^(\d+)\/(\d+) 武器の構成入力済み$/))) return en ? `${match[1]}/${match[2]} weapon compositions entered` : `已輸入 ${match[1]}/${match[2]} 把武器的組合`;
+  if ((match = source.match(/^([\d,]+)条件$/))) return en ? `${match[1]} targets` : `${match[1]}個條件`;
+  if ((match = source.match(/^([\d,]+)件 × ([\d,]+)回・条件一致([\d,]+)セル(?:・条件一致([\d,]+)行)?$/))) {
+    const filteredRows = match[4] === undefined
+      ? ""
+      : en ? ` · ${match[4]} matching rows` : `・${match[4]}列符合條件`;
+    return en
+      ? `${match[1]} targets × ${match[2]} rolls · ${match[3]} matching cells${filteredRows}`
+      : `${match[1]}個目標 × ${match[2]}次・${match[3]}格符合條件${filteredRows}`;
+  }
+  if ((match = source.match(/^候補を特定できませんでした。入力内容が正しい場合、現在の復元ボーナスカウンターが探索範囲（([\d,]+〜[\d,]+|指定範囲)）の外にある可能性があります。これまでこのセーブデータで復元ボーナスを抽選した、おおよその累計回数が含まれるように範囲を変更して、もう一度お試しください。$/))) {
+    const range = match[1] === "指定範囲"
+      ? en ? "specified range" : "指定範圍"
+      : match[1].replace("〜", en ? "–" : "～");
+    return en
+      ? `No candidates were found. If your input is correct, the current Bonus Counter may be outside the search range (${range}). Adjust the range to include the approximate total number of Reinforcement Bonus rolls made on this save, then try again.`
+      : `找不到候選。若輸入內容正確，目前的復原加成計數器可能在搜尋範圍（${range}）之外。請調整範圍，涵蓋此存檔至今抽選復原加成的大約累計次數，然後再試一次。`;
+  }
   if ((match = source.match(/^抽選(\d+)の(\d+)枠目を選択してください。$/))) return en ? `Select slot ${match[2]} for roll ${match[1]}.` : `請選擇抽選${match[1]}的第${match[2]}格。`;
+  if ((match = source.match(/^抽選(\d+)の(\d+)枠目「(.+)」は、選択した武器種・属性では抽選されません。武器種・属性と入力内容を確認してください。$/))) return en ? `Slot ${match[2]} of roll ${match[1]} (${t(match[3])}) cannot occur for the selected weapon type and element. Check the weapon type, element, and input.` : `抽選${match[1]}的第${match[2]}格「${t(match[3])}」不會在所選武器種類與屬性中出現。請確認武器種類、屬性與輸入內容。`;
+  if ((match = source.match(/^抽選(\d+)の「(.+)」が(\d+)枠あります。同一ボーナスは最大2枠です。入力内容を確認してください。$/))) return en ? `Roll ${match[1]} has ${match[3]} slots of ${t(match[2])}. The same bonus is limited to two slots. Check your input.` : `抽選${match[1]}有${match[3]}格「${t(match[2])}」。相同加成最多2格，請確認輸入內容。`;
+  if ((match = source.match(/^抽選(\d+)の(装填系|斬れ味系)ボーナスが(\d+)枠あります。\2は合計2枠までです。入力内容を確認してください。$/))) return en ? `Roll ${match[1]} has ${match[3]} ${t(match[2])} bonus slots. This category is limited to two slots total. Check your input.` : `抽選${match[1]}有${match[3]}格${t(match[2])}加成。此系統合計最多2格，請確認輸入內容。`;
+  if ((match = source.match(/^抽選(\d+)の5枠がゲーム内の復元ボーナス上限に合いません。入力内容を確認してください。$/))) return en ? `The five slots of roll ${match[1]} violate the game's Reinforcement Bonus limits. Check your input.` : `抽選${match[1]}的5格不符合遊戲內的復原加成上限，請確認輸入內容。`;
+  if ((match = source.match(/^探索を開始できませんでした: (.+)$/))) return en ? `Could not start the search: ${t(match[1])}` : `無法開始搜尋：${t(match[1])}`;
+  if ((match = source.match(/^未対応の復元ボーナスIDです: (\d+)$/))) return en ? `Unsupported Reinforcement Bonus ID: ${match[1]}` : `不支援的復原加成ID：${match[1]}`;
   if ((match = source.match(/^再付与(\d+)のシリーズとグループを選択してください。$/))) return en ? `Select the Series and Group Skills for reset ${match[1]}.` : `請選擇第${match[1]}次重新附加的系列與團體技能。`;
   if ((match = source.match(/^(.+)は([\d,]+)〜([\d,]+)の整数で入力してください。$/))) return en ? `Enter ${t(match[1])} as an integer from ${match[2]} to ${match[3]}.` : `${t(match[1])}請輸入${match[2]}～${match[3]}的整數。`;
   if ((match = source.match(/^(\d+)件の武器に未選択の枠があります。各武器の5枠をすべて選択してください。$/))) return en ? `${match[1]} weapon(s) have unselected slots. Select all five slots for every weapon.` : `有${match[1]}把武器尚有未選擇的格位。請為每把武器選擇全部5格。`;
   if ((match = source.match(/^(\d+)\/(\d+) 構成入力済み$/))) return en ? `${match[1]}/${match[2]} compositions entered` : `已輸入 ${match[1]}/${match[2]} 組合`;
   if ((match = source.match(/^スキルカウンター ([\d,]+) を特定$/))) return en ? `Skill Counter ${match[1]} identified` : `已確定技能計數器 ${match[1]}`;
+  if ((match = source.match(/^現在のスキルカウンター ([\d,]+)$/))) return en ? `Current Skill Counter: ${match[1]}` : `目前的技能計數器：${match[1]}`;
+  if ((match = source.match(/^候補が([\d,]+)件あります。続きの再付与結果を追加してください。$/))) return en ? `${match[1]} candidates remain. Add subsequent Reset Skills results.` : `還有${match[1]}個候選，請新增後續的技能重新附加結果。`;
+  if ((match = source.match(/^セーブ状態コードを(入力欄|クリップボード)へコピーしました: (.+)$/))) {
+    const destination = match[1] === "入力欄" ? en ? "input field" : "輸入欄" : en ? "clipboard" : "剪貼簿";
+    return en ? `Copied save-state code to the ${destination}: ${match[2]}` : `已將存檔狀態代碼複製至${destination}：${match[2]}`;
+  }
+  if ((match = source.match(/^(復元ボーナスカウンター|スキルカウンター)([\d,]+)を新しい0地点にしました。$/))) return en ? `Set ${t(match[1])} ${match[2]} as the new origin (0).` : `已將${t(match[1])} ${match[2]}設為新的0點。`;
+  if ((match = source.match(/^(\d+)回先のリセット結果(?:から設定)?$/))) return en ? `Set from the Reset Bonuses result ${match[1]} rolls ahead` : `由${match[1]}次後的重置加成結果設定`;
+  if ((match = source.match(/^(.+)の(\d+)回先を採用した状態へ進み、「ボーナスを同じ構成で再復元」のEX厳選に切り替えました。$/))) return en ? `Advanced to the state after adopting the result ${match[2]} rolls ahead for ${match[1]} and switched to EX farming with Amend (Keep Bonuses).` : `已推進至採用${match[1]}在${match[2]}次後結果的狀態，並切換為以「保留加成組合並再次復原強化」嚴選EX。`;
+  if ((match = source.match(/^EX厳選へ引き継ぐには、登録武器を(\d+)件未満にしてください。$/))) return en ? `To transfer to EX farming, keep fewer than ${match[1]} registered weapons.` : `若要轉移至EX嚴選，已登錄武器必須少於${match[1]}把。`;
+  if ((match = source.match(/^予測対象は最大(\d+)件です。不要な武器を削除してください。$/))) return en ? `You can register up to ${match[1]} targets. Remove unneeded weapons.` : `最多可登錄${match[1]}個預測目標，請刪除不需要的武器。`;
+  if ((match = source.match(/^(シリーズ|グループ) ([\d,]+)$/))) return en ? `${match[1] === "シリーズ" ? "Series" : "Group"} ${match[2]}` : `${match[1] === "シリーズ" ? "系列" : "團體"} ${match[2]}`;
   if ((match = source.match(/^セーブ状態コードをコピー: (.+)$/))) return en ? `Copy save-state code: ${match[1]}` : `複製存檔狀態代碼：${match[1]}`;
   if ((match = source.match(/^(.+)を比較対象から削除$/))) return en ? `Remove ${match[1]} from comparison` : `從比較目標中移除${match[1]}`;
   if ((match = source.match(/^現在の探索範囲: ([\d,]+)〜([\d,]+)（([\d,]+)候補）。(.+)$/))) {
