@@ -44,6 +44,12 @@ cargo test --workspace --all-targets
 cargo clippy --workspace --all-targets -- -D warnings
 ```
 
+UI translation checks (Node.js):
+
+```sh
+node --test web/i18n.test.mjs
+```
+
 ## Web prototype
 
 公開版: [Gogma Seed Finder](https://apeshinzo78.github.io/GogmaSeedFinder/)

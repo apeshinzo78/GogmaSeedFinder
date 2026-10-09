@@ -911,7 +911,7 @@ function keepLayoutProblem(target) {
 
 function requireTargetKeepCategories(target) {
   const problem = keepLayoutProblem(target);
-  if (problem) throw new Error(`${comparisonTargetName(target)}: ${problem}`);
+  if (problem) throw new Error(`${comparisonTargetName(target)}: ${t(problem)}`);
   return target.keepCategories;
 }
 
