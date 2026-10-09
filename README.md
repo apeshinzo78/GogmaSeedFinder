@@ -63,4 +63,6 @@ python -m http.server 4173 --bind 127.0.0.1 --directory web
 
 ## License
 
-このリポジトリ自身のライセンスは未選定です。明示された第三者の権利・許諾を除き、ライセンスが追加されるまで再利用の許諾は付与されません。
+このリポジトリの作者自身が作成したコードは[MIT License](LICENSE)で公開しています。商用・非商用を問わず、利用・改変・再配布できます。
+
+第三者由来の資料・データ・名称などにはMIT Licenseが付与されるとは限りません。該当する権利・許諾とクレジットについては[THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md)を確認してください。

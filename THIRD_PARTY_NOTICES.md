@@ -1,5 +1,10 @@
 # Third-party notices
 
+Except for the third-party material described in this file, the original code
+in this repository is available under the MIT License in `LICENSE`. The MIT
+License does not replace or override any rights, permissions, attribution
+requirements, trademarks, or other terms that apply to third-party material.
+
 ## Gogma Artian Roll Planner
 
 - Author: WiseHorror
