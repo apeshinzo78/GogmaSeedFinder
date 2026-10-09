@@ -340,13 +340,12 @@
             <div class="comparison-actions"><button id="add-skill-target" class="secondary small-button" type="button">この組み合わせを登録</button><button id="clear-skill-targets" class="text-button" type="button">登録をすべて削除</button></div>
             <div id="skill-target-list" class="comparison-target-list" aria-live="polite"></div><p id="skill-target-error" class="error" role="alert" hidden></p>
           </section>
-          <div class="skill-highlight-settings"><div><h3>当たり強調</h3><p>グループスキルの「ヌシの魂」は常に強調します。</p></div><fieldset><legend>強調するシリーズスキル</legend><label><input type="checkbox" name="desired-series" value="11" checked /> 黒蝕竜の力</label><label><input type="checkbox" name="desired-series" value="6" /> 雷顎竜の闘志</label><label><input type="checkbox" name="desired-series" value="5" /> 兇爪竜の力</label><label><input type="checkbox" name="desired-series" value="18" /> 巨戟龍の黙示録</label></fieldset></div>
           <section class="skill-filter-settings" aria-labelledby="skill-filter-title">
-            <div class="skill-filter-intro"><h3 id="skill-filter-title">条件一致だけ表示</h3><p>シリーズの複数選択はORで判定します。いずれかの武器が条件に一致した行を残します。</p></div>
+            <div class="skill-filter-intro"><h3 id="skill-filter-title">当たり強調・条件一致だけ表示</h3><p>シリーズの複数選択はORで判定します。同じ条件を強調表示と行の絞り込みに使用します。</p></div>
             <label><span>グループスキル</span><select id="skill-filter-group"></select></label>
             <label><span>シリーズ群との条件</span><select id="skill-filter-operator"><option value="and" selected>AND（両方一致）</option><option value="or">OR（どちらか一致）</option></select></label>
             <fieldset class="skill-filter-series"><legend>シリーズスキル（複数選択はOR）</legend><div id="skill-filter-series-options" class="skill-filter-series-options"></div></fieldset>
-            <label class="checkbox-label skill-filter-toggle"><input id="skill-filter-enabled" type="checkbox" /><span>条件に合う行だけ表示</span></label>
+            <div class="skill-filter-actions"><label class="checkbox-label skill-filter-toggle"><input id="skill-highlight-enabled" type="checkbox" checked /><span>条件に合う要素だけ強調表示</span></label><label class="checkbox-label skill-filter-toggle"><input id="skill-filter-enabled" type="checkbox" /><span>条件に合う行だけ表示</span></label></div>
           </section>
           <div class="prediction-export-actions">
             <button id="export-skill-csv" class="secondary small-button" type="button" disabled>表示中の結果をCSV出力</button>

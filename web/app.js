@@ -199,6 +199,7 @@ const skillStatus = document.querySelector("#skill-status");
 const skillWeaponSelect = document.querySelector("#skill-weapon-type");
 const skillAttributeSelect = document.querySelector("#skill-attribute-force");
 const skillPredictionCountInput = document.querySelector("#skill-prediction-count");
+const skillHighlightEnabled = document.querySelector("#skill-highlight-enabled");
 const skillFilterEnabled = document.querySelector("#skill-filter-enabled");
 const skillFilterGroupSelect = document.querySelector("#skill-filter-group");
 const skillFilterOperatorSelect = document.querySelector("#skill-filter-operator");
@@ -498,13 +499,10 @@ skillAttributeSelect.addEventListener("change", () => resetSkillSearchFeedback()
 skillPredictionCountInput.addEventListener("change", () => {
   if (selectedSkillCounter !== null) void refreshSkillPredictions();
 });
-[skillFilterEnabled, skillFilterGroupSelect, skillFilterOperatorSelect]
+[skillHighlightEnabled, skillFilterEnabled, skillFilterGroupSelect, skillFilterOperatorSelect]
   .forEach((control) => control.addEventListener("change", () => renderSkillPredictionTable()));
 skillFilterSeriesOptions.addEventListener("change", () => renderSkillPredictionTable());
 exportSkillCsvButton.addEventListener("click", () => exportVisibleSkillPredictionsCsv());
-document.querySelectorAll('input[name="desired-series"]').forEach((checkbox) => {
-  checkbox.addEventListener("change", () => renderSkillPredictionTable());
-});
 findSkillPositionButton.addEventListener("click", () => void findSkillPosition());
 
 function readConfig() {
@@ -2563,14 +2561,6 @@ function readSkillPredictionCount() {
   return value;
 }
 
-function selectedDesiredSeries() {
-  return new Set(
-    [...document.querySelectorAll('input[name="desired-series"]:checked')].map((checkbox) =>
-      Number(checkbox.value),
-    ),
-  );
-}
-
 function selectedSkillFilter() {
   return {
     enabled: skillFilterEnabled.checked,
@@ -2589,7 +2579,8 @@ function skillRollMatchesFilter(roll, filter) {
   const groupMatches = hasGroup && roll.groupIndex === filter.groupIndex;
   const seriesMatches = hasSeries && filter.seriesIndices.has(roll.seriesIndex);
 
-  if (!hasGroup) return !hasSeries || seriesMatches;
+  if (!hasGroup && !hasSeries) return false;
+  if (!hasGroup) return seriesMatches;
   if (!hasSeries) return groupMatches;
   return filter.operator === "and"
     ? groupMatches && seriesMatches
@@ -2617,20 +2608,19 @@ function skillPredictionVisibility(filter = selectedSkillFilter()) {
 function renderSkillPredictionTable() {
   if (skillPredictionRollSets.length === 0) return;
 
-  const desiredSeries = selectedDesiredSeries();
   const skillFilter = selectedSkillFilter();
-  const isHit = (roll) =>
-    desiredSeries.has(roll.seriesIndex) || roll.groupIndex === LORDS_SOUL_GROUP_INDEX;
+  const highlightEnabled = skillHighlightEnabled.checked;
+  const isConditionMatch = (roll) => skillRollMatchesFilter(roll, skillFilter);
   const { count, matchingRowCount, visibleIndices } = skillPredictionVisibility(skillFilter);
-  const hitCount = skillPredictionRollSets.reduce(
-    (total, target) => total + target.rolls.filter(isHit).length,
+  const conditionMatchCount = skillPredictionRollSets.reduce(
+    (total, target) => total + target.rolls.filter(isConditionMatch).length,
     0,
   );
 
   const filterStatus = skillFilter.enabled
     ? `・条件一致${matchingRowCount.toLocaleString("ja-JP")}行`
     : "";
-  skillFutureStatus.textContent = `${skillPredictionRollSets.length.toLocaleString("ja-JP")}件 × ${count.toLocaleString("ja-JP")}回・当たり${hitCount.toLocaleString("ja-JP")}セル${filterStatus}`;
+  skillFutureStatus.textContent = `${skillPredictionRollSets.length.toLocaleString("ja-JP")}件 × ${count.toLocaleString("ja-JP")}回・条件一致${conditionMatchCount.toLocaleString("ja-JP")}セル${filterStatus}`;
   skillFutureStatus.className = "status-pill complete";
   skillTableWrap.hidden = false;
   exportSkillCsvButton.disabled = visibleIndices.length === 0;
@@ -2667,7 +2657,7 @@ function renderSkillPredictionTable() {
   }
 
   skillPredictionRows.replaceChildren(
-    ...visibleIndices.map((index) => createSkillPredictionRow(index, desiredSeries)),
+    ...visibleIndices.map((index) => createSkillPredictionRow(index, skillFilter, highlightEnabled)),
   );
 }
 
@@ -2709,14 +2699,9 @@ function exportVisibleSkillPredictionsCsv() {
   skillExportStatus.textContent = `${rows.length.toLocaleString("ja-JP")}行・${headers.length.toLocaleString("ja-JP")}列をCSVへ出力しました。`;
 }
 
-function createSkillPredictionRow(index, desiredSeries) {
+function createSkillPredictionRow(index, skillFilter, highlightEnabled) {
   const row = document.createElement("tr");
   const offsetCell = document.createElement("th");
-  const anyHit = skillPredictionRollSets.some((target) => {
-    const roll = target.rolls[index];
-    return desiredSeries.has(roll.seriesIndex) || roll.groupIndex === LORDS_SOUL_GROUP_INDEX;
-  });
-  row.classList.toggle("prediction-match", anyHit);
   offsetCell.scope = "row";
   offsetCell.textContent = `${index + 1}回先`;
   row.append(offsetCell, createSavedStateCell("skill", index + 1, null, true));
@@ -2727,12 +2712,11 @@ function createSkillPredictionRow(index, desiredSeries) {
     const tags = document.createElement("div");
     const seriesTag = document.createElement("span");
     const groupTag = document.createElement("span");
-    const desired = desiredSeries.has(roll.seriesIndex);
-    const lordsSoul = roll.groupIndex === LORDS_SOUL_GROUP_INDEX;
+    const conditionMatch = highlightEnabled && skillRollMatchesFilter(roll, skillFilter);
     tags.className = "skill-result-pair";
-    seriesTag.className = `skill-tag series${desired ? " desired" : ""}`;
+    seriesTag.className = `skill-tag series${conditionMatch ? " desired" : ""}`;
     seriesTag.textContent = SERIES_SKILLS[roll.seriesIndex] ?? `シリーズ ${roll.seriesIndex}`;
-    groupTag.className = `skill-tag group${lordsSoul ? " jackpot" : ""}`;
+    groupTag.className = `skill-tag group${conditionMatch ? " jackpot" : ""}`;
     groupTag.textContent = GROUP_SKILLS[roll.groupIndex] ?? `グループ ${roll.groupIndex}`;
     tags.append(seriesTag, groupTag);
     cell.append(tags);

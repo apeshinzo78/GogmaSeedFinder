@@ -2031,19 +2031,6 @@ button:disabled {
   max-width: 900px;
 }
 
-.skill-highlight-settings {
-  display: grid;
-  grid-template-columns: minmax(190px, 0.8fr) minmax(420px, 2fr);
-  gap: 22px;
-  align-items: center;
-  margin: 28px 0 32px;
-  padding: 18px;
-  border: 1px solid #454233;
-  border-radius: 12px;
-  background: rgb(214 179 92 / 5%);
-}
-
-.skill-highlight-settings h3,
 .skill-observation-heading h3 {
   margin: 0 0 6px;
   font-family: Georgia, "Yu Mincho", serif;
@@ -2051,7 +2038,6 @@ button:disabled {
   font-weight: 500;
 }
 
-.skill-highlight-settings p,
 .skill-observation-heading p {
   margin: 0;
   color: var(--muted);
@@ -2059,45 +2045,12 @@ button:disabled {
   line-height: 1.55;
 }
 
-.skill-highlight-settings fieldset {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px 16px;
-  min-width: 0;
-  padding: 11px 13px 13px;
-  border: 1px solid #484a40;
-  border-radius: 9px;
-}
-
-.skill-highlight-settings legend {
-  padding: 0 5px;
-  color: #d6d3c5;
-  font-size: 0.72rem;
-  font-weight: 800;
-}
-
-.skill-highlight-settings fieldset label {
-  display: flex;
-  gap: 6px;
-  align-items: center;
-  color: #e5e0d0;
-  font-size: 0.76rem;
-  cursor: pointer;
-  white-space: nowrap;
-}
-
-.skill-highlight-settings input[type="checkbox"] {
-  width: 17px;
-  height: 17px;
-  accent-color: var(--gold);
-}
-
 .skill-filter-settings {
   display: grid;
-  grid-template-columns: minmax(230px, 0.9fr) minmax(170px, 0.65fr) minmax(190px, 0.7fr) minmax(360px, 1.4fr) auto;
+  grid-template-columns: minmax(230px, 0.9fr) minmax(170px, 0.65fr) minmax(190px, 0.7fr) minmax(360px, 1.4fr) minmax(220px, auto);
   gap: 14px;
   align-items: end;
-  margin: -14px 0 32px;
+  margin: 28px 0 32px;
   padding: 18px;
   border: 1px solid #454233;
   border-radius: 12px;
@@ -2173,9 +2126,15 @@ button:disabled {
 }
 
 .skill-filter-toggle {
-  min-height: 42px;
-  padding: 0 4px;
+  min-height: 0;
+  padding: 0;
   white-space: nowrap;
+}
+
+.skill-filter-actions {
+  display: grid;
+  gap: 10px;
+  align-self: center;
 }
 
 .prediction-export-actions {
@@ -2206,6 +2165,13 @@ button:disabled {
   .skill-filter-intro,
   .skill-filter-series {
     grid-column: 1 / -1;
+  }
+
+  .skill-filter-actions {
+    display: flex;
+    flex-wrap: wrap;
+    grid-column: 1 / -1;
+    gap: 10px 22px;
   }
 }
 
@@ -2463,7 +2429,6 @@ button:disabled {
   }
 
   .continuation-controls,
-  .skill-highlight-settings,
   .skill-filter-settings,
   .bonus-ex-filter-settings,
   .counter-range-guide {
@@ -2478,6 +2443,12 @@ button:disabled {
 
   .skill-filter-intro,
   .skill-filter-series {
+    grid-column: auto;
+  }
+
+  .skill-filter-actions {
+    align-items: flex-start;
+    flex-direction: column;
     grid-column: auto;
   }
 
@@ -2659,11 +2630,6 @@ button:disabled {
   .guide-workflows > article {
     grid-template-columns: 34px minmax(0, 1fr);
     padding: 14px;
-  }
-
-  .skill-highlight-settings fieldset {
-    align-items: flex-start;
-    flex-direction: column;
   }
 
   .skill-observation-row {
