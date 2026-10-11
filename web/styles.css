@@ -1,8 +1,10 @@
 :root {
   color: #f6f0df;
   background: #11120f;
-  font-family:
-    Inter, "Yu Gothic UI", "Yu Gothic", system-ui, -apple-system, sans-serif;
+  --font-ui: "Noto Sans JP", "Noto Sans CJK JP", Meiryo, "メイリオ",
+    "Microsoft JhengHei UI", "Microsoft JhengHei", "Yu Gothic UI", "Yu Gothic",
+    system-ui, -apple-system, sans-serif;
+  font-family: var(--font-ui);
   font-synthesis: none;
   --surface: #1b1d18;
   --surface-raised: #22251f;
@@ -95,7 +97,7 @@ p {
 
 h1 {
   margin-bottom: 14px;
-  font-family: Georgia, "Yu Mincho", serif;
+  font-family: var(--font-ui);
   font-size: clamp(2.5rem, 8vw, 5.25rem);
   font-weight: 500;
   letter-spacing: -0.055em;
@@ -157,7 +159,7 @@ h1 {
 
 .save-state-heading h2 {
   margin: 0;
-  font-family: Georgia, "Yu Mincho", serif;
+  font-family: var(--font-ui);
   font-size: clamp(1.35rem, 3vw, 1.8rem);
   font-weight: 500;
 }
@@ -327,7 +329,7 @@ h1 {
 
 .artian-route-copy h3 {
   margin: 0 0 7px;
-  font-family: Georgia, "Yu Mincho", serif;
+  font-family: var(--font-ui);
   font-size: clamp(1.05rem, 2vw, 1.28rem);
   font-weight: 500;
 }
@@ -468,7 +470,7 @@ h1 {
 .artian-origin-card h3,
 .compact-heading h3 {
   margin: 2px 0 0;
-  font-family: Georgia, "Yu Mincho", serif;
+  font-family: var(--font-ui);
   font-size: 1.12rem;
   font-weight: 500;
 }
@@ -736,7 +738,7 @@ h1 {
 
 .seed-source-node strong {
   display: block;
-  font-family: Georgia, "Yu Mincho", serif;
+  font-family: var(--font-ui);
   font-size: 1.3rem;
   font-weight: 500;
 }
@@ -1012,7 +1014,7 @@ h1 {
 
 .guide-workflows h3 {
   margin: 0 0 10px;
-  font-family: Georgia, "Yu Mincho", serif;
+  font-family: var(--font-ui);
   font-size: 1rem;
   font-weight: 500;
 }
@@ -1039,7 +1041,7 @@ h1 {
 
 .efficient-selection-heading h3 {
   margin: 0 0 9px;
-  font-family: Georgia, "Yu Mincho", serif;
+  font-family: var(--font-ui);
   font-size: clamp(1.12rem, 2.5vw, 1.45rem);
   font-weight: 500;
 }
@@ -1250,7 +1252,7 @@ h1 {
 
 .section-heading h2 {
   margin: 0;
-  font-family: Georgia, "Yu Mincho", serif;
+  font-family: var(--font-ui);
   font-size: clamp(1.35rem, 3vw, 1.8rem);
   font-weight: 500;
 }
@@ -1291,7 +1293,7 @@ h1 {
 
 .counter-range-guide h3 {
   margin: 0 0 8px;
-  font-family: Georgia, "Yu Mincho", serif;
+  font-family: var(--font-ui);
   font-size: 1.05rem;
   font-weight: 500;
 }
@@ -1694,7 +1696,7 @@ button:disabled {
 
 .prediction-state-editor h3 {
   margin: 0 0 18px;
-  font-family: Georgia, "Yu Mincho", serif;
+  font-family: var(--font-ui);
   font-size: 1.3rem;
   font-weight: 500;
 }
@@ -1739,7 +1741,7 @@ button:disabled {
 .bonus-operation-section h3,
 .keep-layout-heading h4 {
   margin: 0 0 6px;
-  font-family: Georgia, "Yu Mincho", serif;
+  font-family: var(--font-ui);
   font-weight: 500;
 }
 
@@ -1958,7 +1960,7 @@ button:disabled {
 
 .prediction-filter-heading h3 {
   margin: 0 0 6px;
-  font-family: Georgia, "Yu Mincho", serif;
+  font-family: var(--font-ui);
   font-size: 1.1rem;
   font-weight: 500;
 }
@@ -2330,7 +2332,7 @@ button:disabled {
 
 .bonus-ex-filter-settings h3 {
   margin: 0 0 4px;
-  font-family: Georgia, "Yu Mincho", serif;
+  font-family: var(--font-ui);
   font-size: 0.98rem;
   font-weight: 500;
 }
@@ -2486,7 +2488,7 @@ button:disabled {
 
 .skill-observation-heading h3 {
   margin: 0 0 6px;
-  font-family: Georgia, "Yu Mincho", serif;
+  font-family: var(--font-ui);
   font-size: 1.05rem;
   font-weight: 500;
 }
@@ -2512,7 +2514,7 @@ button:disabled {
 
 .skill-filter-settings h3 {
   margin: 0 0 6px;
-  font-family: Georgia, "Yu Mincho", serif;
+  font-family: var(--font-ui);
   font-size: 1.05rem;
   font-weight: 500;
 }
