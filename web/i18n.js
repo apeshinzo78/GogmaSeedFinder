@@ -429,6 +429,8 @@ const UI_TEXT = {
   "通常アーティア未来予測": ["Base Artian Forecast", "一般機械武器未來預測"],
   "攻撃重視の構成は、通常アーティアから": ["Start attack-focused builds with base Artian", "攻擊取向的組合請先從一般機械武器開始"],
   "攻撃×5、攻撃×4＋斬れ味×1など、強化系統の構成を優先するなら、まず通常アーティア未来予測を確認してください。": ["For category-focused layouts such as 5× Attack or 4× Attack + 1× Sharpness, check Base Artian Forecast first.", "若目標是攻擊×5、攻擊×4＋銳利度×1等重視強化種類的組合，請先查看一般機械武器未來預測。"],
+  "「ボーナスをリセットして再復元」は、特定の系統構成を狙う用途では通常アーティアより効率が低めです。": ["Resetting bonuses is less efficient than base Artian when targeting a specific category layout.", "以特定加成種類組合為目標時，「重置加成並再次復原強化」的效率通常低於一般機械武器。"],
+  "使い方のTIPで確率比較を見る": ["See the probability comparison in the guide", "在使用方法的TIP查看機率比較"],
   "通常アーティア向きの構成例": ["Example builds suited to base Artian", "適合一般機械武器的組合範例"],
   "通常アーティア向き": ["Best for base Artian", "一般機械武器優先"],
   "攻撃×5": ["Attack ×5", "攻擊×5"],
