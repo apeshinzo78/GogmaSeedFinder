@@ -47,27 +47,9 @@ const ATTRIBUTES = [
 const ARTIAN_R8_ENUM = 7;
 const ARTIAN_ATTRIBUTE_KINDS = [
   [0, "無属性"],
-  [1, "属性・状態異常あり"],
+  [1, "属性・状態異常"],
 ];
 const ARTIAN_LIVE_VERIFIED_WEAPON_TYPES = new Set([0, 6, 11, 12, 13]);
-const ARTIAN_ELEMENT_VALUES = new Map([
-  [0, 80],
-  [1, 30],
-  [2, 20],
-  [3, 50],
-  [4, 50],
-  [5, 50],
-  [6, 50],
-  [7, 50],
-  [8, 30],
-  [9, 50],
-  [10, 30],
-  [11, 30],
-]);
-const ARTIAN_SHARPNESS_VALUES = new Map([
-  ...WEAPON_TYPES.filter(([weaponType]) => weaponType <= 10)
-    .map(([weaponType]) => [weaponType, weaponType === 10 ? 20 : 30]),
-]);
 
 const GOGMA_BONUSES = [
   [8, "基礎攻撃力強化Ⅱ"],
@@ -2992,11 +2974,11 @@ function refreshArtianBasePredictions() {
 }
 
 function artianBaseBonusName(weaponType, bonusId) {
-  if (bonusId === 4) return `${t("基礎攻撃力強化")} +5`;
-  if (bonusId === 6) return [t("属性強化"), `+${ARTIAN_ELEMENT_VALUES.get(weaponType) ?? "?"}`].join(" ");
-  if (bonusId === 7 && BOWGUN_WEAPON_TYPES.has(weaponType)) return t("装填数強化 +1");
-  if (bonusId === 7) return [t("斬れ味強化"), `+${ARTIAN_SHARPNESS_VALUES.get(weaponType) ?? "?"}`].join(" ");
-  if (bonusId === 8) return `${t("会心率強化")} +5%`;
+  if (bonusId === 4) return t("基礎攻撃力強化");
+  if (bonusId === 6) return t("属性強化");
+  if (bonusId === 7 && BOWGUN_WEAPON_TYPES.has(weaponType)) return t("装填数強化");
+  if (bonusId === 7) return t("斬れ味強化");
+  if (bonusId === 8) return t("会心率強化");
   return `ID ${bonusId}`;
 }
 
