@@ -340,6 +340,74 @@ h1 {
   font-variant-numeric: tabular-nums;
 }
 
+.artian-counter-overview {
+  grid-column: 1 / -1;
+  display: grid;
+  gap: 8px;
+  padding-top: 2px;
+}
+
+.artian-counter-overview-heading {
+  display: flex;
+  gap: 10px;
+  align-items: baseline;
+}
+
+.artian-counter-overview-heading strong {
+  color: #ddd8c6;
+  font-size: 0.76rem;
+}
+
+.artian-counter-overview-heading small {
+  color: var(--muted);
+  font-size: 0.66rem;
+}
+
+.artian-counter-overview-grid {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: 6px;
+}
+
+.artian-counter-overview-item {
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+  padding: 8px 9px;
+  border: 1px solid #3b3f35;
+  border-radius: 7px;
+  background: #11120e;
+}
+
+.artian-counter-overview-item span {
+  overflow: hidden;
+  color: #aaa797;
+  font-size: 0.64rem;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.artian-counter-overview-item strong {
+  color: #eee9da;
+  font-size: 0.82rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.artian-counter-overview-item.unknown strong {
+  color: #77766c;
+  font-size: 0.68rem;
+}
+
+.artian-counter-overview-item.selected {
+  border-color: #a3873d;
+  background: rgb(154 121 42 / 12%);
+  box-shadow: inset 0 0 0 1px rgb(214 176 73 / 8%);
+}
+
+.artian-counter-overview-item.selected strong {
+  color: var(--gold-bright);
+}
+
 .compact-heading {
   margin-bottom: 14px;
 }
@@ -2586,6 +2654,10 @@ button:disabled {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
+  .artian-counter-overview-grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+
   .artian-beta-notice {
     grid-template-columns: 1fr;
     gap: 5px;
@@ -2783,6 +2855,16 @@ button:disabled {
   .artian-settings-grid,
   .artian-search-range {
     grid-template-columns: 1fr;
+  }
+
+  .artian-counter-overview-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .artian-counter-overview-heading {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 2px;
   }
 
   .bonus-operation-selector,

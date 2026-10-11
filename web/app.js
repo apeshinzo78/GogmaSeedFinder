@@ -276,6 +276,7 @@ const artianBaseStatus = document.querySelector("#artian-base-status");
 const artianBaseSeed = document.querySelector("#artian-base-seed");
 const artianBaseCurrentCounter = document.querySelector("#artian-base-current-counter");
 const artianBaseCounterSource = document.querySelector("#artian-base-counter-source");
+const artianCounterOverviewGrid = document.querySelector("#artian-counter-overview-grid");
 const artianBaseWeaponSelect = document.querySelector("#artian-base-weapon-type");
 const artianBaseAttributeSelect = document.querySelector("#artian-base-attribute-force");
 const artianBaseCounterInput = document.querySelector("#artian-base-counter");
@@ -2883,9 +2884,30 @@ function syncArtianBaseSeed() {
 }
 
 function currentArtianBaseCounter() {
+  return artianBaseCounterForWeapon(Number(artianBaseWeaponSelect.value));
+}
+
+function artianBaseCounterForWeapon(weaponType) {
   if (saveState.baseSeed === null || artianBaseState.baseSeed !== saveState.baseSeed) return null;
-  const value = Number(artianBaseState.counters[artianBaseCounterKey()]);
+  const value = Number(artianBaseState.counters[artianBaseCounterKey(weaponType)]);
   return Number.isSafeInteger(value) && value >= 0 && value <= 1_000_000 ? value : null;
+}
+
+function renderArtianCounterOverview() {
+  const selectedWeaponType = Number(artianBaseWeaponSelect.value);
+  artianCounterOverviewGrid.replaceChildren(
+    ...WEAPON_TYPES.map(([weaponType, weaponName]) => {
+      const counter = artianBaseCounterForWeapon(weaponType);
+      const item = document.createElement("div");
+      const label = document.createElement("span");
+      const value = document.createElement("strong");
+      item.className = `artian-counter-overview-item${weaponType === selectedWeaponType ? " selected" : ""}${counter === null ? " unknown" : ""}`;
+      label.textContent = t(weaponName);
+      value.textContent = counter === null ? t("未特定") : counter.toLocaleString("ja-JP");
+      item.append(label, value);
+      return item;
+    }),
+  );
 }
 
 function renderArtianBaseState() {
@@ -2901,6 +2923,7 @@ function renderArtianBaseState() {
   artianBaseCounterSource.textContent = counter === null
     ? "武器種ごとに設定（レア8）"
     : stateSourceText(artianBaseState.sources[key] ?? "保存値", "武器種ごとに設定（レア8）");
+  renderArtianCounterOverview();
 
   if (saveState.baseSeed === null) {
     artianBaseStatus.textContent = "基準seedを先に特定してください";
