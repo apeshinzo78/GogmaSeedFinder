@@ -268,6 +268,12 @@ const UI_TEXT = {
   "武器種": ["Weapon Type", "武器種類"],
   "表示する回数": ["Number of Rolls", "顯示次數"],
   "1〜10,000": ["1–10,000", "1～10,000"],
+  "前の100件": ["Previous 100", "前100筆"],
+  "次の100件": ["Next 100", "後100筆"],
+  "復元ボーナス結果のページ": ["Reinforcement Bonus result page", "復原加成結果頁面"],
+  "詳細予測結果のページ": ["Detailed forecast result page", "詳細預測結果頁面"],
+  "スキル結果のページ": ["Skill result page", "技能結果頁面"],
+  "通常アーティア結果のページ": ["Base Artian result page", "一般機械武器結果頁面"],
   "この組み合わせを登録": ["Register This Combination", "登錄此組合"],
   "登録をすべて削除": ["Remove All", "全部刪除"],
   "EX数で絞り込む": ["Filter by EX Count", "依EX數量篩選"],
@@ -279,8 +285,8 @@ const UI_TEXT = {
   "4個以上": ["4 or more", "4個以上"],
   "5個": ["5", "5個"],
   "条件に合う行だけ表示": ["Show Matching Rows Only", "僅顯示符合條件的列"],
-  "表示中の結果をCSV出力": ["Export Visible Results to CSV", "將顯示中的結果匯出為CSV"],
-  "1カウンターを1行にし、登録武器ごとに5枠分の列を追加します。EX絞り込みがONの場合は、現在表示中の行だけを出力します。": ["Exports one counter per row with five columns per registered weapon. If EX filtering is on, only visible rows are exported.", "每個計數器輸出一列，並為每把已登錄武器增加5格欄位。開啟EX篩選時，只輸出目前顯示的列。"],
+  "検索結果をCSV出力": ["Export Search Results to CSV", "將搜尋結果匯出為CSV"],
+  "1カウンターを1行にし、登録武器ごとに5枠分の列を追加します。EX絞り込みがONの場合は、条件に合う行をすべて出力します。": ["Exports one counter per row with five columns per registered weapon. If EX filtering is on, all matching rows are exported.", "每個計數器輸出一列，並為每把已登錄武器增加5格欄位。開啟EX篩選時，會輸出所有符合條件的列。"],
   "「この位置を新しい0にする」は、ゲーム内でその結果まで進めてセーブした場合に使用してください。リセット結果の「この構成でEX厳選へ」は、保存後カウンターと5枠構成をまとめて引き継ぎます。": ["Use “Set This Position as New 0” only after reaching and saving that result in game. “Farm EX with This Composition” carries over both the post-save counter and all five bonus types.", "只有在遊戲中推進至該結果並存檔後，才使用「將此位置設為新的0」。重置結果中的「以此組合嚴選EX」會一併繼承存檔後計數器與5格組合。"],
   "1条件を詳しく絞り込む": ["Detailed Filter for One Target", "詳細篩選單一條件"],
   "状態待ち": ["Waiting for state", "等待狀態"],
@@ -309,7 +315,7 @@ const UI_TEXT = {
   "OR（どちらか一致）": ["OR (Either Matches)", "OR（任一符合）"],
   "シリーズスキル（複数選択はOR）": ["Series Skills (Multiple Selections Use OR)", "系列技能（多選時為OR）"],
   "条件に合う要素だけ強調表示": ["Highlight Matching Skills", "僅強調符合條件的技能"],
-  "1カウンターを1行にし、登録武器ごとにシリーズ・グループの列を追加します。フィルターがONの場合は、現在表示中の行だけを出力します。": ["Exports one counter per row with Series and Group columns for each registered weapon. If filtering is on, only visible rows are exported.", "每個計數器輸出一列，並為每把已登錄武器增加系列與團體欄位。開啟篩選時，只輸出目前顯示的列。"],
+  "1カウンターを1行にし、登録武器ごとにシリーズ・グループの列を追加します。フィルターがONの場合は、条件に合う行をすべて出力します。": ["Exports one counter per row with Series and Group columns for each registered weapon. If filtering is on, all matching rows are exported.", "每個計數器輸出一列，並為每把已登錄武器增加系列與團體欄位。開啟篩選時，會輸出所有符合條件的列。"],
   "スキル結果を採用してセーブした場合は、その行を新しい0地点にできます。復元ボーナスカウンターは維持されます。": ["After accepting and saving a skill result, you can set that row as the new origin. The Bonus Counter is preserved.", "採用技能結果並存檔後，可將該列設為新的0點。復原加成計數器會維持不變。"],
   "不具合や分かりにくい点があれば、": ["If you find a bug or anything unclear, let us know through ", "若發現錯誤或難以理解之處，請透過"],
   "でお知らせください。": [".", "告知我們。"],
@@ -554,6 +560,7 @@ function translateTemplate(source, locale, fallback = source) {
   if ((match = source.match(/^希望 (\d+)$/))) return en ? `Desired ${match[1]}` : `目標 ${match[1]}`;
   if ((match = source.match(/^(\d+)回先$/))) return en ? `${match[1]} rolls ahead` : `${match[1]}次後`;
   if ((match = source.match(/^(\d+)本先$/))) return en ? `${match[1]} weapons ahead` : `${match[1]}把之後`;
+  if ((match = source.match(/^([\d,]+)〜([\d,]+) \/ ([\d,]+)件$/))) return en ? `${match[1]}–${match[2]} of ${match[3]}` : `${match[1]}～${match[2]} / 共${match[3]}筆`;
   if ((match = source.match(/^([\d,]+)候補$/))) return en ? `${match[1]} candidates` : `${match[1]}個候選`;
   if ((match = source.match(/^候補 ([\d,]+)$/))) return en ? `Candidate ${match[1]}` : `候選 ${match[1]}`;
   if ((match = source.match(/^抽選(\d+)の(\d+)枠目$/))) return en ? `Roll ${match[1]}, slot ${match[2]}` : `抽選${match[1]}的第${match[2]}格`;
@@ -565,9 +572,9 @@ function translateTemplate(source, locale, fallback = source) {
   if ((match = source.match(/^([\d.]+)秒$/))) return en ? `${match[1]} sec` : `${match[1]}秒`;
   if ((match = source.match(/^復元([\d,]+)$/))) return en ? `Bonus ${match[1]}` : `復原 ${match[1]}`;
   if ((match = source.match(/^スキル([\d,]+)$/))) return en ? `Skill ${match[1]}` : `技能 ${match[1]}`;
-  if ((match = source.match(/^現在表示中の([\d,]+)行をCSVへ出力します。$/))) return en ? `Export the ${match[1]} visible rows to CSV.` : `將目前顯示的${match[1]}列匯出為CSV。`;
-  if ((match = source.match(/^EX条件一致で現在表示中の([\d,]+)行をCSVへ出力します。$/))) return en ? `Export the ${match[1]} visible EX-matching rows to CSV.` : `將目前顯示且符合EX條件的${match[1]}列匯出為CSV。`;
-  if ((match = source.match(/^条件一致で現在表示中の([\d,]+)行をCSVへ出力します。$/))) return en ? `Export the ${match[1]} visible matching rows to CSV.` : `將目前顯示且符合條件的${match[1]}列匯出為CSV。`;
+  if ((match = source.match(/^検索範囲内の([\d,]+)行をCSVへ出力します。$/))) return en ? `Export all ${match[1]} rows in the search range to CSV.` : `將搜尋範圍內的${match[1]}列全部匯出為CSV。`;
+  if ((match = source.match(/^EX条件に合う([\d,]+)行をCSVへ出力します。$/))) return en ? `Export all ${match[1]} EX-matching rows to CSV.` : `將符合EX條件的${match[1]}列全部匯出為CSV。`;
+  if ((match = source.match(/^条件に合う([\d,]+)行をCSVへ出力します。$/))) return en ? `Export all ${match[1]} matching rows to CSV.` : `將符合條件的${match[1]}列全部匯出為CSV。`;
   if ((match = source.match(/^(EX厳選・)?([\d,]+)(条件|武器) × ([\d,]+)回(?:・EX(\d+)個以上 ([\d,]+)行)?$/))) {
     const prefix = match[1] ? en ? "EX farming · " : "EX嚴選・" : "";
     const unit = match[3] === "武器" ? en ? "weapons" : "把武器" : en ? "targets" : "個條件";

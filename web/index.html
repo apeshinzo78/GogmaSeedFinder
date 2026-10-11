@@ -347,8 +347,9 @@
             <div class="comparison-actions"><button id="add-comparison-target" class="secondary small-button" type="button">この組み合わせを登録</button><button id="clear-comparison-targets" class="text-button" type="button">登録をすべて削除</button></div>
             <div id="comparison-target-list" class="comparison-target-list" aria-live="polite"></div><p id="comparison-error" class="error" role="alert" hidden></p>
             <div class="bonus-ex-filter-settings"><div><h3>EX数で絞り込む</h3><p>いずれかの登録武器が最低EX数を満たす行だけ表示します。</p></div><label><span>最低EX数</span><select id="bonus-ex-filter-count"><option value="1">1個以上</option><option value="2">2個以上</option><option value="3" selected>3個以上</option><option value="4">4個以上</option><option value="5">5個</option></select></label><label class="checkbox-label bonus-ex-filter-toggle"><input id="bonus-ex-filter-enabled" type="checkbox" /><span>条件に合う行だけ表示</span></label></div>
-            <div class="prediction-export-actions bonus-export-actions"><button id="export-bonus-csv" class="secondary small-button" type="button" disabled>表示中の結果をCSV出力</button><p id="bonus-export-status" aria-live="polite">1カウンターを1行にし、登録武器ごとに5枠分の列を追加します。EX絞り込みがONの場合は、現在表示中の行だけを出力します。</p></div>
+            <div class="prediction-export-actions bonus-export-actions"><button id="export-bonus-csv" class="secondary small-button" type="button" disabled>検索結果をCSV出力</button><p id="bonus-export-status" aria-live="polite">1カウンターを1行にし、登録武器ごとに5枠分の列を追加します。EX絞り込みがONの場合は、条件に合う行をすべて出力します。</p></div>
             <p class="adoption-note">「この位置を新しい0にする」は、ゲーム内でその結果まで進めてセーブした場合に使用してください。リセット結果の「この構成でEX厳選へ」は、保存後カウンターと5枠構成をまとめて引き継ぎます。</p>
+            <div id="comparison-pager" class="table-pager" aria-label="復元ボーナス結果のページ" hidden><button id="comparison-page-prev" class="secondary small-button" type="button">前の100件</button><span id="comparison-page-status" aria-live="polite"></span><button id="comparison-page-next" class="secondary small-button" type="button">次の100件</button></div>
             <div id="comparison-table-wrap" class="prediction-table-wrap" hidden><table class="prediction-table comparison-table"><thead><tr id="comparison-header-row"></tr></thead><tbody id="comparison-rows"></tbody></table></div>
           </section>
           <section class="detail-prediction-section" aria-labelledby="detail-prediction-title">
@@ -358,6 +359,7 @@
             <p id="prediction-pool-note" class="pool-note"></p>
             <div class="prediction-filter-heading"><div><h3>希望ボーナス</h3><p id="prediction-filter-description">「ボーナスをリセットして再復元」で欲しい系統構成を順不同で探します。例：攻撃×4＋斬れ味×1</p></div><div class="prediction-filter-actions"><label class="checkbox-label"><input id="prediction-ignore-tier" type="checkbox" checked /><span>強化段階を区別しない（系統構成を順不同で検索）</span></label><label class="checkbox-label"><input id="prediction-matches-only" type="checkbox" checked /><span>一致結果だけ表示</span></label></div></div>
             <div id="prediction-filters" class="prediction-filter-grid"></div><p id="prediction-error" class="error" role="alert" hidden></p>
+            <div id="prediction-pager" class="table-pager" aria-label="詳細予測結果のページ" hidden><button id="prediction-page-prev" class="secondary small-button" type="button">前の100件</button><span id="prediction-page-status" aria-live="polite"></span><button id="prediction-page-next" class="secondary small-button" type="button">次の100件</button></div>
             <div class="prediction-table-wrap"><table class="prediction-table"><thead><tr><th>何回先</th><th>保存後の状態</th><th>1枠目</th><th>2枠目</th><th>3枠目</th><th>4枠目</th><th>5枠目</th></tr></thead><tbody id="prediction-rows"></tbody></table></div>
           </section>
         </section>
@@ -388,10 +390,11 @@
             <div class="skill-filter-actions"><label class="checkbox-label skill-filter-toggle"><input id="skill-highlight-enabled" type="checkbox" checked /><span>条件に合う要素だけ強調表示</span></label><label class="checkbox-label skill-filter-toggle"><input id="skill-filter-enabled" type="checkbox" /><span>条件に合う行だけ表示</span></label></div>
           </section>
           <div class="prediction-export-actions">
-            <button id="export-skill-csv" class="secondary small-button" type="button" disabled>表示中の結果をCSV出力</button>
-            <p id="skill-export-status" aria-live="polite">1カウンターを1行にし、登録武器ごとにシリーズ・グループの列を追加します。フィルターがONの場合は、現在表示中の行だけを出力します。</p>
+            <button id="export-skill-csv" class="secondary small-button" type="button" disabled>検索結果をCSV出力</button>
+            <p id="skill-export-status" aria-live="polite">1カウンターを1行にし、登録武器ごとにシリーズ・グループの列を追加します。フィルターがONの場合は、条件に合う行をすべて出力します。</p>
           </div>
           <p class="adoption-note">スキル結果を採用してセーブした場合は、その行を新しい0地点にできます。復元ボーナスカウンターは維持されます。</p>
+          <div id="skill-pager" class="table-pager" aria-label="スキル結果のページ" hidden><button id="skill-page-prev" class="secondary small-button" type="button">前の100件</button><span id="skill-page-status" aria-live="polite"></span><button id="skill-page-next" class="secondary small-button" type="button">次の100件</button></div>
           <div id="skill-table-wrap" class="prediction-table-wrap" hidden><table class="prediction-table skill-prediction-table"><thead><tr id="skill-prediction-header-row"></tr></thead><tbody id="skill-prediction-rows"></tbody></table></div>
         </section>
       </div>
@@ -430,7 +433,7 @@
               <label><span>表示する本数</span><input id="artian-base-count" type="number" min="1" max="10000" value="100" placeholder="1〜10,000" /></label>
             </div>
             <p id="artian-weapon-verification" class="pool-note"></p>
-            <div class="comparison-actions"><button id="apply-artian-base-counter" class="primary small-button" type="button">このカウンターで予測</button><button id="export-artian-base-csv" class="secondary small-button" type="button" disabled>表示中の結果をCSV出力</button></div>
+            <div class="comparison-actions"><button id="apply-artian-base-counter" class="primary small-button" type="button">このカウンターで予測</button><button id="export-artian-base-csv" class="secondary small-button" type="button" disabled>検索結果をCSV出力</button></div>
             <p id="artian-base-error" class="error" role="alert" hidden></p>
           </section>
 
@@ -445,6 +448,7 @@
             </div>
             <p id="artian-base-empty" class="empty-result">現在の作成カウンターを入力するか、下の作成結果から検索すると、ここに各武器の復元ボーナス5枠を表示します。</p>
             <p class="adoption-note">「ここを0にする」は、ゲーム内でその本数まで生産してセーブした場合に使用してください。</p>
+            <div id="artian-base-pager" class="table-pager" aria-label="通常アーティア結果のページ" hidden><button id="artian-base-page-prev" class="secondary small-button" type="button">前の100件</button><span id="artian-base-page-status" aria-live="polite"></span><button id="artian-base-page-next" class="secondary small-button" type="button">次の100件</button></div>
             <div id="artian-base-table-wrap" class="prediction-table-wrap" hidden>
               <table class="prediction-table artian-base-table">
                 <thead><tr><th>何本先</th><th>作成前カウンター</th><th>保存後の作成カウンター</th><th>1枠目</th><th>2枠目</th><th>3枠目</th><th>4枠目</th><th>5枠目</th></tr></thead>

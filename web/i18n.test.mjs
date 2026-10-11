@@ -31,7 +31,7 @@ function translator(locale) {
 }
 
 const exampleState = {
-  start: 1000, end: 1010, candidateCount: 11,
+  start: 1000, end: 1010, total: 10000, candidateCount: 11,
   suffix: "狭い探索範囲です。推定値に自信がある場合に使用してください。",
   label: "武器の属性", minimum: 0, maximum: 4294967295,
   source: "手入力", knownCount: 2, target: { keepSource: "10回先のリセット結果" },

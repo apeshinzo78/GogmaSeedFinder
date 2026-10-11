@@ -191,6 +191,10 @@ const predictionMatchesOnly = document.querySelector("#prediction-matches-only")
 const predictionFilterDescription = document.querySelector("#prediction-filter-description");
 const predictionError = document.querySelector("#prediction-error");
 const predictionRows = document.querySelector("#prediction-rows");
+const predictionPager = document.querySelector("#prediction-pager");
+const predictionPagePrev = document.querySelector("#prediction-page-prev");
+const predictionPageNext = document.querySelector("#prediction-page-next");
+const predictionPageStatus = document.querySelector("#prediction-page-status");
 const comparisonStatus = document.querySelector("#comparison-status");
 const comparisonWeaponSelect = document.querySelector("#comparison-weapon-type");
 const comparisonAttributeSelect = document.querySelector("#comparison-attribute-force");
@@ -204,6 +208,10 @@ const comparisonError = document.querySelector("#comparison-error");
 const comparisonTableWrap = document.querySelector("#comparison-table-wrap");
 const comparisonHeaderRow = document.querySelector("#comparison-header-row");
 const comparisonRows = document.querySelector("#comparison-rows");
+const comparisonPager = document.querySelector("#comparison-pager");
+const comparisonPagePrev = document.querySelector("#comparison-page-prev");
+const comparisonPageNext = document.querySelector("#comparison-page-next");
+const comparisonPageStatus = document.querySelector("#comparison-page-status");
 const exportBonusCsvButton = document.querySelector("#export-bonus-csv");
 const bonusExportStatus = document.querySelector("#bonus-export-status");
 const continuationCodeInput = document.querySelector("#continuation-code");
@@ -229,6 +237,10 @@ const skillError = document.querySelector("#skill-error");
 const skillTableWrap = document.querySelector("#skill-table-wrap");
 const skillPredictionRows = document.querySelector("#skill-prediction-rows");
 const skillPredictionHeaderRow = document.querySelector("#skill-prediction-header-row");
+const skillPager = document.querySelector("#skill-pager");
+const skillPagePrev = document.querySelector("#skill-page-prev");
+const skillPageNext = document.querySelector("#skill-page-next");
+const skillPageStatus = document.querySelector("#skill-page-status");
 const skillFutureStatus = document.querySelector("#skill-future-status");
 const stateBaseSeed = document.querySelector("#state-base-seed");
 const stateBonusCounter = document.querySelector("#state-bonus-counter");
@@ -296,6 +308,10 @@ const artianCounterCandidates = document.querySelector("#artian-counter-candidat
 const artianBaseEmpty = document.querySelector("#artian-base-empty");
 const artianBaseTableWrap = document.querySelector("#artian-base-table-wrap");
 const artianBaseRows = document.querySelector("#artian-base-rows");
+const artianBasePager = document.querySelector("#artian-base-pager");
+const artianBasePagePrev = document.querySelector("#artian-base-page-prev");
+const artianBasePageNext = document.querySelector("#artian-base-page-next");
+const artianBasePageStatus = document.querySelector("#artian-base-page-status");
 const artianFilterEnabled = document.querySelector("#artian-filter-enabled");
 const artianFilterGrid = document.querySelector("#artian-filter-grid");
 const tabButtons = [...document.querySelectorAll("[data-tab]")];
@@ -355,6 +371,49 @@ let selectedSkillCounter = null;
 let skillObservedCount = 0;
 let currentSkillObservations = [];
 let artianBasePredictionRolls = [];
+const TABLE_PAGE_SIZE = 100;
+const tablePageIndexes = {
+  prediction: 0,
+  comparison: 0,
+  skill: 0,
+  artianBase: 0,
+};
+const tablePagers = {
+  prediction: {
+    root: predictionPager,
+    previous: predictionPagePrev,
+    next: predictionPageNext,
+    status: predictionPageStatus,
+    wrapper: predictionRows.closest(".prediction-table-wrap"),
+    render: renderPredictionTable,
+  },
+  comparison: {
+    root: comparisonPager,
+    previous: comparisonPagePrev,
+    next: comparisonPageNext,
+    status: comparisonPageStatus,
+    wrapper: comparisonTableWrap,
+    render: renderComparisonTable,
+  },
+  skill: {
+    root: skillPager,
+    previous: skillPagePrev,
+    next: skillPageNext,
+    status: skillPageStatus,
+    wrapper: skillTableWrap,
+    render: renderSkillPredictionTable,
+  },
+  artianBase: {
+    root: artianBasePager,
+    previous: artianBasePagePrev,
+    next: artianBasePageNext,
+    status: artianBasePageStatus,
+    wrapper: artianBaseTableWrap,
+    render: renderArtianBaseTable,
+  },
+};
+
+wireTablePagers();
 
 renderComparisonTargets();
 renderBonusOperation();
@@ -487,10 +546,17 @@ predictionIgnoreTier.addEventListener("change", () => {
     ? currentFilters.map((value) => value === null ? null : bonusCategoryId(value))
     : [];
   renderPredictionFilters(nextFilters);
+  resetTablePage("prediction");
   renderPredictionTable();
 });
-predictionMatchesOnly.addEventListener("change", () => renderPredictionTable());
-predictionFilters.addEventListener("change", () => renderPredictionTable());
+predictionMatchesOnly.addEventListener("change", () => {
+  resetTablePage("prediction");
+  renderPredictionTable();
+});
+predictionFilters.addEventListener("change", () => {
+  resetTablePage("prediction");
+  renderPredictionTable();
+});
 
 addComparisonTargetButton.addEventListener("click", () => void addComparisonTarget());
 clearComparisonTargetsButton.addEventListener("click", () => {
@@ -503,7 +569,10 @@ clearComparisonTargetsButton.addEventListener("click", () => {
 });
 comparisonCountInput.addEventListener("change", () => void refreshComparisonPredictions());
 [bonusExFilterEnabled, bonusExFilterCountSelect]
-  .forEach((control) => control.addEventListener("change", () => renderComparisonTable()));
+  .forEach((control) => control.addEventListener("change", () => {
+    resetTablePage("comparison");
+    renderComparisonTable();
+  }));
 exportBonusCsvButton.addEventListener("click", () => exportVisibleBonusPredictionsCsv());
 
 addSkillTargetButton.addEventListener("click", () => void addSkillTarget());
@@ -557,9 +626,16 @@ skillAttributeSelect.addEventListener("change", () => resetSkillSearchFeedback()
 skillPredictionCountInput.addEventListener("change", () => {
   if (selectedSkillCounter !== null) void refreshSkillPredictions();
 });
-[skillHighlightEnabled, skillFilterEnabled, skillFilterGroupSelect, skillFilterOperatorSelect]
-  .forEach((control) => control.addEventListener("change", () => renderSkillPredictionTable()));
-skillFilterSeriesOptions.addEventListener("change", () => renderSkillPredictionTable());
+skillHighlightEnabled.addEventListener("change", () => renderSkillPredictionTable());
+[skillFilterEnabled, skillFilterGroupSelect, skillFilterOperatorSelect]
+  .forEach((control) => control.addEventListener("change", () => {
+    resetTablePage("skill");
+    renderSkillPredictionTable();
+  }));
+skillFilterSeriesOptions.addEventListener("change", () => {
+  resetTablePage("skill");
+  renderSkillPredictionTable();
+});
 exportSkillCsvButton.addEventListener("click", () => exportVisibleSkillPredictionsCsv());
 findSkillPositionButton.addEventListener("click", () => void findSkillPosition());
 
@@ -601,8 +677,14 @@ removeArtianObservationButton.addEventListener("click", () => {
 artianObservationRows.addEventListener("change", () => clearArtianCounterSearchFeedback());
 findArtianCounterButton.addEventListener("click", () => void searchArtianBaseCounter());
 exportArtianBaseCsvButton.addEventListener("click", () => exportArtianBasePredictionsCsv());
-artianFilterEnabled.addEventListener("change", () => renderArtianBaseTable());
-artianFilterGrid.addEventListener("change", () => renderArtianBaseTable());
+artianFilterEnabled.addEventListener("change", () => {
+  resetTablePage("artianBase");
+  renderArtianBaseTable();
+});
+artianFilterGrid.addEventListener("change", () => {
+  resetTablePage("artianBase");
+  renderArtianBaseTable();
+});
 
 function readConfig() {
   const weaponType = readInteger("weapon-type", "武器種", 0, 13);
@@ -1860,6 +1942,7 @@ async function refreshPredictions() {
   if (bonusPrediction.mode === "keep") {
     predictionRolls = [];
     predictionRows.replaceChildren();
+    clearTablePager("prediction");
     predictionStatus.textContent = "「ボーナスを同じ構成で再復元」の未来は武器一覧で比較します";
     predictionStatus.className = "status-pill";
     return;
@@ -1902,11 +1985,13 @@ async function refreshPredictions() {
       bonusIds: Array.from(flattened.slice(index * 5, index * 5 + 5)),
       observed: matchesSearchWeapon && index < observationCount,
     }));
+    resetTablePage("prediction");
     renderPredictionTable();
   } catch (error) {
     if (requestId !== predictionRequestId) return;
     predictionRolls = [];
     predictionRows.replaceChildren();
+    clearTablePager("prediction");
     predictionStatus.textContent = "予測エラー";
     predictionStatus.className = "status-pill";
     showPredictionError(error instanceof Error ? error.message : String(error));
@@ -2001,6 +2086,51 @@ function flattenedPrefixMatches(actual, expected) {
   return expected.every((value, index) => actual[index] === value);
 }
 
+function wireTablePagers() {
+  for (const [key, pager] of Object.entries(tablePagers)) {
+    pager.previous.addEventListener("click", () => changeTablePage(key, -1));
+    pager.next.addEventListener("click", () => changeTablePage(key, 1));
+  }
+}
+
+function changeTablePage(key, delta) {
+  tablePageIndexes[key] += delta;
+  const pager = tablePagers[key];
+  pager.render();
+  pager.wrapper.scrollTop = 0;
+  pager.wrapper.scrollLeft = 0;
+}
+
+function resetTablePage(key) {
+  tablePageIndexes[key] = 0;
+}
+
+function clearTablePager(key) {
+  resetTablePage(key);
+  const pager = tablePagers[key];
+  pager.root.hidden = true;
+  pager.status.textContent = "";
+  pager.previous.disabled = true;
+  pager.next.disabled = true;
+}
+
+function tablePage(items, key) {
+  const total = items.length;
+  const pageCount = Math.max(1, Math.ceil(total / TABLE_PAGE_SIZE));
+  const page = Math.min(Math.max(0, tablePageIndexes[key]), pageCount - 1);
+  tablePageIndexes[key] = page;
+  const start = page * TABLE_PAGE_SIZE;
+  const end = Math.min(total, start + TABLE_PAGE_SIZE);
+  const pager = tablePagers[key];
+  pager.root.hidden = total <= TABLE_PAGE_SIZE;
+  pager.previous.disabled = page === 0;
+  pager.next.disabled = page >= pageCount - 1;
+  pager.status.textContent = total === 0
+    ? ""
+    : t(`${(start + 1).toLocaleString("ja-JP")}〜${end.toLocaleString("ja-JP")} / ${total.toLocaleString("ja-JP")}件`);
+  return items.slice(start, end);
+}
+
 function renderPredictionTable() {
   if (!selectedCandidate) return;
 
@@ -2026,11 +2156,12 @@ function renderPredictionTable() {
     cell.textContent = "指定した構成は表示範囲内にありません。表示回数を増やしてください。";
     row.append(cell);
     predictionRows.replaceChildren(row);
+    clearTablePager("prediction");
     return;
   }
 
   predictionRows.replaceChildren(
-    ...visibleRolls.map((roll) => createPredictionRow(roll, requirements)),
+    ...tablePage(visibleRolls, "prediction").map((roll) => createPredictionRow(roll, requirements)),
   );
 }
 
@@ -2369,6 +2500,7 @@ async function refreshComparisonPredictions() {
     });
     if (requestId !== comparisonRequestId) return;
     comparisonRollSets = nextRollSets;
+    resetTablePage("comparison");
     renderComparisonTable();
   } catch (error) {
     if (requestId !== comparisonRequestId) return;
@@ -2397,6 +2529,7 @@ function renderComparisonTable() {
   if (!selectedCandidate || comparisonRollSets.length === 0) {
     comparisonHeaderRow.replaceChildren();
     comparisonRows.replaceChildren();
+    clearTablePager("comparison");
     comparisonTableWrap.hidden = true;
     exportBonusCsvButton.disabled = true;
     bonusExportStatus.textContent = "予測結果を表示するとCSVへ出力できます。";
@@ -2422,8 +2555,9 @@ function renderComparisonTable() {
   );
 
   const { count, minimumExCount, visibleIndices } = comparisonPredictionVisibility();
+  const pageIndices = tablePage(visibleIndices, "comparison");
   comparisonRows.replaceChildren(
-    ...visibleIndices.map((index) => createComparisonRow(index)),
+    ...pageIndices.map((index) => createComparisonRow(index)),
   );
   if (visibleIndices.length === 0) {
     const row = document.createElement("tr");
@@ -2433,12 +2567,13 @@ function renderComparisonTable() {
     cell.textContent = `EXが${minimumExCount}個以上の結果は表示範囲内にありません。表示回数を増やすか最低EX数を下げてください。`;
     row.append(cell);
     comparisonRows.replaceChildren(row);
+    clearTablePager("comparison");
   }
   comparisonTableWrap.hidden = false;
   exportBonusCsvButton.disabled = visibleIndices.length === 0;
   bonusExportStatus.textContent = bonusExFilterEnabled.checked
-    ? `EX条件一致で現在表示中の${visibleIndices.length.toLocaleString("ja-JP")}行をCSVへ出力します。`
-    : `現在表示中の${visibleIndices.length.toLocaleString("ja-JP")}行をCSVへ出力します。`;
+    ? `EX条件に合う${visibleIndices.length.toLocaleString("ja-JP")}行をCSVへ出力します。`
+    : `検索範囲内の${visibleIndices.length.toLocaleString("ja-JP")}行をCSVへ出力します。`;
   const unit = bonusPrediction.mode === "keep" ? "武器" : "条件";
   const prefix = bonusPrediction.mode === "keep" ? "EX厳選・" : "";
   const filterStatus = bonusExFilterEnabled.checked
@@ -2681,6 +2816,7 @@ async function refreshSkillPredictions() {
         })),
       };
     });
+    resetTablePage("skill");
     renderSkillPredictionTable();
   } catch (error) {
     clearSkillPredictionResults();
@@ -2762,8 +2898,8 @@ function renderSkillPredictionTable() {
   skillTableWrap.hidden = false;
   exportSkillCsvButton.disabled = visibleIndices.length === 0;
   skillExportStatus.textContent = skillFilter.enabled
-    ? `条件一致で現在表示中の${visibleIndices.length.toLocaleString("ja-JP")}行をCSVへ出力します。`
-    : `現在表示中の${visibleIndices.length.toLocaleString("ja-JP")}行をCSVへ出力します。`;
+    ? `条件に合う${visibleIndices.length.toLocaleString("ja-JP")}行をCSVへ出力します。`
+    : `検索範囲内の${visibleIndices.length.toLocaleString("ja-JP")}行をCSVへ出力します。`;
 
   const offsetHeader = document.createElement("th");
   const stateHeader = document.createElement("th");
@@ -2790,11 +2926,12 @@ function renderSkillPredictionTable() {
     cell.textContent = "指定したグループ・シリーズ条件に合う結果は表示範囲内にありません。表示回数を増やすか条件を変更してください。";
     row.append(cell);
     skillPredictionRows.replaceChildren(row);
+    clearTablePager("skill");
     return;
   }
 
   skillPredictionRows.replaceChildren(
-    ...visibleIndices.map((index) => createSkillPredictionRow(index, skillFilter, highlightEnabled)),
+    ...tablePage(visibleIndices, "skill").map((index) => createSkillPredictionRow(index, skillFilter, highlightEnabled)),
   );
 }
 
@@ -3007,6 +3144,7 @@ function refreshArtianBasePredictions() {
       counter,
       count,
     );
+    resetTablePage("artianBase");
     renderArtianBaseTable();
     renderArtianBaseState();
   } catch (error) {
@@ -3084,6 +3222,7 @@ function visibleArtianBaseRolls() {
 function renderArtianBaseTable() {
   if (artianBasePredictionRolls.length === 0) {
     artianBaseRows.replaceChildren();
+    clearTablePager("artianBase");
     artianBaseTableWrap.hidden = true;
     artianBaseEmpty.hidden = false;
     exportArtianBaseCsvButton.disabled = true;
@@ -3098,9 +3237,10 @@ function renderArtianBaseTable() {
     cell.textContent = "指定した復元ボーナス構成は表示範囲内にありません。表示する本数を増やすか条件を変更してください。";
     row.append(cell);
     artianBaseRows.replaceChildren(row);
+    clearTablePager("artianBase");
   } else {
     artianBaseRows.replaceChildren(
-      ...visibleRolls.map(({ roll, index }) => createArtianBaseRow(roll, index)),
+      ...tablePage(visibleRolls, "artianBase").map(({ roll, index }) => createArtianBaseRow(roll, index)),
     );
   }
   artianBaseTableWrap.hidden = false;
@@ -3367,6 +3507,7 @@ function clearSkillPredictionResults() {
   skillPredictionRollSets = [];
   skillPredictionHeaderRow.replaceChildren();
   skillPredictionRows.replaceChildren();
+  clearTablePager("skill");
   skillTableWrap.hidden = true;
   exportSkillCsvButton.disabled = true;
   skillExportStatus.textContent = "予測結果を表示するとCSVへ出力できます。";

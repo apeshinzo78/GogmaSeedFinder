@@ -2004,6 +2004,31 @@ button:disabled {
   scrollbar-gutter: stable;
 }
 
+.table-pager {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  margin: 18px 0 -8px;
+}
+
+.table-pager[hidden] {
+  display: none;
+}
+
+.table-pager span {
+  min-width: 120px;
+  color: #ddd8c6;
+  font-size: 0.78rem;
+  font-variant-numeric: tabular-nums;
+  text-align: center;
+}
+
+.table-pager button:disabled {
+  opacity: 0.38;
+}
+
 .prediction-table-wrap::-webkit-scrollbar {
   width: 13px;
   height: 13px;
