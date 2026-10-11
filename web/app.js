@@ -300,6 +300,7 @@ const artianFilterEnabled = document.querySelector("#artian-filter-enabled");
 const artianFilterGrid = document.querySelector("#artian-filter-grid");
 const tabButtons = [...document.querySelectorAll("[data-tab]")];
 const tabViews = [...document.querySelectorAll("[data-tab-view]")];
+const openArtianFutureButtons = [...document.querySelectorAll("[data-open-artian-future]")];
 
 const suggestedWorkers = Math.min(16, Math.max(1, navigator.hardwareConcurrency ?? 4));
 workerInput.value = String(suggestedWorkers);
@@ -457,6 +458,13 @@ cancelButton.addEventListener("click", () => finishCancelled());
 
 tabButtons.forEach((button) => {
   button.addEventListener("click", () => setActiveTab(button.dataset.tab));
+});
+
+openArtianFutureButtons.forEach((button) => {
+  button.addEventListener("click", () => {
+    setActiveTab("artian-future");
+    document.querySelector(".app-tabs")?.scrollIntoView({ behavior: "smooth", block: "start" });
+  });
 });
 
 predictionWeaponSelect.addEventListener("change", () => {

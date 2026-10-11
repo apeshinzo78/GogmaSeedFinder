@@ -293,6 +293,71 @@ h1 {
   line-height: 1.65;
 }
 
+.artian-route-notice {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 22px;
+  align-items: center;
+  margin: 34px 0 0;
+  padding: clamp(17px, 2.5vw, 23px);
+  border: 1px solid #606248;
+  border-left: 4px solid #78a9b1;
+  border-radius: 13px;
+  background:
+    radial-gradient(circle at 90% 10%, rgb(76 129 141 / 18%), transparent 24rem),
+    rgb(18 20 17 / 92%);
+}
+
+.compact-route-notice {
+  margin-top: 18px;
+}
+
+.artian-route-copy h3 {
+  margin: 0 0 7px;
+  font-family: Georgia, "Yu Mincho", serif;
+  font-size: clamp(1.05rem, 2vw, 1.28rem);
+  font-weight: 500;
+}
+
+.artian-route-copy > p:not(.step) {
+  max-width: 1000px;
+  margin: 0;
+  color: #c9c6b8;
+  font-size: 0.8rem;
+  line-height: 1.7;
+}
+
+.artian-route-examples {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+  align-items: center;
+  margin-top: 12px;
+}
+
+.artian-route-examples span,
+.artian-route-examples strong {
+  padding: 5px 9px;
+  border: 1px solid #4b5145;
+  border-radius: 999px;
+  font-size: 0.7rem;
+}
+
+.artian-route-examples span {
+  color: #9fcbd1;
+}
+
+.artian-route-examples strong {
+  border-color: #6d693d;
+  background: rgb(214 179 92 / 8%);
+  color: var(--gold-bright);
+}
+
+.artian-route-button {
+  min-width: 210px;
+  white-space: nowrap;
+}
+
 .artian-origin-card {
   display: grid;
   grid-template-columns: minmax(170px, 0.45fr) minmax(0, 1fr);
@@ -2661,6 +2726,16 @@ button:disabled {
   .artian-beta-notice {
     grid-template-columns: 1fr;
     gap: 5px;
+  }
+
+  .artian-route-notice {
+    grid-template-columns: 1fr;
+    gap: 15px;
+  }
+
+  .artian-route-button {
+    width: 100%;
+    min-width: 0;
   }
 
   .keep-layout-slots {
