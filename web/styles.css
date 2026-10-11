@@ -253,7 +253,7 @@ h1 {
   top: 0;
   z-index: 8;
   display: grid;
-  grid-template-columns: repeat(6, minmax(0, 1fr));
+  grid-template-columns: repeat(7, minmax(0, 1fr));
   gap: 6px;
   margin: 18px 0;
   padding: 7px;
@@ -626,6 +626,10 @@ h1 {
 
 .artian-settings-grid {
   grid-template-columns: 1.1fr 0.65fr 1fr 0.75fr;
+}
+
+.artian-search-target-grid {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
 }
 
 .artian-search-range {
@@ -2871,6 +2875,7 @@ button:disabled {
 
   .artian-origin-values,
   .artian-settings-grid,
+  .artian-search-target-grid,
   .artian-search-range {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
@@ -3093,6 +3098,7 @@ button:disabled {
 
   .artian-origin-values,
   .artian-settings-grid,
+  .artian-search-target-grid,
   .artian-search-range {
     grid-template-columns: 1fr;
   }

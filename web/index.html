@@ -109,7 +109,8 @@
         <button type="button" class="tab-button" data-tab="skill-search" aria-selected="false"><span>03</span>スキルカウンター特定</button>
         <button type="button" class="tab-button" data-tab="bonus-future" aria-selected="false"><span>04</span>復元ボーナス未来予測</button>
         <button type="button" class="tab-button" data-tab="skill-future" aria-selected="false"><span>05</span>スキル未来予測</button>
-        <button type="button" class="tab-button" data-tab="artian-future" aria-selected="false"><span>06</span>通常アーティア未来予測</button>
+        <button type="button" class="tab-button" data-tab="artian-search" aria-selected="false"><span>06</span>通常アーティアカウンター特定</button>
+        <button type="button" class="tab-button" data-tab="artian-future" aria-selected="false"><span>07</span>通常アーティア未来予測</button>
       </nav>
 
       <div class="tab-view active" data-tab-view="guide">
@@ -400,6 +401,44 @@
         </section>
       </div>
 
+      <div class="tab-view" data-tab-view="artian-search" hidden>
+        <section class="panel artian-base-section" aria-labelledby="artian-search-title">
+          <div class="section-heading artian-base-heading">
+            <div><p class="step">BASE ARTIAN COUNTER SEARCH · BETA</p><h2 id="artian-search-title">通常アーティアカウンター特定</h2></div>
+            <p class="status-pill">レア8専用</p>
+          </div>
+          <div class="artian-beta-notice">
+            <strong>武器種ごとに特定</strong>
+            <p>通常アーティアの作成カウンターは武器種ごとに別管理です。同じ武器種であれば、無属性・属性・状態異常で共通のカウンターを使用します。</p>
+          </div>
+
+          <section class="artian-settings-section" aria-labelledby="artian-search-target-title">
+            <div class="section-heading compact-heading"><div><p class="step">TARGET</p><h3 id="artian-search-target-title">観測した通常アーティア武器</h3></div></div>
+            <div class="field-grid artian-search-target-grid">
+              <label><span>武器種</span><select id="artian-search-weapon-type"></select></label>
+              <label><span>属性の有無</span><select id="artian-search-attribute-force"></select></label>
+              <div class="fixed-field"><span>対象レア度</span><strong>レア8（固定）</strong></div>
+            </div>
+            <p id="artian-search-weapon-verification" class="pool-note"></p>
+          </section>
+
+          <section id="artian-counter-search" class="artian-counter-search" aria-labelledby="artian-counter-search-title">
+            <div class="section-heading compact-heading"><div><p class="step">FIND CREATE COUNTER</p><h3 id="artian-counter-search-title">作成結果からカウンターを特定</h3></div></div>
+            <p class="prediction-intro">上で選んだ武器種・属性の有無をそろえてレア8武器を連続生産し、毎回の復元強化5枠を入力します。確認後に元の状態へ戻す場合は、セーブせずにゲームを終了してください。</p>
+            <div class="field-grid artian-search-range">
+              <label><span>カウンター候補（開始）</span><input id="artian-counter-start" type="number" min="0" max="1000000" value="0" /></label>
+              <label><span>カウンター候補（終了）</span><input id="artian-counter-end" type="number" min="0" max="1000000" value="100000" /></label>
+            </div>
+            <div id="artian-observation-rows" class="observation-rows artian-observation-rows"></div>
+            <div class="observation-controls"><button id="add-artian-observation" class="secondary small-button" type="button">作成結果を1回追加</button><button id="remove-artian-observation" class="text-button" type="button">最後の1回を削除</button></div>
+            <div class="actions artian-search-actions"><button id="find-artian-counter" class="primary" type="button">作成カウンターを検索</button><button id="open-artian-future-from-search" class="secondary" type="button" data-open-artian-future disabled>このカウンターで未来予測へ</button></div>
+            <p id="artian-search-error" class="error" role="alert" hidden></p>
+            <p id="artian-search-message" class="continuation-message" aria-live="polite"></p>
+            <div id="artian-counter-candidates" class="artian-counter-candidates" aria-live="polite"></div>
+          </section>
+        </section>
+      </div>
+
       <div class="tab-view" data-tab-view="artian-future" hidden>
         <section class="panel artian-base-section" aria-labelledby="artian-base-title">
           <div class="section-heading artian-base-heading">
@@ -413,7 +452,7 @@
           <p class="prediction-intro">通常アーティア武器の作成カウンターは、武器種ごとに別管理です。同じ武器種であれば、無属性・属性・状態異常で共通のカウンターを使用します。レア8武器を1本生産すると、その武器種のカウンターだけが1つ進みます。</p>
           <div class="artian-counter-jump">
             <div><strong>作成カウンターが分からない場合</strong><span>実際の作成結果から現在位置を検索できます。</span></div>
-            <button class="secondary small-button" type="button" data-scroll-artian-counter-search>カウンター特定へ</button>
+            <button class="secondary small-button" type="button" data-open-artian-counter-search>カウンターを特定する</button>
           </div>
 
           <section class="artian-origin-card" aria-labelledby="artian-origin-title">
@@ -462,19 +501,6 @@
             </div>
           </section>
 
-          <section id="artian-counter-search" class="artian-counter-search" aria-labelledby="artian-counter-search-title">
-            <div class="section-heading compact-heading"><div><p class="step">FIND CREATE COUNTER</p><h3 id="artian-counter-search-title">作成結果からカウンターを特定</h3></div></div>
-            <p class="prediction-intro">上で選んだ武器種・属性の有無をそろえてレア8武器を連続生産し、毎回の復元強化5枠を入力します。確認後に元の状態へ戻す場合は、セーブせずにゲームを終了してください。</p>
-            <div class="field-grid artian-search-range">
-              <label><span>カウンター候補（開始）</span><input id="artian-counter-start" type="number" min="0" max="1000000" value="0" /></label>
-              <label><span>カウンター候補（終了）</span><input id="artian-counter-end" type="number" min="0" max="1000000" value="100000" /></label>
-            </div>
-            <div id="artian-observation-rows" class="observation-rows artian-observation-rows"></div>
-            <div class="observation-controls"><button id="add-artian-observation" class="secondary small-button" type="button">作成結果を1回追加</button><button id="remove-artian-observation" class="text-button" type="button">最後の1回を削除</button></div>
-            <div class="actions"><button id="find-artian-counter" class="primary" type="button">作成カウンターを検索</button></div>
-            <p id="artian-search-message" class="continuation-message" aria-live="polite"></p>
-            <div id="artian-counter-candidates" class="artian-counter-candidates" aria-live="polite"></div>
-          </section>
         </section>
       </div>
       <footer class="site-footer">

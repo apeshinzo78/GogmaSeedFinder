@@ -291,12 +291,17 @@ const artianBaseCounterSource = document.querySelector("#artian-base-counter-sou
 const artianCounterOverviewGrid = document.querySelector("#artian-counter-overview-grid");
 const artianBaseWeaponSelect = document.querySelector("#artian-base-weapon-type");
 const artianBaseAttributeSelect = document.querySelector("#artian-base-attribute-force");
+const artianSearchWeaponSelect = document.querySelector("#artian-search-weapon-type");
+const artianSearchAttributeSelect = document.querySelector("#artian-search-attribute-force");
 const artianBaseCounterInput = document.querySelector("#artian-base-counter");
 const artianBaseCountInput = document.querySelector("#artian-base-count");
 const artianWeaponVerification = document.querySelector("#artian-weapon-verification");
+const artianSearchWeaponVerification = document.querySelector("#artian-search-weapon-verification");
 const applyArtianBaseCounterButton = document.querySelector("#apply-artian-base-counter");
 const exportArtianBaseCsvButton = document.querySelector("#export-artian-base-csv");
 const artianBaseError = document.querySelector("#artian-base-error");
+const artianSearchError = document.querySelector("#artian-search-error");
+const openArtianFutureFromSearchButton = document.querySelector("#open-artian-future-from-search");
 const artianCounterStartInput = document.querySelector("#artian-counter-start");
 const artianCounterEndInput = document.querySelector("#artian-counter-end");
 const artianObservationRows = document.querySelector("#artian-observation-rows");
@@ -318,7 +323,7 @@ const tabButtons = [...document.querySelectorAll("[data-tab]")];
 const tabViews = [...document.querySelectorAll("[data-tab-view]")];
 const openArtianFutureButtons = [...document.querySelectorAll("[data-open-artian-future]")];
 const openArtianTipButtons = [...document.querySelectorAll("[data-open-artian-tip]")];
-const openArtianCounterSearchButtons = [...document.querySelectorAll("[data-scroll-artian-counter-search]")];
+const openArtianCounterSearchButtons = [...document.querySelectorAll("[data-open-artian-counter-search]")];
 
 const suggestedWorkers = Math.min(16, Math.max(1, navigator.hardwareConcurrency ?? 4));
 workerInput.value = String(suggestedWorkers);
@@ -334,6 +339,8 @@ populateSelect(skillTargetWeaponSelect, WEAPON_TYPES, 3);
 populateSelect(skillTargetAttributeSelect, ATTRIBUTES, 1);
 populateSelect(artianBaseWeaponSelect, WEAPON_TYPES, 6);
 populateSelect(artianBaseAttributeSelect, ARTIAN_ATTRIBUTE_KINDS, 1);
+populateSelect(artianSearchWeaponSelect, WEAPON_TYPES, 6);
+populateSelect(artianSearchAttributeSelect, ARTIAN_ATTRIBUTE_KINDS, 1);
 populateSelect(
   skillFilterGroupSelect,
   [[-1, "指定しない"], ...prioritizedSkillOptions(GROUP_SKILLS, PRIORITY_GROUP_SKILL_INDICES)],
@@ -537,7 +544,8 @@ openArtianTipButtons.forEach((button) => {
 
 openArtianCounterSearchButtons.forEach((button) => {
   button.addEventListener("click", () => {
-    document.querySelector("#artian-counter-search")?.scrollIntoView({ behavior: "smooth", block: "start" });
+    setActiveTab("artian-search");
+    document.querySelector(".app-tabs")?.scrollIntoView({ behavior: "smooth", block: "start" });
   });
 });
 
@@ -654,27 +662,35 @@ skillFilterSeriesOptions.addEventListener("change", () => {
 exportSkillCsvButton.addEventListener("click", () => exportVisibleSkillPredictionsCsv());
 findSkillPositionButton.addEventListener("click", () => void findSkillPosition());
 
-artianBaseWeaponSelect.addEventListener("change", () => {
+function updateArtianTargetSelection(weaponType, attributeForce) {
   const observations = snapshotArtianObservationValues();
   const filters = snapshotArtianBaseFilters();
+  artianBaseWeaponSelect.value = String(weaponType);
+  artianSearchWeaponSelect.value = String(weaponType);
+  artianBaseAttributeSelect.value = String(attributeForce);
+  artianSearchAttributeSelect.value = String(attributeForce);
   syncArtianAttributeControl();
   hideArtianBaseError();
+  hideArtianSearchError();
   clearArtianCounterSearchFeedback();
   renderArtianObservationRows(observations);
   renderArtianBaseFilters(filters);
   renderArtianWeaponVerification();
   renderArtianBaseState();
   refreshArtianBasePredictions();
+}
+
+artianBaseWeaponSelect.addEventListener("change", () => {
+  updateArtianTargetSelection(artianBaseWeaponSelect.value, artianBaseAttributeSelect.value);
 });
 artianBaseAttributeSelect.addEventListener("change", () => {
-  const observations = snapshotArtianObservationValues();
-  const filters = snapshotArtianBaseFilters();
-  hideArtianBaseError();
-  clearArtianCounterSearchFeedback();
-  renderArtianObservationRows(observations);
-  renderArtianBaseFilters(filters);
-  renderArtianWeaponVerification();
-  refreshArtianBasePredictions();
+  updateArtianTargetSelection(artianBaseWeaponSelect.value, artianBaseAttributeSelect.value);
+});
+artianSearchWeaponSelect.addEventListener("change", () => {
+  updateArtianTargetSelection(artianSearchWeaponSelect.value, artianSearchAttributeSelect.value);
+});
+artianSearchAttributeSelect.addEventListener("change", () => {
+  updateArtianTargetSelection(artianSearchWeaponSelect.value, artianSearchAttributeSelect.value);
 });
 artianBaseCountInput.addEventListener("change", () => refreshArtianBasePredictions());
 applyArtianBaseCounterButton.addEventListener("click", () => applyArtianBaseCounter());
@@ -3028,8 +3044,15 @@ function currentArtianAttributeForce() {
 
 function syncArtianAttributeControl() {
   const isBowgun = BOWGUN_WEAPON_TYPES.has(Number(artianBaseWeaponSelect.value));
-  if (isBowgun) artianBaseAttributeSelect.value = "0";
+  if (isBowgun) {
+    artianBaseAttributeSelect.value = "0";
+    artianSearchAttributeSelect.value = "0";
+  } else {
+    artianSearchAttributeSelect.value = artianBaseAttributeSelect.value;
+  }
+  artianSearchWeaponSelect.value = artianBaseWeaponSelect.value;
   artianBaseAttributeSelect.disabled = isBowgun;
+  artianSearchAttributeSelect.disabled = isBowgun;
 }
 
 function syncArtianBaseSeed() {
@@ -3083,6 +3106,7 @@ function renderArtianBaseState() {
   artianBaseCounterSource.textContent = counter === null
     ? "武器種ごとに設定（レア8）"
     : stateSourceText(artianBaseState.sources[key] ?? "保存値", "武器種ごとに設定（レア8）");
+  openArtianFutureFromSearchButton.disabled = counter === null;
   renderArtianCounterOverview();
 
   if (saveState.baseSeed === null) {
@@ -3110,7 +3134,9 @@ function renderArtianWeaponVerification() {
   const verificationText = ARTIAN_LIVE_VERIFIED_WEAPON_TYPES.has(weaponType)
     ? "この武器種はレア8の実機結果と一致を確認済みです。"
     : "この武器種は実機一致を確認した共通式から予測します。個別の確認は未完了です。";
-  artianWeaponVerification.textContent = `${t(poolText)} ${t(verificationText)}`;
+  const message = `${t(poolText)} ${t(verificationText)}`;
+  artianWeaponVerification.textContent = message;
+  artianSearchWeaponVerification.textContent = message;
 }
 
 function applyArtianBaseCounter() {
@@ -3413,24 +3439,24 @@ function readArtianObservations() {
 }
 
 async function searchArtianBaseCounter() {
-  hideArtianBaseError();
+  hideArtianSearchError();
   clearArtianCounterSearchFeedback();
   if (saveState.baseSeed === null) {
-    showArtianBaseError("基準seedを先に特定するか、上部の現在のセーブ状態から手入力してください。");
+    showArtianSearchError("基準seedを先に特定するか、上部の現在のセーブ状態から手入力してください。");
     return;
   }
   const start = Number(artianCounterStartInput.value);
   const end = Number(artianCounterEndInput.value);
   if (!Number.isSafeInteger(start) || !Number.isSafeInteger(end) ||
       start < 0 || end < start || end > 1_000_000) {
-    showArtianBaseError("カウンター候補は0〜1,000,000の範囲で、開始を終了以下にしてください。");
+    showArtianSearchError("カウンター候補は0〜1,000,000の範囲で、開始を終了以下にしてください。");
     return;
   }
   let observations;
   try {
     observations = readArtianObservations();
   } catch (error) {
-    showArtianBaseError(error instanceof Error ? error.message : String(error));
+    showArtianSearchError(error instanceof Error ? error.message : String(error));
     return;
   }
   findArtianCounterButton.disabled = true;
@@ -3453,7 +3479,7 @@ async function searchArtianBaseCounter() {
         ? "候補が100件以上あります。作成結果を追加して絞り込んでください。"
         : `${matches.length.toLocaleString("ja-JP")}件の候補が見つかりました。使用するカウンターを選んでください。`;
   } catch (error) {
-    showArtianBaseError(error instanceof Error ? error.message : String(error));
+    showArtianSearchError(error instanceof Error ? error.message : String(error));
   } finally {
     findArtianCounterButton.disabled = false;
   }
@@ -3479,6 +3505,7 @@ function renderArtianCounterCandidates(matches) {
 }
 
 function clearArtianCounterSearchFeedback() {
+  hideArtianSearchError();
   artianSearchMessage.textContent = "";
   artianCounterCandidates.replaceChildren();
 }
@@ -3516,6 +3543,16 @@ function showArtianBaseError(message) {
 function hideArtianBaseError() {
   artianBaseError.textContent = "";
   artianBaseError.hidden = true;
+}
+
+function showArtianSearchError(message) {
+  artianSearchError.textContent = message;
+  artianSearchError.hidden = false;
+}
+
+function hideArtianSearchError() {
+  artianSearchError.textContent = "";
+  artianSearchError.hidden = true;
 }
 
 function clearSkillPredictionResults() {
