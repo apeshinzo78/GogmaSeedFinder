@@ -267,6 +267,7 @@ const UI_TEXT = {
   "例：火太刀": ["Example: Fire Long Sword", "例：火屬性太刀"],
   "武器種": ["Weapon Type", "武器種類"],
   "表示する回数": ["Number of Rolls", "顯示次數"],
+  "1〜10,000": ["1–10,000", "1～10,000"],
   "この組み合わせを登録": ["Register This Combination", "登錄此組合"],
   "登録をすべて削除": ["Remove All", "全部刪除"],
   "EX数で絞り込む": ["Filter by EX Count", "依EX數量篩選"],

@@ -342,7 +342,7 @@
             <div class="section-heading comparison-heading"><div><p class="step">REGISTERED TARGETS</p><h2 id="comparison-title">登録した武器種・属性を一覧比較</h2></div></div>
             <p class="prediction-intro">リセット抽選は武器種・属性が同じなら同じ結果です。「ボーナスを同じ構成で再復元」でEXを厳選する場合は、同じ武器種・属性の別武器も表示名を付けて複数登録できます。</p>
             <div class="field-grid comparison-settings target-registration-grid">
-              <label><span>表示名（任意）</span><input id="comparison-target-label" type="text" maxlength="24" placeholder="例：火太刀" /></label><label><span>武器種</span><select id="comparison-weapon-type"></select></label><label><span>属性</span><select id="comparison-attribute-force"></select></label><label><span>表示する回数</span><input id="comparison-count" type="number" min="1" max="10000" value="100" /></label>
+              <label><span>表示名（任意）</span><input id="comparison-target-label" type="text" maxlength="24" placeholder="例：火太刀" /></label><label><span>武器種</span><select id="comparison-weapon-type"></select></label><label><span>属性</span><select id="comparison-attribute-force"></select></label><label><span>表示する回数</span><input id="comparison-count" type="number" min="1" max="10000" value="100" placeholder="1〜10,000" /></label>
             </div>
             <div class="comparison-actions"><button id="add-comparison-target" class="secondary small-button" type="button">この組み合わせを登録</button><button id="clear-comparison-targets" class="text-button" type="button">登録をすべて削除</button></div>
             <div id="comparison-target-list" class="comparison-target-list" aria-live="polite"></div><p id="comparison-error" class="error" role="alert" hidden></p>
@@ -354,7 +354,7 @@
           <section class="detail-prediction-section" aria-labelledby="detail-prediction-title">
             <div class="section-heading"><div><p class="step">DETAIL FILTER</p><h2 id="detail-prediction-title">1条件を詳しく絞り込む</h2></div><p id="prediction-status" class="status-pill">状態待ち</p></div>
             <div class="prediction-source" aria-label="予測の起点"><div><span>基準seed</span><strong id="prediction-seed">—</strong></div><div><span>現在地点</span><strong id="prediction-origin">0</strong></div></div>
-            <div class="field-grid prediction-settings"><label><span>予測する武器種</span><select id="prediction-weapon-type"></select></label><label><span>予測する属性</span><select id="prediction-attribute-force"></select></label><label><span>表示する回数</span><input id="prediction-count" type="number" min="1" max="10000" value="100" /></label></div>
+            <div class="field-grid prediction-settings"><label><span>予測する武器種</span><select id="prediction-weapon-type"></select></label><label><span>予測する属性</span><select id="prediction-attribute-force"></select></label><label><span>表示する回数</span><input id="prediction-count" type="number" min="1" max="10000" value="100" placeholder="1〜10,000" /></label></div>
             <p id="prediction-pool-note" class="pool-note"></p>
             <div class="prediction-filter-heading"><div><h3>希望ボーナス</h3><p id="prediction-filter-description">「ボーナスをリセットして再復元」で欲しい系統構成を順不同で探します。例：攻撃×4＋斬れ味×1</p></div><div class="prediction-filter-actions"><label class="checkbox-label"><input id="prediction-ignore-tier" type="checkbox" checked /><span>強化段階を区別しない（系統構成を順不同で検索）</span></label><label class="checkbox-label"><input id="prediction-matches-only" type="checkbox" checked /><span>一致結果だけ表示</span></label></div></div>
             <div id="prediction-filters" class="prediction-filter-grid"></div><p id="prediction-error" class="error" role="alert" hidden></p>
@@ -375,7 +375,7 @@
           <section class="comparison-section" aria-labelledby="skill-targets-title">
             <div class="section-heading comparison-heading"><div><p class="step">REGISTERED TARGETS</p><h2 id="skill-targets-title">登録した武器種・属性を一覧比較</h2></div></div>
             <div class="field-grid comparison-settings target-registration-grid">
-              <label><span>表示名（任意）</span><input id="skill-target-label" type="text" maxlength="24" placeholder="例：火太刀" /></label><label><span>武器種</span><select id="skill-target-weapon-type"></select></label><label><span>属性</span><select id="skill-target-attribute-force"></select></label><label><span>表示する回数</span><input id="skill-prediction-count" type="number" min="1" max="10000" value="100" /></label>
+              <label><span>表示名（任意）</span><input id="skill-target-label" type="text" maxlength="24" placeholder="例：火太刀" /></label><label><span>武器種</span><select id="skill-target-weapon-type"></select></label><label><span>属性</span><select id="skill-target-attribute-force"></select></label><label><span>表示する回数</span><input id="skill-prediction-count" type="number" min="1" max="10000" value="100" placeholder="1〜10,000" /></label>
             </div>
             <div class="comparison-actions"><button id="add-skill-target" class="secondary small-button" type="button">この組み合わせを登録</button><button id="clear-skill-targets" class="text-button" type="button">登録をすべて削除</button></div>
             <div id="skill-target-list" class="comparison-target-list" aria-live="polite"></div><p id="skill-target-error" class="error" role="alert" hidden></p>
@@ -427,7 +427,7 @@
               <label><span>属性の有無</span><select id="artian-base-attribute-force"></select></label>
               <div class="fixed-field"><span>対象レア度</span><strong>レア8（固定）</strong></div>
               <label><span>現在の作成カウンター</span><input id="artian-base-counter" type="number" min="0" max="1000000" placeholder="未特定" /></label>
-              <label><span>表示する本数</span><input id="artian-base-count" type="number" min="1" max="10000" value="100" /></label>
+              <label><span>表示する本数</span><input id="artian-base-count" type="number" min="1" max="10000" value="100" placeholder="1〜10,000" /></label>
             </div>
             <p id="artian-weapon-verification" class="pool-note"></p>
             <div class="comparison-actions"><button id="apply-artian-base-counter" class="primary small-button" type="button">このカウンターで予測</button><button id="export-artian-base-csv" class="secondary small-button" type="button" disabled>表示中の結果をCSV出力</button></div>
