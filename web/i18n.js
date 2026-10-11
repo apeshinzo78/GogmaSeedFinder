@@ -39,6 +39,9 @@ const OFFICIAL_TERMS = {
   "斬れ味強化ＥＸ": ["Sharpness Boost EX", "銳利度強化EX"],
   "装填強化": ["Ammo Boost", "裝填強化"],
   "装填強化ＥＸ": ["Ammo Boost EX", "裝填強化EX"],
+  "基礎攻撃力強化": ["Attack Boost", "基礎攻擊力強化"],
+  "会心率強化": ["Affinity Boost", "會心率強化"],
+  "属性強化": ["Element Boost", "屬性強化"],
   "攻撃": ["Attack", "攻擊"],
   "会心": ["Affinity", "會心"],
   "属性": ["Element", "屬性"],
@@ -415,6 +418,52 @@ const UI_TEXT = {
   "この武器種・属性は登録済みです。EX未厳選の別武器は「ボーナスを同じ構成で再復元」を選んでから登録してください。": ["This weapon type and element are already registered. To add another weapon awaiting EX farming, select Amend (Keep Bonuses) first.", "此武器種類與屬性已登錄。若要加入另一把尚未嚴選EX的武器，請先選擇「保留加成組合並再次復原強化」。"],
   "同じ表示名が登録済みです。別の名前を入力してください。": ["That display name is already registered. Enter a different name.", "此顯示名稱已登錄，請輸入其他名稱。"],
   "同じ武器種・属性の別武器には、区別できる表示名を入力してください。": ["Give separate weapons with the same type and element distinct display names.", "相同武器種類與屬性的不同武器，請輸入可區分的顯示名稱。"],
+  "通常アーティア未来予測": ["Base Artian Forecast", "一般機械武器未來預測"],
+  "基準seedと作成カウンターを設定してください": ["Set the base seed and forge counter", "請設定基準seed與生產計數器"],
+  "β版・検証範囲": ["Beta verification scope", "β版驗證範圍"],
+  "レア8専用です。大剣・ランス・弓・ヘビィボウガン・ライトボウガンの計28本で、作成カウンターと5枠の一致を確認しています。ほかの近接武器は同じ式で予測します。": ["Rarity 8 only. Forge counters and all five slots were verified across 28 Great Swords, Lances, Bows, Heavy Bowguns, and Light Bowguns. Other melee weapons use the same formula.", "僅支援稀有度8。已用大劍、長槍、弓、重弩槍與輕弩槍共28把確認生產計數器與5格結果一致；其他近戰武器使用相同公式預測。"],
+  "通常アーティア武器は、武器種ごとに作成カウンターが別管理です。同じ武器種のレア8武器を1本生産すると、その武器種のカウンターだけが1つ進みます。": ["Base Artian forge counters are tracked separately for each weapon type. Forging one rarity 8 weapon advances only that weapon type's counter.", "一般機械武器的生產計數器會依武器種類分別管理。生產1把相同武器種類的稀有度8武器時，只有該武器種類的計數器會前進1。"],
+  "共通の基準seed": ["Shared base seed", "共用基準seed"],
+  "上部の現在のセーブ状態と共通": ["Shared with Current Save State above", "與上方目前存檔狀態共用"],
+  "対象の作成カウンター": ["Target forge counter", "目標生產計數器"],
+  "武器種ごとに設定（レア8）": ["Set for each weapon type (Rarity 8)", "依武器種類設定（稀有度8）"],
+  "予測する通常アーティア武器": ["Base Artian weapon to forecast", "要預測的一般機械武器"],
+  "属性の有無": ["Element", "是否有屬性"],
+  "属性・状態異常あり": ["Element / Status", "有屬性／異常狀態"],
+  "対象レア度": ["Target rarity", "目標稀有度"],
+  "レア8（固定）": ["Rarity 8 (Fixed)", "稀有度8（固定）"],
+  "現在の作成カウンター": ["Current forge counter", "目前生產計數器"],
+  "作成カウンター": ["Forge Counter", "生產計數器"],
+  "表示する本数": ["Weapons to display", "顯示武器數"],
+  "このカウンターで予測": ["Forecast from this counter", "從此計數器預測"],
+  "作成結果からカウンターを特定": ["Find the counter from forge results", "從生產結果確定計數器"],
+  "上で選んだ武器種・属性の有無をそろえてレア8武器を連続生産し、毎回の復元強化5枠を入力します。確認後に元の状態へ戻す場合は、セーブせずにゲームを終了してください。": ["Forge consecutive rarity 8 weapons using the weapon type and element setting selected above, then enter all five reinforcement slots for each result. To return to the original state, quit without saving.", "依照上方選擇的武器種類與屬性設定，連續生產稀有度8武器，並輸入每次復原強化的5格結果。若要回到原本狀態，請不要存檔並結束遊戲。"],
+  "作成結果を1回追加": ["Add one forge result", "新增1次生產結果"],
+  "作成カウンターを検索": ["Search forge counter", "搜尋生產計數器"],
+  "この先に生産する武器の5枠": ["Five slots of upcoming forged weapons", "接下來生產武器的5格結果"],
+  "「ここを0にする」は、ゲーム内でその本数まで生産してセーブした場合に使用してください。": ["Use “Set as 0” only after forging through that weapon and saving in game.", "只有在遊戲中生產到該把武器並存檔後，才使用「設為0」。"],
+  "何本先": ["Weapons ahead", "幾把之後"],
+  "作成前カウンター": ["Counter before forging", "生產前計數器"],
+  "保存後の作成カウンター": ["Forge counter after saving", "存檔後的生產計數器"],
+  "基準seedを先に特定してください": ["Identify the base seed first", "請先確定基準seed"],
+  "作成カウンターを入力または検索してください": ["Enter or search for the forge counter", "請輸入或搜尋生產計數器"],
+  "属性・状態異常近接は、攻撃・属性・斬れ味・会心から抽選されます。": ["Elemental and status melee weapons roll Attack, Element, Sharpness, and Affinity.", "屬性與異常狀態近戰武器會從攻擊、屬性、銳利度與會心中抽選。"],
+  "無属性近接は、攻撃・斬れ味・会心から抽選されます。": ["Non-element melee weapons roll Attack, Sharpness, and Affinity.", "無屬性近戰武器會從攻擊、銳利度與會心中抽選。"],
+  "属性・状態異常弓は、攻撃・属性・会心から抽選されます。": ["Elemental and status Bows roll Attack, Element, and Affinity.", "屬性與異常狀態弓會從攻擊、屬性與會心中抽選。"],
+  "無属性弓は、攻撃・会心から抽選されます。": ["Non-element Bows roll Attack and Affinity.", "無屬性弓會從攻擊與會心中抽選。"],
+  "ボウガンは、攻撃・装填数・会心から抽選されます。": ["Bowguns roll Attack, Ammo Capacity, and Affinity.", "弩槍會從攻擊、裝填數與會心中抽選。"],
+  "この武器種はレア8の実機結果と一致を確認済みです。": ["This weapon type has been verified against in-game rarity 8 results.", "此武器種類已確認與稀有度8的遊戲實測結果一致。"],
+  "この武器種は実機一致を確認した共通式から予測します。個別の確認は未完了です。": ["This weapon type uses the formula verified in game; this specific type has not yet been checked individually.", "此武器種類使用已在遊戲中確認一致的共通公式；尚未逐一確認此特定武器種類。"],
+  "基準seedを先に特定するか、上部の現在のセーブ状態から手入力してください。": ["Identify the base seed first or enter it manually in Current Save State above.", "請先確定基準seed，或在上方目前存檔狀態中手動輸入。"],
+  "現在の作成カウンターは0〜1,000,000の整数で入力してください。": ["Enter the current forge counter as an integer from 0 to 1,000,000.", "目前生產計數器請輸入0～1,000,000的整數。"],
+  "表示する本数は1〜10,000の整数で入力してください。": ["Enter the number of weapons to display as an integer from 1 to 10,000.", "顯示武器數請輸入1～10,000的整數。"],
+  "保存値": ["saved value", "已保存數值"],
+  "作成結果を1回以上入力してください。": ["Enter at least one forge result.", "請輸入至少1次生產結果。"],
+  "入力した5枠はゲーム内の上限を超えています。入力内容を確認してください。": ["The five entered slots exceed an in-game limit. Check the input.", "輸入的5格超出遊戲內上限，請確認輸入內容。"],
+  "選択した武器種・属性では出ない強化が含まれています。入力内容を確認してください。": ["The input includes a bonus that cannot appear for the selected weapon type and element. Check the input.", "輸入內容包含所選武器種類與屬性不會出現的強化，請確認輸入。"],
+  "カウンター候補は0〜1,000,000の範囲で、開始を終了以下にしてください。": ["Use a counter range from 0 to 1,000,000 with the start no greater than the end.", "計數器候選範圍請設為0～1,000,000，且開始值不得大於結束值。"],
+  "候補を特定できませんでした。入力内容と探索範囲を確認してください。": ["No candidate was found. Check the input and search range.", "找不到候選。請確認輸入內容與搜尋範圍。"],
+  "候補が100件以上あります。作成結果を追加して絞り込んでください。": ["There are at least 100 candidates. Add more forge results to narrow them down.", "候選至少有100件。請新增生產結果以縮小範圍。"],
 };
 
 const ALL_TEXT = { ...OFFICIAL_TERMS, ...UI_TEXT };
@@ -460,13 +509,17 @@ function translateTemplate(source, locale, fallback = source) {
   if ((match = source.match(/^(\d+)枠目$/))) return en ? `Slot ${match[1]}` : `第${match[1]}格`;
   if ((match = source.match(/^抽選 (\d+)$/))) return en ? `Roll ${match[1]}` : `抽選 ${match[1]}`;
   if ((match = source.match(/^再付与 (\d+)$/))) return en ? `Reset ${match[1]}` : `重新附加 ${match[1]}`;
+  if ((match = source.match(/^作成 (\d+)$/))) return en ? `Forge ${match[1]}` : `生產 ${match[1]}`;
   if ((match = source.match(/^再付与(\d+)のシリーズスキル$/))) return en ? `Reset ${match[1]} Series Skill` : `第${match[1]}次重新附加的系列技能`;
   if ((match = source.match(/^再付与(\d+)のグループスキル$/))) return en ? `Reset ${match[1]} Group Skill` : `第${match[1]}次重新附加的團體技能`;
   if ((match = source.match(/^希望 (\d+)$/))) return en ? `Desired ${match[1]}` : `目標 ${match[1]}`;
   if ((match = source.match(/^(\d+)回先$/))) return en ? `${match[1]} rolls ahead` : `${match[1]}次後`;
+  if ((match = source.match(/^(\d+)本先$/))) return en ? `${match[1]} weapons ahead` : `${match[1]}把之後`;
   if ((match = source.match(/^([\d,]+)候補$/))) return en ? `${match[1]} candidates` : `${match[1]}個候選`;
   if ((match = source.match(/^候補 ([\d,]+)$/))) return en ? `Candidate ${match[1]}` : `候選 ${match[1]}`;
   if ((match = source.match(/^抽選(\d+)の(\d+)枠目$/))) return en ? `Roll ${match[1]}, slot ${match[2]}` : `抽選${match[1]}的第${match[2]}格`;
+  if ((match = source.match(/^作成(\d+)の(\d+)枠目$/))) return en ? `Forge ${match[1]}, slot ${match[2]}` : `生產${match[1]}的第${match[2]}格`;
+  if ((match = source.match(/^作成カウンター ([\d,]+)から予測$/))) return en ? `Forecasting from Forge Counter ${match[1]}` : `從生產計數器 ${match[1]}開始預測`;
   if ((match = source.match(/^(\d+)回を表示$/))) return en ? `Showing ${match[1]} rolls` : `顯示${match[1]}次`;
   if ((match = source.match(/^(\d+)回中 (\d+)回一致$/))) return en ? `${match[2]} of ${match[1]} rolls match` : `${match[1]}次中有${match[2]}次符合`;
   if ((match = source.match(/^([\d,]+)行・([\d,]+)列をCSVへ出力しました。$/))) return en ? `Exported ${match[1]} rows and ${match[2]} columns to CSV.` : `已將${match[1]}列、${match[2]}欄匯出為CSV。`;
@@ -507,6 +560,7 @@ function translateTemplate(source, locale, fallback = source) {
       : `找不到候選。若輸入內容正確，目前的復原加成計數器可能在搜尋範圍（${range}）之外。請調整範圍，涵蓋此存檔至今抽選復原加成的大約累計次數，然後再試一次。`;
   }
   if ((match = source.match(/^抽選(\d+)の(\d+)枠目を選択してください。$/))) return en ? `Select slot ${match[2]} for roll ${match[1]}.` : `請選擇抽選${match[1]}的第${match[2]}格。`;
+  if ((match = source.match(/^作成(\d+)の(\d+)枠目を選択してください。$/))) return en ? `Select slot ${match[2]} for forge ${match[1]}.` : `請選擇生產${match[1]}的第${match[2]}格。`;
   if ((match = source.match(/^抽選(\d+)の(\d+)枠目「(.+)」は、選択した武器種・属性では抽選されません。武器種・属性と入力内容を確認してください。$/))) return en ? `Slot ${match[2]} of roll ${match[1]} (${t(match[3])}) cannot occur for the selected weapon type and element. Check the weapon type, element, and input.` : `抽選${match[1]}的第${match[2]}格「${t(match[3])}」不會在所選武器種類與屬性中出現。請確認武器種類、屬性與輸入內容。`;
   if ((match = source.match(/^抽選(\d+)の「(.+)」が(\d+)枠あります。同一ボーナスは最大2枠です。入力内容を確認してください。$/))) return en ? `Roll ${match[1]} has ${match[3]} slots of ${t(match[2])}. The same bonus is limited to two slots. Check your input.` : `抽選${match[1]}有${match[3]}格「${t(match[2])}」。相同加成最多2格，請確認輸入內容。`;
   if ((match = source.match(/^抽選(\d+)の(装填系|斬れ味系)ボーナスが(\d+)枠あります。\2は合計2枠までです。入力内容を確認してください。$/))) return en ? `Roll ${match[1]} has ${match[3]} ${t(match[2])} bonus slots. This category is limited to two slots total. Check your input.` : `抽選${match[1]}有${match[3]}格${t(match[2])}加成。此系統合計最多2格，請確認輸入內容。`;
@@ -525,6 +579,11 @@ function translateTemplate(source, locale, fallback = source) {
     return en ? `Copied save-state code to the ${destination}: ${match[2]}` : `已將存檔狀態代碼複製至${destination}：${match[2]}`;
   }
   if ((match = source.match(/^(復元ボーナスカウンター|スキルカウンター)([\d,]+)を新しい0地点にしました。$/))) return en ? `Set ${t(match[1])} ${match[2]} as the new origin (0).` : `已將${t(match[1])} ${match[2]}設為新的0點。`;
+  if ((match = source.match(/^作成カウンター([\d,]+)を新しい0地点にしました。$/))) return en ? `Set Forge Counter ${match[1]} as the new origin (0).` : `已將生產計數器${match[1]}設為新的0點。`;
+  if ((match = source.match(/^作成カウンター([\d,]+)〜([\d,]+)を検索中…$/))) return en ? `Searching Forge Counters ${match[1]}–${match[2]}…` : `正在搜尋生產計數器${match[1]}～${match[2]}…`;
+  if ((match = source.match(/^([\d,]+)件の候補が見つかりました。使用するカウンターを選んでください。$/))) return en ? `${match[1]} candidates found. Select the counter to use.` : `找到${match[1]}個候選，請選擇要使用的計數器。`;
+  if ((match = source.match(/^カウンター ([\d,]+)を使用$/))) return en ? `Use Counter ${match[1]}` : `使用計數器 ${match[1]}`;
+  if ((match = source.match(/^作成カウンター([\d,]+)を現在位置に設定しました。$/))) return en ? `Set Forge Counter ${match[1]} as the current position.` : `已將生產計數器${match[1]}設為目前位置。`;
   if ((match = source.match(/^(\d+)回先のリセット結果(?:から設定)?$/))) return en ? `Set from the Reset Bonuses result ${match[1]} rolls ahead` : `由${match[1]}次後的重置加成結果設定`;
   if ((match = source.match(/^(.+)の(\d+)回先を採用した状態へ進み、「ボーナスを同じ構成で再復元」のEX厳選に切り替えました。$/))) return en ? `Advanced to the state after adopting the result ${match[2]} rolls ahead for ${match[1]} and switched to EX farming with Amend (Keep Bonuses).` : `已推進至採用${match[1]}在${match[2]}次後結果的狀態，並切換為以「保留加成組合並再次復原強化」嚴選EX。`;
   if ((match = source.match(/^EX厳選へ引き継ぐには、登録武器を(\d+)件未満にしてください。$/))) return en ? `To transfer to EX farming, keep fewer than ${match[1]} registered weapons.` : `若要轉移至EX嚴選，已登錄武器必須少於${match[1]}把。`;

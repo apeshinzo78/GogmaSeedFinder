@@ -4,6 +4,12 @@ import initWasm, {
   predict_gogma_rolls,
   predict_skill_rolls,
 } from "./pkg/gogma_wasm_search.js";
+import {
+  ARTIAN_BASE_BONUSES,
+  artianBasePool,
+  findArtianCreateCounters,
+  predictArtianBaseRolls,
+} from "./artian-base-rng.js";
 import { localizedTargetName, t } from "./i18n.js";
 
 const WEAPON_TYPES = [
@@ -37,6 +43,31 @@ const ATTRIBUTES = [
   [8, "睡眠属性"],
   [9, "爆破属性"],
 ];
+
+const ARTIAN_R8_ENUM = 7;
+const ARTIAN_ATTRIBUTE_KINDS = [
+  [0, "無属性"],
+  [1, "属性・状態異常あり"],
+];
+const ARTIAN_LIVE_VERIFIED_WEAPON_TYPES = new Set([0, 6, 11, 12, 13]);
+const ARTIAN_ELEMENT_VALUES = new Map([
+  [0, 80],
+  [1, 30],
+  [2, 20],
+  [3, 50],
+  [4, 50],
+  [5, 50],
+  [6, 50],
+  [7, 50],
+  [8, 30],
+  [9, 50],
+  [10, 30],
+  [11, 30],
+]);
+const ARTIAN_SHARPNESS_VALUES = new Map([
+  ...WEAPON_TYPES.filter(([weaponType]) => weaponType <= 10)
+    .map(([weaponType]) => [weaponType, weaponType === 10 ? 20 : 30]),
+]);
 
 const GOGMA_BONUSES = [
   [8, "基礎攻撃力強化Ⅱ"],
@@ -258,6 +289,28 @@ const keepLayoutInputs = document.querySelector("#keep-layout-inputs");
 const keepLayoutSource = document.querySelector("#keep-layout-source");
 const keepLayoutError = document.querySelector("#keep-layout-error");
 const detailPredictionSection = document.querySelector(".detail-prediction-section");
+const artianBaseStatus = document.querySelector("#artian-base-status");
+const artianBaseSeed = document.querySelector("#artian-base-seed");
+const artianBaseCurrentCounter = document.querySelector("#artian-base-current-counter");
+const artianBaseCounterSource = document.querySelector("#artian-base-counter-source");
+const artianBaseWeaponSelect = document.querySelector("#artian-base-weapon-type");
+const artianBaseAttributeSelect = document.querySelector("#artian-base-attribute-force");
+const artianBaseCounterInput = document.querySelector("#artian-base-counter");
+const artianBaseCountInput = document.querySelector("#artian-base-count");
+const artianWeaponVerification = document.querySelector("#artian-weapon-verification");
+const applyArtianBaseCounterButton = document.querySelector("#apply-artian-base-counter");
+const exportArtianBaseCsvButton = document.querySelector("#export-artian-base-csv");
+const artianBaseError = document.querySelector("#artian-base-error");
+const artianCounterStartInput = document.querySelector("#artian-counter-start");
+const artianCounterEndInput = document.querySelector("#artian-counter-end");
+const artianObservationRows = document.querySelector("#artian-observation-rows");
+const addArtianObservationButton = document.querySelector("#add-artian-observation");
+const removeArtianObservationButton = document.querySelector("#remove-artian-observation");
+const findArtianCounterButton = document.querySelector("#find-artian-counter");
+const artianSearchMessage = document.querySelector("#artian-search-message");
+const artianCounterCandidates = document.querySelector("#artian-counter-candidates");
+const artianBaseTableWrap = document.querySelector("#artian-base-table-wrap");
+const artianBaseRows = document.querySelector("#artian-base-rows");
 const tabButtons = [...document.querySelectorAll("[data-tab]")];
 const tabViews = [...document.querySelectorAll("[data-tab-view]")];
 
@@ -273,6 +326,8 @@ populateSelect(skillWeaponSelect, WEAPON_TYPES, 8);
 populateSelect(skillAttributeSelect, ATTRIBUTES, 1);
 populateSelect(skillTargetWeaponSelect, WEAPON_TYPES, 3);
 populateSelect(skillTargetAttributeSelect, ATTRIBUTES, 1);
+populateSelect(artianBaseWeaponSelect, WEAPON_TYPES, 6);
+populateSelect(artianBaseAttributeSelect, ARTIAN_ATTRIBUTE_KINDS, 1);
 populateSelect(
   skillFilterGroupSelect,
   [[-1, "指定しない"], ...prioritizedSkillOptions(GROUP_SKILLS, PRIORITY_GROUP_SKILL_INDICES)],
@@ -283,8 +338,10 @@ const persistedAppState = loadPersistedAppState();
 let saveState = persistedAppState.saveState;
 let comparisonTargets = persistedAppState.targets;
 let bonusPrediction = persistedAppState.bonusPrediction;
+let artianBaseState = persistedAppState.artianBaseState;
 renderObservationRows(SAMPLE_OBSERVATIONS);
 renderSkillObservationRows(Array.from({ length: 4 }, () => null));
+renderArtianObservationRows(Array.from({ length: 3 }, () => null));
 updateBonusPoolNote();
 updateCounterRangeSummary();
 renderPredictionFilters();
@@ -308,16 +365,20 @@ let skillPredictionRollSets = [];
 let selectedSkillCounter = null;
 let skillObservedCount = 0;
 let currentSkillObservations = [];
+let artianBasePredictionRolls = [];
 
 renderComparisonTargets();
 renderBonusOperation();
 syncRuntimeFromSaveState();
 renderSaveState();
+syncArtianAttributeControl();
+renderArtianWeaponVerification();
 setActiveTab(location.hash.slice(1) || "guide", false);
 if (selectedCandidate) {
   void Promise.all([refreshPredictions(), refreshComparisonPredictions()]);
 }
 if (selectedSkillCounter !== null) void refreshSkillPredictions();
+if (currentArtianBaseCounter() !== null) refreshArtianBasePredictions();
 
 document.querySelector("#load-sample").addEventListener("click", () => {
   weaponSelect.value = "8";
@@ -506,6 +567,41 @@ skillFilterSeriesOptions.addEventListener("change", () => renderSkillPredictionT
 exportSkillCsvButton.addEventListener("click", () => exportVisibleSkillPredictionsCsv());
 findSkillPositionButton.addEventListener("click", () => void findSkillPosition());
 
+artianBaseWeaponSelect.addEventListener("change", () => {
+  const observations = snapshotArtianObservationValues();
+  syncArtianAttributeControl();
+  hideArtianBaseError();
+  clearArtianCounterSearchFeedback();
+  renderArtianObservationRows(observations);
+  renderArtianWeaponVerification();
+  renderArtianBaseState();
+  refreshArtianBasePredictions();
+});
+artianBaseAttributeSelect.addEventListener("change", () => {
+  const observations = snapshotArtianObservationValues();
+  hideArtianBaseError();
+  clearArtianCounterSearchFeedback();
+  renderArtianObservationRows(observations);
+  renderArtianWeaponVerification();
+  refreshArtianBasePredictions();
+});
+artianBaseCountInput.addEventListener("change", () => refreshArtianBasePredictions());
+applyArtianBaseCounterButton.addEventListener("click", () => applyArtianBaseCounter());
+addArtianObservationButton.addEventListener("click", () => {
+  artianObservationRows.append(createArtianObservationRow());
+  renumberArtianObservationRows();
+  clearArtianCounterSearchFeedback();
+});
+removeArtianObservationButton.addEventListener("click", () => {
+  const rows = artianObservationRows.querySelectorAll(".artian-observation-row");
+  if (rows.length > 1) rows[rows.length - 1].remove();
+  renumberArtianObservationRows();
+  clearArtianCounterSearchFeedback();
+});
+artianObservationRows.addEventListener("change", () => clearArtianCounterSearchFeedback());
+findArtianCounterButton.addEventListener("click", () => void searchArtianBaseCounter());
+exportArtianBaseCsvButton.addEventListener("click", () => exportArtianBasePredictionsCsv());
+
 function readConfig() {
   const weaponType = readInteger("weapon-type", "武器種", 0, 13);
   const attributeForce = readInteger("attribute-force", "武器の属性", 0, 9);
@@ -628,6 +724,11 @@ function loadPersistedAppState() {
     bonusSource: null,
     skillSource: null,
   };
+  const emptyArtianBaseState = {
+    baseSeed: null,
+    counters: {},
+    sources: {},
+  };
   try {
     const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) ?? "null");
     const candidateState = saved?.saveState ?? {};
@@ -674,9 +775,41 @@ function loadPersistedAppState() {
     const bonusPrediction = {
       mode: saved?.bonusPrediction?.mode === "keep" ? "keep" : "reset",
     };
-    return { saveState: normalizedState, targets, bonusPrediction };
+    const savedArtianBaseState = saved?.artianBaseState ?? {};
+    const artianBaseSeedValue = savedArtianBaseState.baseSeed === null ||
+        savedArtianBaseState.baseSeed === undefined
+      ? Number.NaN
+      : Number(savedArtianBaseState.baseSeed);
+    const counters = {};
+    const sources = {};
+    if (savedArtianBaseState.counters && typeof savedArtianBaseState.counters === "object") {
+      for (const [key, rawCounter] of Object.entries(savedArtianBaseState.counters)) {
+        if (!/^\d+:\d+$/.test(key)) continue;
+        const counter = Number(rawCounter);
+        if (!isValidCounter(counter)) continue;
+        counters[key] = counter;
+        if (typeof savedArtianBaseState.sources?.[key] === "string") {
+          sources[key] = savedArtianBaseState.sources[key];
+        }
+      }
+    }
+    const artianBaseState = {
+      ...emptyArtianBaseState,
+      baseSeed: Number.isSafeInteger(artianBaseSeedValue) && artianBaseSeedValue >= 0 &&
+          artianBaseSeedValue <= 99_999_999
+        ? artianBaseSeedValue
+        : null,
+      counters,
+      sources,
+    };
+    return { saveState: normalizedState, targets, bonusPrediction, artianBaseState };
   } catch {
-    return { saveState: emptyState, targets: [], bonusPrediction: { mode: "reset" } };
+    return {
+      saveState: emptyState,
+      targets: [],
+      bonusPrediction: { mode: "reset" },
+      artianBaseState: emptyArtianBaseState,
+    };
   }
 }
 
@@ -684,7 +817,7 @@ function persistAppState() {
   try {
     localStorage.setItem(
       STORAGE_KEY,
-      JSON.stringify({ saveState, targets: comparisonTargets, bonusPrediction }),
+      JSON.stringify({ saveState, targets: comparisonTargets, bonusPrediction, artianBaseState }),
     );
   } catch {
     // The app remains usable when storage is unavailable.
@@ -776,6 +909,8 @@ function renderSaveState() {
   const stateCode = currentStateCode();
   if (stateCode) continuationCodeInput.value = stateCode;
   syncRuntimeFromSaveState();
+  syncArtianBaseSeed();
+  renderArtianBaseState();
   updateComparisonStatus();
   resetSkillSearchFeedback();
   persistAppState();
@@ -2723,6 +2858,419 @@ function createSkillPredictionRow(index, skillFilter, highlightEnabled) {
     row.append(cell);
   }
   return row;
+}
+
+function artianBaseCounterKey(
+  weaponType = Number(artianBaseWeaponSelect.value),
+) {
+  return `${weaponType}:${ARTIAN_R8_ENUM}`;
+}
+
+function currentArtianAttributeForce() {
+  return BOWGUN_WEAPON_TYPES.has(Number(artianBaseWeaponSelect.value))
+    ? 0
+    : Number(artianBaseAttributeSelect.value);
+}
+
+function syncArtianAttributeControl() {
+  const isBowgun = BOWGUN_WEAPON_TYPES.has(Number(artianBaseWeaponSelect.value));
+  if (isBowgun) artianBaseAttributeSelect.value = "0";
+  artianBaseAttributeSelect.disabled = isBowgun;
+}
+
+function syncArtianBaseSeed() {
+  if (saveState.baseSeed === null) return;
+  if (artianBaseState.baseSeed === saveState.baseSeed) return;
+  artianBaseState = {
+    baseSeed: saveState.baseSeed,
+    counters: {},
+    sources: {},
+  };
+  artianBasePredictionRolls = [];
+}
+
+function currentArtianBaseCounter() {
+  if (saveState.baseSeed === null || artianBaseState.baseSeed !== saveState.baseSeed) return null;
+  const value = Number(artianBaseState.counters[artianBaseCounterKey()]);
+  return Number.isSafeInteger(value) && value >= 0 && value <= 1_000_000 ? value : null;
+}
+
+function renderArtianBaseState() {
+  const counter = currentArtianBaseCounter();
+  const key = artianBaseCounterKey();
+  artianBaseSeed.textContent = saveState.baseSeed === null
+    ? "未特定"
+    : saveState.baseSeed.toLocaleString("ja-JP");
+  artianBaseCurrentCounter.textContent = counter === null
+    ? "未特定"
+    : counter.toLocaleString("ja-JP");
+  artianBaseCounterInput.value = counter ?? "";
+  artianBaseCounterSource.textContent = counter === null
+    ? "武器種ごとに設定（レア8）"
+    : stateSourceText(artianBaseState.sources[key] ?? "保存値", "武器種ごとに設定（レア8）");
+
+  if (saveState.baseSeed === null) {
+    artianBaseStatus.textContent = "基準seedを先に特定してください";
+    artianBaseStatus.className = "status-pill";
+  } else if (counter === null) {
+    artianBaseStatus.textContent = "作成カウンターを入力または検索してください";
+    artianBaseStatus.className = "status-pill";
+  } else {
+    artianBaseStatus.textContent = `作成カウンター ${counter.toLocaleString("ja-JP")}から予測`;
+    artianBaseStatus.className = "status-pill complete";
+  }
+}
+
+function renderArtianWeaponVerification() {
+  const weaponType = Number(artianBaseWeaponSelect.value);
+  const profile = artianBasePool(weaponType, currentArtianAttributeForce()).name;
+  const poolText = {
+    element_melee: "属性・状態異常近接は、攻撃・属性・斬れ味・会心から抽選されます。",
+    raw_melee: "無属性近接は、攻撃・斬れ味・会心から抽選されます。",
+    element_bow: "属性・状態異常弓は、攻撃・属性・会心から抽選されます。",
+    raw_bow: "無属性弓は、攻撃・会心から抽選されます。",
+    bowgun: "ボウガンは、攻撃・装填数・会心から抽選されます。",
+  }[profile];
+  const verificationText = ARTIAN_LIVE_VERIFIED_WEAPON_TYPES.has(weaponType)
+    ? "この武器種はレア8の実機結果と一致を確認済みです。"
+    : "この武器種は実機一致を確認した共通式から予測します。個別の確認は未完了です。";
+  artianWeaponVerification.textContent = `${t(poolText)} ${t(verificationText)}`;
+}
+
+function applyArtianBaseCounter() {
+  hideArtianBaseError();
+  if (saveState.baseSeed === null) {
+    showArtianBaseError("基準seedを先に特定するか、上部の現在のセーブ状態から手入力してください。");
+    return;
+  }
+  const counter = Number(artianBaseCounterInput.value);
+  if (!Number.isSafeInteger(counter) || counter < 0 || counter > 1_000_000) {
+    showArtianBaseError("現在の作成カウンターは0〜1,000,000の整数で入力してください。");
+    return;
+  }
+  syncArtianBaseSeed();
+  const key = artianBaseCounterKey();
+  artianBaseState.counters[key] = counter;
+  artianBaseState.sources[key] = "手入力";
+  persistAppState();
+  renderArtianBaseState();
+  refreshArtianBasePredictions();
+}
+
+function refreshArtianBasePredictions() {
+  hideArtianBaseError();
+  const counter = currentArtianBaseCounter();
+  if (saveState.baseSeed === null || counter === null) {
+    artianBasePredictionRolls = [];
+    artianBaseRows.replaceChildren();
+    artianBaseTableWrap.hidden = true;
+    exportArtianBaseCsvButton.disabled = true;
+    renderArtianBaseState();
+    return;
+  }
+  const count = Number(artianBaseCountInput.value);
+  if (!Number.isSafeInteger(count) || count < 1 || count > 10_000) {
+    showArtianBaseError("表示する本数は1〜10,000の整数で入力してください。");
+    return;
+  }
+  try {
+    artianBasePredictionRolls = predictArtianBaseRolls(
+      saveState.baseSeed,
+      Number(artianBaseWeaponSelect.value),
+      ARTIAN_R8_ENUM,
+      currentArtianAttributeForce(),
+      counter,
+      count,
+    );
+    renderArtianBaseTable();
+    renderArtianBaseState();
+  } catch (error) {
+    showArtianBaseError(error instanceof Error ? error.message : String(error));
+  }
+}
+
+function artianBaseBonusName(weaponType, bonusId) {
+  if (bonusId === 4) return `${t("基礎攻撃力強化")} +5`;
+  if (bonusId === 6) return [t("属性強化"), `+${ARTIAN_ELEMENT_VALUES.get(weaponType) ?? "?"}`].join(" ");
+  if (bonusId === 7 && BOWGUN_WEAPON_TYPES.has(weaponType)) return t("装填数強化 +1");
+  if (bonusId === 7) return [t("斬れ味強化"), `+${ARTIAN_SHARPNESS_VALUES.get(weaponType) ?? "?"}`].join(" ");
+  if (bonusId === 8) return `${t("会心率強化")} +5%`;
+  return `ID ${bonusId}`;
+}
+
+function artianBaseBonusClassName(bonusId) {
+  if (bonusId === 4) return "attack";
+  if (bonusId === 6) return "element";
+  if (bonusId === 8) return "affinity";
+  return "sharpness-ammo";
+}
+
+function renderArtianBaseTable() {
+  if (artianBasePredictionRolls.length === 0) {
+    artianBaseRows.replaceChildren();
+    artianBaseTableWrap.hidden = true;
+    exportArtianBaseCsvButton.disabled = true;
+    return;
+  }
+  artianBaseRows.replaceChildren(
+    ...artianBasePredictionRolls.map((roll, index) => createArtianBaseRow(roll, index)),
+  );
+  artianBaseTableWrap.hidden = false;
+  exportArtianBaseCsvButton.disabled = false;
+}
+
+function createArtianBaseRow(roll, index) {
+  const row = document.createElement("tr");
+  const offsetCell = document.createElement("th");
+  const beforeCounterCell = document.createElement("td");
+  offsetCell.scope = "row";
+  offsetCell.textContent = `${index + 1}本先`;
+  beforeCounterCell.className = "artian-counter-cell";
+  beforeCounterCell.textContent = roll.counter.toLocaleString("ja-JP");
+  row.append(offsetCell, beforeCounterCell, createArtianSavedStateCell(index + 1));
+  for (const bonusId of roll.bonusIds) {
+    const cell = document.createElement("td");
+    const tag = document.createElement("span");
+    tag.className = `bonus-tag ${artianBaseBonusClassName(bonusId)}`;
+    tag.textContent = artianBaseBonusName(Number(artianBaseWeaponSelect.value), bonusId);
+    cell.append(tag);
+    row.append(cell);
+  }
+  return row;
+}
+
+function createArtianSavedStateCell(completedCreations) {
+  const cell = document.createElement("td");
+  const counter = currentArtianBaseCounter();
+  const value = document.createElement("strong");
+  const button = document.createElement("button");
+  cell.className = "saved-state-cell artian-counter-cell";
+  value.textContent = counter === null
+    ? "未特定"
+    : (counter + completedCreations).toLocaleString("ja-JP");
+  button.type = "button";
+  button.className = "adopt-position-button";
+  button.textContent = "ここを0にする";
+  button.addEventListener("click", () => adoptArtianBasePosition(completedCreations));
+  cell.append(value, button);
+  return cell;
+}
+
+function adoptArtianBasePosition(completedCreations) {
+  const counter = currentArtianBaseCounter();
+  if (counter === null) return;
+  const nextCounter = counter + completedCreations;
+  if (nextCounter > 1_000_000) return;
+  const key = artianBaseCounterKey();
+  artianBaseState.counters[key] = nextCounter;
+  artianBaseState.sources[key] = "予測結果";
+  persistAppState();
+  renderArtianBaseState();
+  artianSearchMessage.textContent = `作成カウンター${nextCounter.toLocaleString("ja-JP")}を新しい0地点にしました。`;
+  refreshArtianBasePredictions();
+  setActiveTab("artian-future");
+}
+
+function snapshotArtianObservationValues() {
+  return [...artianObservationRows.querySelectorAll(".artian-observation-row")].map((row) =>
+    [...row.querySelectorAll("select")].map((select) =>
+      select.value === "" ? null : Number(select.value),
+    ),
+  );
+}
+
+function renderArtianObservationRows(values) {
+  const allowed = new Set(artianBasePool(
+    Number(artianBaseWeaponSelect.value),
+    currentArtianAttributeForce(),
+  ).ids);
+  const normalized = values.map((roll) => roll?.map((bonusId) =>
+    allowed.has(bonusId) ? bonusId : null,
+  ));
+  artianObservationRows.replaceChildren(...normalized.map((roll) => createArtianObservationRow(roll)));
+  renumberArtianObservationRows();
+}
+
+function createArtianObservationRow(values = null) {
+  const row = document.createElement("div");
+  row.className = "observation-row artian-observation-row";
+  const rollNumber = document.createElement("span");
+  rollNumber.className = "roll-number";
+  row.append(rollNumber);
+  for (let slotIndex = 0; slotIndex < 5; slotIndex += 1) {
+    const label = document.createElement("label");
+    const accessibleLabel = document.createElement("span");
+    const select = document.createElement("select");
+    accessibleLabel.className = "sr-only slot-label";
+    const placeholder = document.createElement("option");
+    placeholder.value = "";
+    placeholder.textContent = "選択してください";
+    placeholder.disabled = true;
+    placeholder.selected = values?.[slotIndex] === null || values?.[slotIndex] === undefined;
+    select.append(placeholder);
+    const allowedIds = new Set(artianBasePool(
+      Number(artianBaseWeaponSelect.value),
+      currentArtianAttributeForce(),
+    ).ids);
+    for (const [bonusId] of ARTIAN_BASE_BONUSES.filter(([bonusId]) => allowedIds.has(bonusId))) {
+      const option = document.createElement("option");
+      option.value = String(bonusId);
+      option.textContent = artianBaseBonusName(Number(artianBaseWeaponSelect.value), bonusId);
+      option.selected = values?.[slotIndex] === bonusId;
+      select.append(option);
+    }
+    label.append(accessibleLabel, select);
+    row.append(label);
+  }
+  return row;
+}
+
+function renumberArtianObservationRows() {
+  const rows = [...artianObservationRows.querySelectorAll(".artian-observation-row")];
+  rows.forEach((row, rollIndex) => {
+    row.querySelector(".roll-number").textContent = `作成 ${rollIndex + 1}`;
+    row.querySelectorAll(".slot-label").forEach((label, slotIndex) => {
+      label.textContent = `${slotIndex + 1}枠目`;
+      label.parentElement.querySelector("select").setAttribute(
+        "aria-label",
+        t(`作成${rollIndex + 1}の${slotIndex + 1}枠目`),
+      );
+    });
+  });
+  removeArtianObservationButton.disabled = rows.length <= 1;
+}
+
+function readArtianObservations() {
+  const observations = snapshotArtianObservationValues();
+  const profile = artianBasePool(
+    Number(artianBaseWeaponSelect.value),
+    currentArtianAttributeForce(),
+  );
+  const allowedIds = new Set(profile.ids);
+  if (observations.length === 0) throw new Error("作成結果を1回以上入力してください。");
+  for (const [rollIndex, roll] of observations.entries()) {
+    for (const [slotIndex, bonusId] of roll.entries()) {
+      if (bonusId === null) {
+        throw new Error(`作成${rollIndex + 1}の${slotIndex + 1}枠目を選択してください。`);
+      }
+    }
+    const counts = new Map();
+    for (const bonusId of roll) {
+      if (!allowedIds.has(bonusId)) {
+        throw new Error("選択した武器種・属性では出ない強化が含まれています。入力内容を確認してください。");
+      }
+      counts.set(bonusId, (counts.get(bonusId) ?? 0) + 1);
+    }
+    if ([...counts].some(([bonusId, count]) => count > profile.caps.get(bonusId))) {
+      throw new Error("入力した5枠はゲーム内の上限を超えています。入力内容を確認してください。");
+    }
+  }
+  return observations;
+}
+
+async function searchArtianBaseCounter() {
+  hideArtianBaseError();
+  clearArtianCounterSearchFeedback();
+  if (saveState.baseSeed === null) {
+    showArtianBaseError("基準seedを先に特定するか、上部の現在のセーブ状態から手入力してください。");
+    return;
+  }
+  const start = Number(artianCounterStartInput.value);
+  const end = Number(artianCounterEndInput.value);
+  if (!Number.isSafeInteger(start) || !Number.isSafeInteger(end) ||
+      start < 0 || end < start || end > 1_000_000) {
+    showArtianBaseError("カウンター候補は0〜1,000,000の範囲で、開始を終了以下にしてください。");
+    return;
+  }
+  let observations;
+  try {
+    observations = readArtianObservations();
+  } catch (error) {
+    showArtianBaseError(error instanceof Error ? error.message : String(error));
+    return;
+  }
+  findArtianCounterButton.disabled = true;
+  artianSearchMessage.textContent = `作成カウンター${start.toLocaleString("ja-JP")}〜${end.toLocaleString("ja-JP")}を検索中…`;
+  await new Promise((resolve) => requestAnimationFrame(resolve));
+  try {
+    const matches = findArtianCreateCounters(
+      saveState.baseSeed,
+      Number(artianBaseWeaponSelect.value),
+      ARTIAN_R8_ENUM,
+      currentArtianAttributeForce(),
+      start,
+      end,
+      observations,
+    );
+    renderArtianCounterCandidates(matches);
+    artianSearchMessage.textContent = matches.length === 0
+      ? "候補を特定できませんでした。入力内容と探索範囲を確認してください。"
+      : matches.length >= 100
+        ? "候補が100件以上あります。作成結果を追加して絞り込んでください。"
+        : `${matches.length.toLocaleString("ja-JP")}件の候補が見つかりました。使用するカウンターを選んでください。`;
+  } catch (error) {
+    showArtianBaseError(error instanceof Error ? error.message : String(error));
+  } finally {
+    findArtianCounterButton.disabled = false;
+  }
+}
+
+function renderArtianCounterCandidates(matches) {
+  artianCounterCandidates.replaceChildren(...matches.map((counter) => {
+    const button = document.createElement("button");
+    button.type = "button";
+    button.textContent = `カウンター ${counter.toLocaleString("ja-JP")}を使用`;
+    button.addEventListener("click", () => {
+      syncArtianBaseSeed();
+      const key = artianBaseCounterKey();
+      artianBaseState.counters[key] = counter;
+      artianBaseState.sources[key] = "検索結果";
+      persistAppState();
+      renderArtianBaseState();
+      refreshArtianBasePredictions();
+      artianSearchMessage.textContent = `作成カウンター${counter.toLocaleString("ja-JP")}を現在位置に設定しました。`;
+    });
+    return button;
+  }));
+}
+
+function clearArtianCounterSearchFeedback() {
+  artianSearchMessage.textContent = "";
+  artianCounterCandidates.replaceChildren();
+}
+
+function exportArtianBasePredictionsCsv() {
+  const counter = currentArtianBaseCounter();
+  if (saveState.baseSeed === null || counter === null || artianBasePredictionRolls.length === 0) return;
+  const weaponType = Number(artianBaseWeaponSelect.value);
+  const attributeForce = currentArtianAttributeForce();
+  const headers = [
+    t("何本先"),
+    t("作成前カウンター"),
+    t("保存後の作成カウンター"),
+    ...Array.from({ length: 5 }, (_, index) => t(`${index + 1}枠目`)),
+  ];
+  const rows = artianBasePredictionRolls.map((roll, index) => [
+    index + 1,
+    roll.counter,
+    roll.counter + 1,
+    ...roll.bonusIds.map((bonusId) => artianBaseBonusName(weaponType, bonusId)),
+  ]);
+  downloadCsv(
+    `artian-base-future-seed-${saveState.baseSeed}-weapon-${weaponType}-attribute-${attributeForce}-counter-${counter}.csv`,
+    headers,
+    rows,
+  );
+}
+
+function showArtianBaseError(message) {
+  artianBaseError.textContent = message;
+  artianBaseError.hidden = false;
+}
+
+function hideArtianBaseError() {
+  artianBaseError.textContent = "";
+  artianBaseError.hidden = true;
 }
 
 function clearSkillPredictionResults() {

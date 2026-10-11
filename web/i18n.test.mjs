@@ -47,6 +47,7 @@ const exampleState = {
   unit: "条件", filterStatus: "", minimumExCount: 4, rows: [{}, {}, {}], headers: [{}, {}],
   ready: 1, counters: [{}, {}], selectedSkillCounter: 1000, skillPredictionRollSets: [{}, {}],
   conditionMatchCount: 0, matchingRowCount: 0, targetName: "Custom Weapon", saveState: { skillCounter: 1000 },
+  matches: [1, 2],
   comparisonTargetName: () => "Custom Weapon", gogmaBonusName: () => "基礎攻撃力強化Ⅱ",
 };
 

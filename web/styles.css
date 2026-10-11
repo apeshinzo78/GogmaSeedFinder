@@ -251,7 +251,7 @@ h1 {
   top: 0;
   z-index: 8;
   display: grid;
-  grid-template-columns: repeat(5, minmax(0, 1fr));
+  grid-template-columns: repeat(6, minmax(0, 1fr));
   gap: 6px;
   margin: 18px 0;
   padding: 7px;
@@ -260,6 +260,151 @@ h1 {
   background: rgb(18 19 16 / 94%);
   box-shadow: 0 12px 30px rgb(0 0 0 / 28%);
   backdrop-filter: blur(14px);
+}
+
+.artian-base-section {
+  background:
+    radial-gradient(circle at 85% 8%, rgb(76 129 141 / 10%), transparent 28rem),
+    rgb(27 29 24 / 96%);
+}
+
+.artian-beta-notice {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 14px;
+  align-items: start;
+  margin: 18px 0 14px;
+  padding: 13px 15px;
+  border: 1px solid #5b563c;
+  border-left: 3px solid var(--gold);
+  background: rgb(214 179 92 / 7%);
+}
+
+.artian-beta-notice strong {
+  color: var(--gold-bright);
+  font-size: 0.78rem;
+  white-space: nowrap;
+}
+
+.artian-beta-notice p {
+  margin: 0;
+  color: #c9c6b8;
+  font-size: 0.76rem;
+  line-height: 1.65;
+}
+
+.artian-origin-card {
+  display: grid;
+  grid-template-columns: minmax(170px, 0.45fr) minmax(0, 1fr);
+  gap: 22px;
+  align-items: center;
+  margin: 24px 0;
+  padding: 18px;
+  border: 1px solid #44483d;
+  border-radius: 12px;
+  background: #151611;
+}
+
+.artian-origin-card h3,
+.compact-heading h3 {
+  margin: 2px 0 0;
+  font-family: Georgia, "Yu Mincho", serif;
+  font-size: 1.12rem;
+  font-weight: 500;
+}
+
+.artian-origin-values {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.artian-origin-values > div {
+  display: grid;
+  gap: 4px;
+  padding: 12px 14px;
+  border: 1px solid #3b3f35;
+  border-radius: 9px;
+  background: #11120e;
+}
+
+.artian-origin-values span,
+.artian-origin-values small {
+  color: var(--muted);
+  font-size: 0.68rem;
+}
+
+.artian-origin-values strong {
+  color: var(--gold-bright);
+  font-size: 1.08rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.compact-heading {
+  margin-bottom: 14px;
+}
+
+.artian-settings-section,
+.artian-counter-search,
+.artian-results {
+  margin-top: 28px;
+  padding-top: 26px;
+  border-top: 1px solid #3c4036;
+}
+
+.artian-settings-grid {
+  grid-template-columns: 1.1fr 0.65fr 1fr 0.75fr;
+}
+
+.artian-search-range {
+  grid-template-columns: repeat(2, minmax(0, 300px));
+  margin: 16px 0;
+}
+
+.artian-counter-candidates {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.artian-counter-candidates button {
+  padding: 8px 11px;
+  border: 1px solid #5d6e4e;
+  border-radius: 8px;
+  background: rgb(104 143 87 / 11%);
+  color: #c6edb2;
+  font-size: 0.75rem;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.artian-counter-candidates button:hover {
+  border-color: #8fb376;
+  background: rgb(104 143 87 / 20%);
+}
+
+.artian-base-table {
+  min-width: 1280px;
+}
+
+.artian-base-table > thead > tr > th:first-child,
+.artian-base-table > tbody > tr > th:first-child {
+  position: sticky;
+  left: 0;
+  z-index: 2;
+  background: #20221c;
+}
+
+.artian-base-table .artian-counter-cell {
+  min-width: 118px;
+  color: #ddd8c6;
+  font-size: 0.75rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.artian-base-table .saved-state-cell {
+  min-width: 176px;
 }
 
 .tab-button {
@@ -968,12 +1113,25 @@ h1 {
 }
 
 label > span,
+.fixed-field > span,
 .metrics span {
   display: block;
   margin-bottom: 8px;
   color: #d6d3c5;
   font-size: 0.83rem;
   font-weight: 700;
+}
+
+.fixed-field > strong {
+  display: flex;
+  align-items: center;
+  min-height: 46px;
+  padding: 0 13px;
+  border: 1px solid #474a3f;
+  border-radius: 10px;
+  background: #191a15;
+  color: var(--gold-bright);
+  font-size: 0.86rem;
 }
 
 input,
@@ -2408,6 +2566,21 @@ button:disabled {
     grid-template-columns: 1fr 1fr;
   }
 
+  .artian-origin-card {
+    grid-template-columns: 1fr;
+  }
+
+  .artian-origin-values,
+  .artian-settings-grid,
+  .artian-search-range {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .artian-beta-notice {
+    grid-template-columns: 1fr;
+    gap: 5px;
+  }
+
   .keep-layout-slots {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
@@ -2593,6 +2766,12 @@ button:disabled {
 
   .save-state-values,
   .prediction-state-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .artian-origin-values,
+  .artian-settings-grid,
+  .artian-search-range {
     grid-template-columns: 1fr;
   }
 

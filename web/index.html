@@ -109,6 +109,7 @@
         <button type="button" class="tab-button" data-tab="skill-search" aria-selected="false"><span>03</span>スキルカウンター特定</button>
         <button type="button" class="tab-button" data-tab="bonus-future" aria-selected="false"><span>04</span>復元ボーナス未来予測</button>
         <button type="button" class="tab-button" data-tab="skill-future" aria-selected="false"><span>05</span>スキル未来予測</button>
+        <button type="button" class="tab-button" data-tab="artian-future" aria-selected="false"><span>06</span>通常アーティア未来予測</button>
       </nav>
 
       <div class="tab-view active" data-tab-view="guide">
@@ -363,6 +364,67 @@
           </div>
           <p class="adoption-note">スキル結果を採用してセーブした場合は、その行を新しい0地点にできます。復元ボーナスカウンターは維持されます。</p>
           <div id="skill-table-wrap" class="prediction-table-wrap" hidden><table class="prediction-table skill-prediction-table"><thead><tr id="skill-prediction-header-row"></tr></thead><tbody id="skill-prediction-rows"></tbody></table></div>
+        </section>
+      </div>
+
+      <div class="tab-view" data-tab-view="artian-future" hidden>
+        <section class="panel artian-base-section" aria-labelledby="artian-base-title">
+          <div class="section-heading artian-base-heading">
+            <div><p class="step">BASE ARTIAN FORECAST · BETA</p><h2 id="artian-base-title">通常アーティア未来予測</h2></div>
+            <p id="artian-base-status" class="status-pill">基準seedと作成カウンターを設定してください</p>
+          </div>
+          <div class="artian-beta-notice">
+            <strong>β版・検証範囲</strong>
+            <p>レア8専用です。大剣・ランス・弓・ヘビィボウガン・ライトボウガンの計28本で、作成カウンターと5枠の一致を確認しています。ほかの近接武器は同じ式で予測します。</p>
+          </div>
+          <p class="prediction-intro">通常アーティア武器は、武器種ごとに作成カウンターが別管理です。同じ武器種のレア8武器を1本生産すると、その武器種のカウンターだけが1つ進みます。</p>
+
+          <section class="artian-origin-card" aria-labelledby="artian-origin-title">
+            <div><p class="step">PREDICTION ORIGIN</p><h3 id="artian-origin-title">予測の基準状態</h3></div>
+            <div class="artian-origin-values">
+              <div><span>共通の基準seed</span><strong id="artian-base-seed">未特定</strong><small>上部の現在のセーブ状態と共通</small></div>
+              <div><span>対象の作成カウンター</span><strong id="artian-base-current-counter">未特定</strong><small id="artian-base-counter-source">武器種ごとに設定（レア8）</small></div>
+            </div>
+          </section>
+
+          <section class="artian-settings-section" aria-labelledby="artian-settings-title">
+            <div class="section-heading compact-heading"><div><p class="step">TARGET</p><h3 id="artian-settings-title">予測する通常アーティア武器</h3></div></div>
+            <div class="field-grid artian-settings-grid">
+              <label><span>武器種</span><select id="artian-base-weapon-type"></select></label>
+              <label><span>属性の有無</span><select id="artian-base-attribute-force"></select></label>
+              <div class="fixed-field"><span>対象レア度</span><strong>レア8（固定）</strong></div>
+              <label><span>現在の作成カウンター</span><input id="artian-base-counter" type="number" min="0" max="1000000" placeholder="未特定" /></label>
+              <label><span>表示する本数</span><input id="artian-base-count" type="number" min="1" max="10000" value="100" /></label>
+            </div>
+            <p id="artian-weapon-verification" class="pool-note"></p>
+            <div class="comparison-actions"><button id="apply-artian-base-counter" class="primary small-button" type="button">このカウンターで予測</button><button id="export-artian-base-csv" class="secondary small-button" type="button" disabled>表示中の結果をCSV出力</button></div>
+            <p id="artian-base-error" class="error" role="alert" hidden></p>
+          </section>
+
+          <section class="artian-counter-search" aria-labelledby="artian-counter-search-title">
+            <div class="section-heading compact-heading"><div><p class="step">FIND CREATE COUNTER</p><h3 id="artian-counter-search-title">作成結果からカウンターを特定</h3></div></div>
+            <p class="prediction-intro">上で選んだ武器種・属性の有無をそろえてレア8武器を連続生産し、毎回の復元強化5枠を入力します。確認後に元の状態へ戻す場合は、セーブせずにゲームを終了してください。</p>
+            <div class="field-grid artian-search-range">
+              <label><span>カウンター候補（開始）</span><input id="artian-counter-start" type="number" min="0" max="1000000" value="0" /></label>
+              <label><span>カウンター候補（終了）</span><input id="artian-counter-end" type="number" min="0" max="1000000" value="100000" /></label>
+            </div>
+            <div id="artian-observation-rows" class="observation-rows artian-observation-rows"></div>
+            <div class="observation-controls"><button id="add-artian-observation" class="secondary small-button" type="button">作成結果を1回追加</button><button id="remove-artian-observation" class="text-button" type="button">最後の1回を削除</button></div>
+            <div class="actions"><button id="find-artian-counter" class="primary" type="button">作成カウンターを検索</button></div>
+            <p id="artian-search-message" class="continuation-message" aria-live="polite"></p>
+            <div id="artian-counter-candidates" class="artian-counter-candidates" aria-live="polite"></div>
+          </section>
+
+          <section class="artian-results" aria-labelledby="artian-results-title">
+            <div class="section-heading compact-heading"><div><p class="step">FORECAST</p><h3 id="artian-results-title">この先に生産する武器の5枠</h3></div></div>
+            <p class="adoption-note">「ここを0にする」は、ゲーム内でその本数まで生産してセーブした場合に使用してください。</p>
+            <div id="artian-base-table-wrap" class="prediction-table-wrap" hidden>
+              <table class="prediction-table artian-base-table">
+                <thead><tr><th>何本先</th><th>作成前カウンター</th><th>保存後の作成カウンター</th><th>1枠目</th><th>2枠目</th><th>3枠目</th><th>4枠目</th><th>5枠目</th></tr></thead>
+                <tbody id="artian-base-rows"></tbody>
+              </table>
+            </div>
+          </section>
         </section>
       </div>
       <footer class="site-footer">

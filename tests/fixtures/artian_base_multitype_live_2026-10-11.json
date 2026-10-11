@@ -1,0 +1,42 @@
+{
+  "source": "ArtianBaseRngProbe 0.1.0 live session",
+  "sourceSha256": "A4524045E1FAD880B604B1BD28EA9362913AEBC1180BA88BD51B783A1B7C068B",
+  "sessionId": "20261011-161321-394",
+  "baseSeed": 86315169,
+  "rarityEnum": 7,
+  "displayedRarity": 8,
+  "observations": [
+    { "weaponType": 0, "weaponTypeName": "Great Sword", "attributeForce": 1, "profile": "element_melee", "createCounter": 0, "bonusIds": [7, 4, 6, 7, 8] },
+    { "weaponType": 0, "weaponTypeName": "Great Sword", "attributeForce": 1, "profile": "element_melee", "createCounter": 1, "bonusIds": [6, 7, 4, 4, 6] },
+    { "weaponType": 0, "weaponTypeName": "Great Sword", "attributeForce": 0, "profile": "raw_melee", "createCounter": 2, "bonusIds": [8, 7, 7, 8, 4] },
+    { "weaponType": 0, "weaponTypeName": "Great Sword", "attributeForce": 0, "profile": "raw_melee", "createCounter": 3, "bonusIds": [4, 8, 8, 7, 8] },
+    { "weaponType": 0, "weaponTypeName": "Great Sword", "attributeForce": 1, "profile": "element_melee", "createCounter": 4, "bonusIds": [8, 4, 8, 6, 7] },
+    { "weaponType": 0, "weaponTypeName": "Great Sword", "attributeForce": 1, "profile": "element_melee", "createCounter": 5, "bonusIds": [8, 6, 8, 4, 6] },
+    { "weaponType": 0, "weaponTypeName": "Great Sword", "attributeForce": 1, "profile": "element_melee", "createCounter": 6, "bonusIds": [4, 4, 4, 6, 8] },
+    { "weaponType": 0, "weaponTypeName": "Great Sword", "attributeForce": 1, "profile": "element_melee", "createCounter": 7, "bonusIds": [4, 7, 7, 6, 6] },
+    { "weaponType": 0, "weaponTypeName": "Great Sword", "attributeForce": 1, "profile": "element_melee", "createCounter": 8, "bonusIds": [4, 8, 6, 6, 7] },
+
+    { "weaponType": 6, "weaponTypeName": "Lance", "attributeForce": 0, "profile": "raw_melee", "createCounter": 2, "bonusIds": [4, 7, 7, 4, 8] },
+    { "weaponType": 6, "weaponTypeName": "Lance", "attributeForce": 1, "profile": "element_melee", "createCounter": 3, "bonusIds": [7, 6, 8, 8, 7] },
+
+    { "weaponType": 11, "weaponTypeName": "Bow", "attributeForce": 1, "profile": "element_bow", "createCounter": 10, "bonusIds": [4, 8, 4, 8, 4] },
+    { "weaponType": 11, "weaponTypeName": "Bow", "attributeForce": 1, "profile": "element_bow", "createCounter": 11, "bonusIds": [8, 8, 4, 6, 4] },
+    { "weaponType": 11, "weaponTypeName": "Bow", "attributeForce": 0, "profile": "raw_bow", "createCounter": 12, "bonusIds": [4, 8, 8, 4, 4] },
+
+    { "weaponType": 12, "weaponTypeName": "Heavy Bowgun", "attributeForce": 0, "profile": "bowgun", "createCounter": 2, "bonusIds": [8, 7, 8, 7, 8] },
+    { "weaponType": 12, "weaponTypeName": "Heavy Bowgun", "attributeForce": 0, "profile": "bowgun", "createCounter": 3, "bonusIds": [4, 8, 7, 7, 4] },
+    { "weaponType": 12, "weaponTypeName": "Heavy Bowgun", "attributeForce": 0, "profile": "bowgun", "createCounter": 4, "bonusIds": [7, 8, 4, 7, 8] },
+    { "weaponType": 12, "weaponTypeName": "Heavy Bowgun", "attributeForce": 0, "profile": "bowgun", "createCounter": 5, "bonusIds": [7, 8, 7, 4, 8] },
+    { "weaponType": 12, "weaponTypeName": "Heavy Bowgun", "attributeForce": 0, "profile": "bowgun", "createCounter": 6, "bonusIds": [8, 8, 8, 7, 7] },
+    { "weaponType": 12, "weaponTypeName": "Heavy Bowgun", "attributeForce": 0, "profile": "bowgun", "createCounter": 7, "bonusIds": [4, 8, 4, 4, 8] },
+    { "weaponType": 12, "weaponTypeName": "Heavy Bowgun", "attributeForce": 0, "profile": "bowgun", "createCounter": 8, "bonusIds": [8, 7, 8, 4, 8] },
+    { "weaponType": 12, "weaponTypeName": "Heavy Bowgun", "attributeForce": 0, "profile": "bowgun", "createCounter": 9, "bonusIds": [4, 8, 4, 7, 4] },
+    { "weaponType": 12, "weaponTypeName": "Heavy Bowgun", "attributeForce": 0, "profile": "bowgun", "createCounter": 10, "bonusIds": [7, 8, 4, 8, 4] },
+
+    { "weaponType": 13, "weaponTypeName": "Light Bowgun", "attributeForce": 0, "profile": "bowgun", "createCounter": 5, "bonusIds": [7, 7, 4, 4, 4] },
+    { "weaponType": 13, "weaponTypeName": "Light Bowgun", "attributeForce": 0, "profile": "bowgun", "createCounter": 6, "bonusIds": [7, 8, 4, 8, 7] },
+    { "weaponType": 13, "weaponTypeName": "Light Bowgun", "attributeForce": 0, "profile": "bowgun", "createCounter": 7, "bonusIds": [8, 4, 8, 8, 7] },
+    { "weaponType": 13, "weaponTypeName": "Light Bowgun", "attributeForce": 0, "profile": "bowgun", "createCounter": 8, "bonusIds": [7, 7, 8, 8, 8] },
+    { "weaponType": 13, "weaponTypeName": "Light Bowgun", "attributeForce": 0, "profile": "bowgun", "createCounter": 9, "bonusIds": [8, 7, 7, 4, 4] }
+  ]
+}

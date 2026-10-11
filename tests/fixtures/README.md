@@ -24,3 +24,16 @@ Steam screenshots. All 30 slots use only Attack, Affinity, and Ammo bonuses.
 Removing Element IDs 11 and 14 from the weighted pool reproduces the complete
 sequence at `baseSeed=86315169` and `gogmaCounter=480`. Heavy and Light Bowgun
 share this candidate rule. The fixture stores screenshot SHA-256 values only.
+
+`artian_base_lance_live_2026-10-11.json` is a reduced, address-free snapshot
+from ArtianBaseRngProbe 0.1.0. It records one rarity 8 elemental Lance created
+at counter 2 and the five observed base-Artian reinforcement categories. The
+source snapshot SHA-256 is retained in the fixture. It is evidence for this one
+condition, not proof for other weapon profiles or rarities.
+
+`artian_base_multitype_live_2026-10-11.json` reduces a second probe session to
+28 rarity 8 observations. It covers Great Sword, Lance, Bow, Heavy Bowgun, and
+Light Bowgun and includes elemental/status melee, raw melee, elemental Bow, raw
+Bow, and Bowgun candidate profiles. The probe displayed Bow and Light Bowgun
+names in reverse; the fixture uses the weapon data's corrected type mapping.
+The source session SHA-256 is retained.

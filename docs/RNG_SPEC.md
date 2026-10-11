@@ -253,6 +253,46 @@ the new relative origin `0` without discarding the other known stream position.
 
 `tests/fixtures/gogma_bonus_metadata_2026-08-23.json` is a reduced, address-free snapshot of the runtime metadata export. Tests verify the candidate order, categories, initial and subtraction weights, rare flags, and category maxima used by Rust.
 
+## Base Artian forge stream (beta)
+
+The Web UI includes a rarity 8-only beta forecast for elemental/status and raw
+melee weapons, Bows, and Bowguns. Unlike the two Gogma streams, the saved forge
+position is keyed by weapon type and rarity. It must not be stored as one
+global Artian counter. Rarity 6 and 7 weapons are intentionally outside the UI
+scope.
+
+The effective seed candidate is:
+
+```text
+effectiveSeed = (baseSeed + weaponType * 1000 + rarityEnum) XOR 0x00AC9365
+```
+
+The generator uses the same 100-round initializer and four-word xorshift
+transition. The state advances by `createCounter * 10`; one forge result reads
+five consecutive words from a copy of that state. The next forge of the same
+weapon type and rarity begins ten transitions later.
+
+Candidate profiles are evaluated in these orders:
+
+```text
+Elemental/status melee: 4 Attack, 6 Element, 7 Sharpness, 8 Affinity
+Raw melee:              4 Attack, 7 Sharpness, 8 Affinity
+Elemental/status Bow:   4 Attack, 6 Element, 8 Affinity
+Raw Bow:                4 Attack, 8 Affinity
+Heavy/Light Bowgun:     4 Attack, 7 Ammo Capacity, 8 Affinity
+```
+
+Selection is `word % remainingCandidateCount`. A category is removed from the
+local pool after reaching its cap: Attack 5, Element 4, Sharpness 2, and
+Affinity 3.
+
+`tests/fixtures/artian_base_lance_live_2026-10-11.json` records the first live
+comparison. `tests/fixtures/artian_base_multitype_live_2026-10-11.json` adds 28
+rarity 8 observations covering Great Sword, Lance, Bow, Heavy Bowgun, and Light
+Bowgun, including elemental/status and raw profiles. Every recorded counter and
+all five slots match. The remaining nine melee weapon types use the same
+formula but have not been verified individually in game.
+
 ## Next scope
 
 1. Define the PS5 observation format
@@ -261,5 +301,7 @@ the new relative origin `0` without discarding the other known stream position.
 4. Extend the implemented bounded Gogma counter search to very wide ranges
 5. Verify Keep Bonuses with an independent live-game sequence
 6. Add a guided PS5 observation and counter-range workflow
+7. Collect independent Base Artian observations for the remaining melee weapon
+   types
 
-Base Artian reinforcements remain deferred. Keep Bonuses intentionally uses its own category-preserving calculation and is never treated as Reset Bonuses.
+Keep Bonuses intentionally uses its own category-preserving calculation and is never treated as Reset Bonuses.

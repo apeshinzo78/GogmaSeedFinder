@@ -1,0 +1,15 @@
+{
+  "source": "ArtianBaseRngProbe 0.1.0 live observation",
+  "sourceSha256": "0B93A395A6496EB2CC3E169303C0490D9934808644F744901F728964F3E3329A",
+  "sessionId": "20261011-155307-923",
+  "baseSeed": 86315169,
+  "weaponType": 6,
+  "weaponTypeName": "Lance",
+  "rarityEnum": 7,
+  "displayedRarity": 8,
+  "profile": "element_melee",
+  "createCounter": 2,
+  "poolOrder": [4, 6, 7, 8],
+  "actualBonusIds": [8, 7, 8, 4, 8],
+  "actualBonusLabels": ["Affinity", "Sharpness/Capacity", "Affinity", "Attack", "Affinity"]
+}
