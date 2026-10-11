@@ -423,7 +423,7 @@ const UI_TEXT = {
   "基準seedと作成カウンターを設定してください": ["Set the base seed and forge counter", "請設定基準seed與生產計數器"],
   "β版・検証範囲": ["Beta verification scope", "β版驗證範圍"],
   "レア8専用です。大剣・ランス・弓・ヘビィボウガン・ライトボウガンの計28本で、作成カウンターと5枠の一致を確認しています。ほかの近接武器は同じ式で予測します。": ["Rarity 8 only. Forge counters and all five slots were verified across 28 Great Swords, Lances, Bows, Heavy Bowguns, and Light Bowguns. Other melee weapons use the same formula.", "僅支援稀有度8。已用大劍、長槍、弓、重弩槍與輕弩槍共28把確認生產計數器與5格結果一致；其他近戰武器使用相同公式預測。"],
-  "通常アーティア武器は、武器種ごとに作成カウンターが別管理です。同じ武器種のレア8武器を1本生産すると、その武器種のカウンターだけが1つ進みます。": ["Base Artian forge counters are tracked separately for each weapon type. Forging one rarity 8 weapon advances only that weapon type's counter.", "一般機械武器的生產計數器會依武器種類分別管理。生產1把相同武器種類的稀有度8武器時，只有該武器種類的計數器會前進1。"],
+  "通常アーティア武器の作成カウンターは、武器種ごとに別管理です。同じ武器種であれば、無属性・属性・状態異常で共通のカウンターを使用します。レア8武器を1本生産すると、その武器種のカウンターだけが1つ進みます。": ["Base Artian forge counters are tracked separately for each weapon type. Non-elemental, elemental, and status weapons of the same type share one counter. Forging one rarity 8 weapon advances only that weapon type's counter.", "一般機械武器的生產計數器會依武器種類分別管理。同一武器種類的無屬性、屬性與異常狀態武器共用同一個計數器。生產1把稀有度8武器時，只有該武器種類的計數器會前進1。"],
   "共通の基準seed": ["Shared base seed", "共用基準seed"],
   "上部の現在のセーブ状態と共通": ["Shared with Current Save State above", "與上方目前存檔狀態共用"],
   "選択中の作成カウンター": ["Selected forge counter", "目前選擇的生產計數器"],
