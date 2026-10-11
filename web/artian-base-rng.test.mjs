@@ -3,11 +3,19 @@ import { readFileSync } from "node:fs";
 import test from "node:test";
 
 import {
+  artianBonusMultisetContains,
   artianBasePool,
   artianBaseProfileName,
   findArtianCreateCounters,
   predictArtianBaseRolls,
 } from "./artian-base-rng.js";
+
+test("unordered bonus filtering preserves duplicate counts", () => {
+  const roll = [7, 6, 8, 8, 7];
+  assert.equal(artianBonusMultisetContains(roll, [8, 7, 6, 7, 8]), true);
+  assert.equal(artianBonusMultisetContains(roll, [7, 7, 7]), false);
+  assert.equal(artianBonusMultisetContains(roll, [6, 8]), true);
+});
 
 const lanceFixture = JSON.parse(readFileSync(
   new URL("../tests/fixtures/artian_base_lance_live_2026-10-11.json", import.meta.url),

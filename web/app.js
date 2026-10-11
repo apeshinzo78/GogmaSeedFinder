@@ -6,6 +6,7 @@ import initWasm, {
 } from "./pkg/gogma_wasm_search.js";
 import {
   ARTIAN_BASE_BONUSES,
+  artianBonusMultisetContains,
   artianBasePool,
   findArtianCreateCounters,
   predictArtianBaseRolls,
@@ -294,6 +295,8 @@ const artianCounterCandidates = document.querySelector("#artian-counter-candidat
 const artianBaseEmpty = document.querySelector("#artian-base-empty");
 const artianBaseTableWrap = document.querySelector("#artian-base-table-wrap");
 const artianBaseRows = document.querySelector("#artian-base-rows");
+const artianFilterEnabled = document.querySelector("#artian-filter-enabled");
+const artianFilterGrid = document.querySelector("#artian-filter-grid");
 const tabButtons = [...document.querySelectorAll("[data-tab]")];
 const tabViews = [...document.querySelectorAll("[data-tab-view]")];
 
@@ -328,6 +331,7 @@ renderArtianObservationRows(Array.from({ length: 3 }, () => null));
 updateBonusPoolNote();
 updateCounterRangeSummary();
 renderPredictionFilters();
+renderArtianBaseFilters();
 updatePredictionPoolNote();
 
 let activeWorkers = [];
@@ -552,19 +556,23 @@ findSkillPositionButton.addEventListener("click", () => void findSkillPosition()
 
 artianBaseWeaponSelect.addEventListener("change", () => {
   const observations = snapshotArtianObservationValues();
+  const filters = snapshotArtianBaseFilters();
   syncArtianAttributeControl();
   hideArtianBaseError();
   clearArtianCounterSearchFeedback();
   renderArtianObservationRows(observations);
+  renderArtianBaseFilters(filters);
   renderArtianWeaponVerification();
   renderArtianBaseState();
   refreshArtianBasePredictions();
 });
 artianBaseAttributeSelect.addEventListener("change", () => {
   const observations = snapshotArtianObservationValues();
+  const filters = snapshotArtianBaseFilters();
   hideArtianBaseError();
   clearArtianCounterSearchFeedback();
   renderArtianObservationRows(observations);
+  renderArtianBaseFilters(filters);
   renderArtianWeaponVerification();
   refreshArtianBasePredictions();
 });
@@ -584,6 +592,8 @@ removeArtianObservationButton.addEventListener("click", () => {
 artianObservationRows.addEventListener("change", () => clearArtianCounterSearchFeedback());
 findArtianCounterButton.addEventListener("click", () => void searchArtianBaseCounter());
 exportArtianBaseCsvButton.addEventListener("click", () => exportArtianBasePredictionsCsv());
+artianFilterEnabled.addEventListener("change", () => renderArtianBaseTable());
+artianFilterGrid.addEventListener("change", () => renderArtianBaseTable());
 
 function readConfig() {
   const weaponType = readInteger("weapon-type", "武器種", 0, 13);
@@ -2989,6 +2999,57 @@ function artianBaseBonusClassName(bonusId) {
   return "sharpness-ammo";
 }
 
+function renderArtianBaseFilters(values = []) {
+  const weaponType = Number(artianBaseWeaponSelect.value);
+  const bonuses = artianBasePool(weaponType, currentArtianAttributeForce()).ids.map((bonusId) => [
+    bonusId,
+    artianBaseBonusName(weaponType, bonusId),
+  ]);
+
+  artianFilterGrid.replaceChildren(
+    ...Array.from({ length: 5 }, (_, index) => {
+      const label = document.createElement("label");
+      const text = document.createElement("span");
+      const select = document.createElement("select");
+      const placeholder = document.createElement("option");
+      const selectedId = values[index] ?? null;
+      const selectedIdIsAvailable = bonuses.some(([bonusId]) => bonusId === selectedId);
+
+      text.textContent = `希望 ${index + 1}`;
+      placeholder.value = "";
+      placeholder.textContent = "指定なし";
+      placeholder.selected = selectedId === null || !selectedIdIsAvailable;
+      select.append(placeholder);
+
+      for (const [bonusId, name] of bonuses) {
+        const option = document.createElement("option");
+        option.value = String(bonusId);
+        option.textContent = name;
+        option.selected = selectedId === bonusId;
+        select.append(option);
+      }
+
+      label.append(text, select);
+      return label;
+    }),
+  );
+}
+
+function snapshotArtianBaseFilters() {
+  return [...artianFilterGrid.querySelectorAll("select")].map((select) =>
+    select.value === "" ? null : Number(select.value),
+  );
+}
+
+function visibleArtianBaseRolls() {
+  const requirements = snapshotArtianBaseFilters().filter((value) => value !== null);
+  const allRolls = artianBasePredictionRolls.map((roll, index) => ({ roll, index }));
+  if (!artianFilterEnabled.checked || requirements.length === 0) return allRolls;
+  return allRolls.filter(({ roll }) =>
+    artianBonusMultisetContains(roll.bonusIds, requirements),
+  );
+}
+
 function renderArtianBaseTable() {
   if (artianBasePredictionRolls.length === 0) {
     artianBaseRows.replaceChildren();
@@ -2997,12 +3058,23 @@ function renderArtianBaseTable() {
     exportArtianBaseCsvButton.disabled = true;
     return;
   }
-  artianBaseRows.replaceChildren(
-    ...artianBasePredictionRolls.map((roll, index) => createArtianBaseRow(roll, index)),
-  );
+  const visibleRolls = visibleArtianBaseRolls();
+  if (visibleRolls.length === 0) {
+    const row = document.createElement("tr");
+    const cell = document.createElement("td");
+    cell.colSpan = 8;
+    cell.className = "prediction-empty";
+    cell.textContent = "指定した復元ボーナス構成は表示範囲内にありません。表示する本数を増やすか条件を変更してください。";
+    row.append(cell);
+    artianBaseRows.replaceChildren(row);
+  } else {
+    artianBaseRows.replaceChildren(
+      ...visibleRolls.map(({ roll, index }) => createArtianBaseRow(roll, index)),
+    );
+  }
   artianBaseTableWrap.hidden = false;
   artianBaseEmpty.hidden = true;
-  exportArtianBaseCsvButton.disabled = false;
+  exportArtianBaseCsvButton.disabled = visibleRolls.length === 0;
 }
 
 function createArtianBaseRow(roll, index) {
@@ -3227,7 +3299,8 @@ function clearArtianCounterSearchFeedback() {
 
 function exportArtianBasePredictionsCsv() {
   const counter = currentArtianBaseCounter();
-  if (saveState.baseSeed === null || counter === null || artianBasePredictionRolls.length === 0) return;
+  const visibleRolls = visibleArtianBaseRolls();
+  if (saveState.baseSeed === null || counter === null || visibleRolls.length === 0) return;
   const weaponType = Number(artianBaseWeaponSelect.value);
   const attributeForce = currentArtianAttributeForce();
   const headers = [
@@ -3236,7 +3309,7 @@ function exportArtianBasePredictionsCsv() {
     t("保存後の作成カウンター"),
     ...Array.from({ length: 5 }, (_, index) => t(`${index + 1}枠目`)),
   ];
-  const rows = artianBasePredictionRolls.map((roll, index) => [
+  const rows = visibleRolls.map(({ roll, index }) => [
     index + 1,
     roll.counter,
     roll.counter + 1,

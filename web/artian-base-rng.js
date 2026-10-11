@@ -62,6 +62,19 @@ export function artianBasePool(weaponType, attributeForce) {
   };
 }
 
+export function artianBonusMultisetContains(bonusIds, requirements) {
+  const remaining = new Map();
+  for (const bonusId of bonusIds) {
+    remaining.set(bonusId, (remaining.get(bonusId) ?? 0) + 1);
+  }
+  for (const requiredId of requirements) {
+    const count = remaining.get(requiredId) ?? 0;
+    if (count === 0) return false;
+    remaining.set(requiredId, count - 1);
+  }
+  return true;
+}
+
 export function initializeArtianRng(seed) {
   let seedWord = u32(seed);
   const words = [0x159a55e5, 0x1f123bb5, 0x05491333, 0x05491333];

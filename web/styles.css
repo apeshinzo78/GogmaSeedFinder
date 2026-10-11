@@ -352,6 +352,14 @@ h1 {
   border-top: 1px solid #3c4036;
 }
 
+.artian-result-filter {
+  margin: 0 0 18px;
+  padding: 16px;
+  border: 1px solid #3c4036;
+  border-radius: 12px;
+  background: rgb(12 13 11 / 36%);
+}
+
 .artian-settings-grid {
   grid-template-columns: 1.1fr 0.65fr 1fr 0.75fr;
 }
@@ -1876,13 +1884,15 @@ button:disabled {
 }
 
 .bonus-tag.element {
-  border-color: #3f6570;
-  background: rgb(62 118 134 / 14%);
+  border-color: #4f9fb3;
+  background: rgb(53 136 157 / 18%);
+  color: #d8f7ff;
 }
 
 .bonus-tag.sharpness-ammo {
-  border-color: #58666e;
-  background: rgb(89 111 122 / 14%);
+  border-color: #8c76b8;
+  background: rgb(112 86 166 / 18%);
+  color: #ebe4ff;
 }
 
 .bonus-tag.ex {

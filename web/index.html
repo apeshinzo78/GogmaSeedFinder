@@ -403,6 +403,13 @@
 
           <section class="artian-results" aria-labelledby="artian-results-title">
             <div class="section-heading compact-heading"><div><p class="step">FORECAST</p><h3 id="artian-results-title">復元ボーナス予測結果</h3></div></div>
+            <div class="artian-result-filter">
+              <div class="prediction-filter-heading">
+                <div><h4>希望する復元ボーナス</h4><p>5枠を順不同で指定します。指定なしを残した枠は条件に含めません。</p></div>
+                <label class="checkbox-label"><input id="artian-filter-enabled" type="checkbox" /><span>一致結果だけ表示</span></label>
+              </div>
+              <div id="artian-filter-grid" class="prediction-filter-grid"></div>
+            </div>
             <p id="artian-base-empty" class="empty-result">現在の作成カウンターを入力するか、下の作成結果から検索すると、ここに各武器の復元ボーナス5枠を表示します。</p>
             <p class="adoption-note">「ここを0にする」は、ゲーム内でその本数まで生産してセーブした場合に使用してください。</p>
             <div id="artian-base-table-wrap" class="prediction-table-wrap" hidden>
