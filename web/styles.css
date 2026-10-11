@@ -295,6 +295,40 @@ h1 {
   line-height: 1.65;
 }
 
+.artian-counter-jump {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 12px 14px;
+  border: 1px solid rgba(208, 170, 76, 0.28);
+  border-radius: 10px;
+  background: rgba(208, 170, 76, 0.06);
+}
+
+.artian-counter-jump > div {
+  display: grid;
+  gap: 3px;
+}
+
+.artian-counter-jump strong {
+  color: var(--text-strong);
+  font-size: 0.94rem;
+}
+
+.artian-counter-jump span {
+  color: var(--text-muted);
+  font-size: 0.82rem;
+}
+
+.artian-counter-jump button {
+  flex: 0 0 auto;
+}
+
+#artian-counter-search {
+  scroll-margin-top: 92px;
+}
+
 .artian-route-notice {
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto;
@@ -2848,6 +2882,15 @@ button:disabled {
   .artian-beta-notice {
     grid-template-columns: 1fr;
     gap: 5px;
+  }
+
+  .artian-counter-jump {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .artian-counter-jump button {
+    width: 100%;
   }
 
   .artian-route-notice {

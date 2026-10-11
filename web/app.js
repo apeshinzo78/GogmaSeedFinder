@@ -318,6 +318,7 @@ const tabButtons = [...document.querySelectorAll("[data-tab]")];
 const tabViews = [...document.querySelectorAll("[data-tab-view]")];
 const openArtianFutureButtons = [...document.querySelectorAll("[data-open-artian-future]")];
 const openArtianTipButtons = [...document.querySelectorAll("[data-open-artian-tip]")];
+const openArtianCounterSearchButtons = [...document.querySelectorAll("[data-scroll-artian-counter-search]")];
 
 const suggestedWorkers = Math.min(16, Math.max(1, navigator.hardwareConcurrency ?? 4));
 workerInput.value = String(suggestedWorkers);
@@ -531,6 +532,12 @@ openArtianTipButtons.forEach((button) => {
   button.addEventListener("click", () => {
     setActiveTab("guide");
     document.querySelector("#guide-artian-route")?.scrollIntoView({ behavior: "smooth", block: "start" });
+  });
+});
+
+openArtianCounterSearchButtons.forEach((button) => {
+  button.addEventListener("click", () => {
+    document.querySelector("#artian-counter-search")?.scrollIntoView({ behavior: "smooth", block: "start" });
   });
 });
 

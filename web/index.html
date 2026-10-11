@@ -411,6 +411,10 @@
             <p>レア8専用です。大剣・ランス・弓・ヘビィボウガン・ライトボウガンの計28本で、作成カウンターと5枠の一致を確認しています。ほかの近接武器は同じ式で予測します。</p>
           </div>
           <p class="prediction-intro">通常アーティア武器の作成カウンターは、武器種ごとに別管理です。同じ武器種であれば、無属性・属性・状態異常で共通のカウンターを使用します。レア8武器を1本生産すると、その武器種のカウンターだけが1つ進みます。</p>
+          <div class="artian-counter-jump">
+            <div><strong>作成カウンターが分からない場合</strong><span>実際の作成結果から現在位置を検索できます。</span></div>
+            <button class="secondary small-button" type="button" data-scroll-artian-counter-search>カウンター特定へ</button>
+          </div>
 
           <section class="artian-origin-card" aria-labelledby="artian-origin-title">
             <div><p class="step">PREDICTION ORIGIN</p><h3 id="artian-origin-title">予測の基準状態</h3></div>
@@ -458,7 +462,7 @@
             </div>
           </section>
 
-          <section class="artian-counter-search" aria-labelledby="artian-counter-search-title">
+          <section id="artian-counter-search" class="artian-counter-search" aria-labelledby="artian-counter-search-title">
             <div class="section-heading compact-heading"><div><p class="step">FIND CREATE COUNTER</p><h3 id="artian-counter-search-title">作成結果からカウンターを特定</h3></div></div>
             <p class="prediction-intro">上で選んだ武器種・属性の有無をそろえてレア8武器を連続生産し、毎回の復元強化5枠を入力します。確認後に元の状態へ戻す場合は、セーブせずにゲームを終了してください。</p>
             <div class="field-grid artian-search-range">
