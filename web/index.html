@@ -401,6 +401,18 @@
             <p id="artian-base-error" class="error" role="alert" hidden></p>
           </section>
 
+          <section class="artian-results" aria-labelledby="artian-results-title">
+            <div class="section-heading compact-heading"><div><p class="step">FORECAST</p><h3 id="artian-results-title">復元ボーナス予測結果</h3></div></div>
+            <p id="artian-base-empty" class="empty-result">現在の作成カウンターを入力するか、下の作成結果から検索すると、ここに各武器の復元ボーナス5枠を表示します。</p>
+            <p class="adoption-note">「ここを0にする」は、ゲーム内でその本数まで生産してセーブした場合に使用してください。</p>
+            <div id="artian-base-table-wrap" class="prediction-table-wrap" hidden>
+              <table class="prediction-table artian-base-table">
+                <thead><tr><th>何本先</th><th>作成前カウンター</th><th>保存後の作成カウンター</th><th>1枠目</th><th>2枠目</th><th>3枠目</th><th>4枠目</th><th>5枠目</th></tr></thead>
+                <tbody id="artian-base-rows"></tbody>
+              </table>
+            </div>
+          </section>
+
           <section class="artian-counter-search" aria-labelledby="artian-counter-search-title">
             <div class="section-heading compact-heading"><div><p class="step">FIND CREATE COUNTER</p><h3 id="artian-counter-search-title">作成結果からカウンターを特定</h3></div></div>
             <p class="prediction-intro">上で選んだ武器種・属性の有無をそろえてレア8武器を連続生産し、毎回の復元強化5枠を入力します。確認後に元の状態へ戻す場合は、セーブせずにゲームを終了してください。</p>
@@ -413,17 +425,6 @@
             <div class="actions"><button id="find-artian-counter" class="primary" type="button">作成カウンターを検索</button></div>
             <p id="artian-search-message" class="continuation-message" aria-live="polite"></p>
             <div id="artian-counter-candidates" class="artian-counter-candidates" aria-live="polite"></div>
-          </section>
-
-          <section class="artian-results" aria-labelledby="artian-results-title">
-            <div class="section-heading compact-heading"><div><p class="step">FORECAST</p><h3 id="artian-results-title">この先に生産する武器の5枠</h3></div></div>
-            <p class="adoption-note">「ここを0にする」は、ゲーム内でその本数まで生産してセーブした場合に使用してください。</p>
-            <div id="artian-base-table-wrap" class="prediction-table-wrap" hidden>
-              <table class="prediction-table artian-base-table">
-                <thead><tr><th>何本先</th><th>作成前カウンター</th><th>保存後の作成カウンター</th><th>1枠目</th><th>2枠目</th><th>3枠目</th><th>4枠目</th><th>5枠目</th></tr></thead>
-                <tbody id="artian-base-rows"></tbody>
-              </table>
-            </div>
           </section>
         </section>
       </div>

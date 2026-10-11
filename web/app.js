@@ -309,6 +309,7 @@ const removeArtianObservationButton = document.querySelector("#remove-artian-obs
 const findArtianCounterButton = document.querySelector("#find-artian-counter");
 const artianSearchMessage = document.querySelector("#artian-search-message");
 const artianCounterCandidates = document.querySelector("#artian-counter-candidates");
+const artianBaseEmpty = document.querySelector("#artian-base-empty");
 const artianBaseTableWrap = document.querySelector("#artian-base-table-wrap");
 const artianBaseRows = document.querySelector("#artian-base-rows");
 const tabButtons = [...document.querySelectorAll("[data-tab]")];
@@ -2964,6 +2965,7 @@ function refreshArtianBasePredictions() {
     artianBasePredictionRolls = [];
     artianBaseRows.replaceChildren();
     artianBaseTableWrap.hidden = true;
+    artianBaseEmpty.hidden = false;
     exportArtianBaseCsvButton.disabled = true;
     renderArtianBaseState();
     return;
@@ -3009,6 +3011,7 @@ function renderArtianBaseTable() {
   if (artianBasePredictionRolls.length === 0) {
     artianBaseRows.replaceChildren();
     artianBaseTableWrap.hidden = true;
+    artianBaseEmpty.hidden = false;
     exportArtianBaseCsvButton.disabled = true;
     return;
   }
@@ -3016,6 +3019,7 @@ function renderArtianBaseTable() {
     ...artianBasePredictionRolls.map((roll, index) => createArtianBaseRow(roll, index)),
   );
   artianBaseTableWrap.hidden = false;
+  artianBaseEmpty.hidden = true;
   exportArtianBaseCsvButton.disabled = false;
 }
 
