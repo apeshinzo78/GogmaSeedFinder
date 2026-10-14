@@ -2143,10 +2143,10 @@ async function beginKeepOptimization(target, bonusIds, completedRolls) {
   renderBonusOperation();
   renderPredictionFilters();
   updatePredictionPoolNote();
-  const counterMessage = `復元ボーナスカウンターを${nextCounter.toLocaleString("ja-JP")}で保存しました。`;
-  const compositionMessage = `${profileName}の武器構成「${composition}」を保存しました。`;
+  const counterMessage = `復元ボーナスカウンター ${nextCounter.toLocaleString("ja-JP")} を保存しました。`;
+  const compositionMessage = `${profileName}の武器構成「${composition}」をEX厳選用に保存しました。`;
   bonusStateMessage.textContent = [counterMessage, compositionMessage].map(t).join(" ");
-  showSaveFeedback("EX厳選用に保存しました", [counterMessage, compositionMessage]);
+  showSaveFeedback(counterMessage, [compositionMessage]);
   await Promise.all([refreshPredictions(), refreshComparisonPredictions()]);
   setActiveTab("bonus-future");
 }
@@ -2360,9 +2360,9 @@ async function adoptBonusPosition(completedRolls) {
     observations: [],
   };
   predictionOrigin.textContent = "0";
-  const message = `復元ボーナスカウンターを${nextCounter.toLocaleString("ja-JP")}で保存しました。`;
+  const message = `復元ボーナスカウンター ${nextCounter.toLocaleString("ja-JP")} を保存しました。`;
   bonusStateMessage.textContent = t(message);
-  showSaveFeedback("保存しました", [message]);
+  showSaveFeedback(message, []);
   await Promise.all([
     refreshPredictions(),
     refreshComparisonPredictions(),

@@ -646,11 +646,11 @@ function translateTemplate(source, locale, fallback = source) {
     return en ? `Copied save-state code to the ${destination}: ${match[2]}` : `已將存檔狀態代碼複製至${destination}：${match[2]}`;
   }
   if ((match = source.match(/^(復元ボーナスカウンター|スキルカウンター)([\d,]+)を新しい0地点にしました。$/))) return en ? `Set ${t(match[1])} ${match[2]} as the new origin (0).` : `已將${t(match[1])} ${match[2]}設為新的0點。`;
-  if ((match = source.match(/^復元ボーナスカウンターを([\d,]+)で保存しました。$/))) return en ? `Saved Bonus Counter ${match[1]}.` : `已儲存復原加成計數器 ${match[1]}。`;
-  if ((match = source.match(/^(.+)の武器構成「(.+)」を保存しました。$/))) {
+  if ((match = source.match(/^復元ボーナスカウンター ([\d,]+) を保存しました。$/))) return en ? `Saved Bonus Counter ${match[1]}.` : `已儲存復原加成計數器 ${match[1]}。`;
+  if ((match = source.match(/^(.+)の武器構成「(.+)」をEX厳選用に保存しました。$/))) {
     const separator = en ? ", " : "、";
     const composition = match[2].split("・").map((category) => t(category)).join(separator);
-    return en ? `Saved the ${match[1]} weapon composition: ${composition}.` : `已儲存${match[1]}的武器組合：${composition}。`;
+    return en ? `Saved the ${match[1]} weapon composition for EX farming: ${composition}.` : `已儲存${match[1]}的武器組合供EX嚴選使用：${composition}。`;
   }
   if ((match = source.match(/^作成カウンター([\d,]+)を新しい0地点にしました。$/))) return en ? `Set Forge Counter ${match[1]} as the new origin (0).` : `已將生產計數器${match[1]}設為新的0點。`;
   if ((match = source.match(/^作成カウンター([\d,]+)〜([\d,]+)を検索中…$/))) return en ? `Searching Forge Counters ${match[1]}–${match[2]}…` : `正在搜尋生產計數器${match[1]}～${match[2]}…`;
@@ -658,7 +658,6 @@ function translateTemplate(source, locale, fallback = source) {
   if ((match = source.match(/^カウンター ([\d,]+)を使用$/))) return en ? `Use Counter ${match[1]}` : `使用計數器 ${match[1]}`;
   if ((match = source.match(/^作成カウンター([\d,]+)を現在位置に設定しました。$/))) return en ? `Set Forge Counter ${match[1]} as the current position.` : `已將生產計數器${match[1]}設為目前位置。`;
   if ((match = source.match(/^(\d+)回先のリセット結果(?:から設定)?$/))) return en ? `Set from the Reset Bonuses result ${match[1]} rolls ahead` : `由${match[1]}次後的重置加成結果設定`;
-  if ((match = source.match(/^(.+)の(\d+)回先を採用した状態へ進み、「ボーナスを同じ構成で再復元」のEX厳選に切り替えました。$/))) return en ? `Advanced to the state after adopting the result ${match[2]} rolls ahead for ${match[1]} and switched to EX farming with Amend (Keep Bonuses).` : `已推進至採用${match[1]}在${match[2]}次後結果的狀態，並切換為以「保留加成組合並再次復原強化」嚴選EX。`;
   if ((match = source.match(/^EX厳選へ引き継ぐには、登録武器を(\d+)件未満にしてください。$/))) return en ? `To transfer to EX farming, keep fewer than ${match[1]} registered weapons.` : `若要轉移至EX嚴選，已登錄武器必須少於${match[1]}把。`;
   if ((match = source.match(/^予測対象は最大(\d+)件です。不要な武器を削除してください。$/))) return en ? `You can register up to ${match[1]} targets. Remove unneeded weapons.` : `最多可登錄${match[1]}個預測目標，請刪除不需要的武器。`;
   if ((match = source.match(/^(シリーズ|グループ) ([\d,]+)$/))) return en ? `${match[1] === "シリーズ" ? "Series" : "Group"} ${match[2]}` : `${match[1] === "シリーズ" ? "系列" : "團體"} ${match[2]}`;
