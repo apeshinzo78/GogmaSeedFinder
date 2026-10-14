@@ -100,8 +100,6 @@ const UI_TEXT = {
   "スキル内部位置の終了": ["Ending Skill Counter candidate", "技能內部位置結束值"],
   "基準seedとスキルカウンターを入力してください": ["Enter the base seed and Skill Counter", "請輸入基準seed與技能計數器"],
   "巨戟アーティア武器の抽選結果を予測します。": ["Predict Gogma Artian weapon lottery results.", "預測巨戟機械武器的抽選結果。"],
-  "現在の制限": ["Current limitations", "目前限制"],
-  "現在は手入力版です。ゲーム画面と同じ名称を選んでください。 入力した検索データが外部へ送信されることはありません。": ["This version uses manual input. Select the same names shown in the game. Your search data never leaves this device.", "目前為手動輸入版。請選擇與遊戲畫面相同的名稱。輸入的搜尋資料不會傳送至外部。"],
   "現在のセーブ状態": ["Current Save State", "目前的存檔狀態"],
   "未特定": ["Unknown", "尚未確定"],
   "基準seed": ["Base Seed", "基準seed"],
@@ -279,6 +277,9 @@ const UI_TEXT = {
   "カウンター特定へ": ["Find Counter", "前往確定計數器"],
   "この組み合わせを登録": ["Register This Combination", "登錄此組合"],
   "登録をすべて削除": ["Remove All", "全部刪除"],
+  "最大140件まで登録できます。登録数や表示回数が多いほど、計算と表示に時間がかかります。": ["You can register up to 140 targets. More targets and rolls take longer to calculate and display.", "最多可登錄140個目標。登錄數量與顯示次數越多，計算與顯示所需時間越長。"],
+  "登録済みのタグまたは結果表の見出しをドラッグすると、表示順を変更できます。": ["Drag a registered tag or a result-table header to change the display order.", "拖曳已登錄的標籤或結果表標題即可變更顯示順序。"],
+  "ドラッグして並び替え": ["Drag to reorder", "拖曳以重新排序"],
   "EX数で絞り込む": ["Filter by EX Count", "依EX數量篩選"],
   "いずれかの登録武器が最低EX数を満たす行だけ表示します。": ["Show only rows where at least one registered weapon meets the minimum EX count.", "僅顯示至少一把已登錄武器達到最低EX數量的列。"],
   "最低EX数": ["Minimum EX Count", "最低EX數量"],
@@ -468,11 +469,11 @@ const UI_TEXT = {
   "約3.9倍出やすい": ["About 3.9× more likely", "約容易出現3.9倍"],
   "系統だけが一致する理論上の確率です。": ["These are theoretical probabilities for matching bonus types only.", "以上是僅要求加成種類一致的理論機率。"],
   "基準seedと作成カウンターを設定してください": ["Set the base seed and forge counter", "請設定基準seed與生產計數器"],
-  "β版・検証範囲": ["Beta verification scope", "β版驗證範圍"],
   "レア8専用": ["Rarity 8 only", "僅限稀有度8"],
   "武器種ごとに特定": ["Find for each weapon type", "依武器種類分別確定"],
   "通常アーティアの作成カウンターは武器種ごとに別管理です。同じ武器種であれば、無属性・属性・状態異常で共通のカウンターを使用します。": ["Base Artian forge counters are tracked separately for each weapon type. Non-elemental, elemental, and status weapons of the same type share one counter.", "一般機械武器的生產計數器會依武器種類分別管理。同一武器種類的無屬性、屬性與異常狀態武器共用同一個計數器。"],
-  "レア8専用です。大剣・ランス・弓・ヘビィボウガン・ライトボウガンの計28本で、作成カウンターと5枠の一致を確認しています。ほかの近接武器は同じ式で予測します。": ["Rarity 8 only. Forge counters and all five slots were verified across 28 Great Swords, Lances, Bows, Heavy Bowguns, and Light Bowguns. Other melee weapons use the same formula.", "僅支援稀有度8。已用大劍、長槍、弓、重弩槍與輕弩槍共28把確認生產計數器與5格結果一致；其他近戰武器使用相同公式預測。"],
+  "通常アーティアの作成カウンター": ["Base Artian forge counters", "一般機械武器生產計數器"],
+  "武器種ごとに別のカウンターを使用します。同じ武器種の無属性・属性・状態異常では共通です。": ["Each weapon type uses a separate counter. Non-elemental, elemental, and status weapons of the same type share that counter.", "每種武器各自使用不同的計數器；同一武器種類的無屬性、屬性與異常狀態武器共用該計數器。"],
   "通常アーティア武器の作成カウンターは、武器種ごとに別管理です。同じ武器種であれば、無属性・属性・状態異常で共通のカウンターを使用します。レア8武器を1本生産すると、その武器種のカウンターだけが1つ進みます。": ["Base Artian forge counters are tracked separately for each weapon type. Non-elemental, elemental, and status weapons of the same type share one counter. Forging one rarity 8 weapon advances only that weapon type's counter.", "一般機械武器的生產計數器會依武器種類分別管理。同一武器種類的無屬性、屬性與異常狀態武器共用同一個計數器。生產1把稀有度8武器時，只有該武器種類的計數器會前進1。"],
   "共通の基準seed": ["Shared base seed", "共用基準seed"],
   "上部の現在のセーブ状態と共通": ["Shared with Current Save State above", "與上方目前存檔狀態共用"],
@@ -599,6 +600,7 @@ function translateTemplate(source, locale, fallback = source) {
       : `${prefix}${match[2]}${unit} × ${match[4]}次${filter}`;
   }
   if ((match = source.match(/^EXが(\d+)個以上の結果は表示範囲内にありません。表示回数を増やすか最低EX数を下げてください。$/))) return en ? `No results in the displayed range have at least ${match[1]} EX bonuses. Increase the number of rolls or lower the minimum EX count.` : `顯示範圍內沒有至少${match[1]}個EX的結果。請增加顯示次數或降低最低EX數量。`;
+  if ((match = source.match(/^([\d,]+)\/([\d,]+)件$/))) return en ? `${match[1]}/${match[2]} targets` : `${match[1]}/${match[2]}個目標`;
   if ((match = source.match(/^([\d,]+)件・基準seedと復元カウンター待ち$/))) return en ? `${match[1]} targets · waiting for base seed and Bonus Counter` : `${match[1]}個目標・等待基準seed與復原計數器`;
   if ((match = source.match(/^(\d+)\/(\d+) 武器の構成入力済み$/))) return en ? `${match[1]}/${match[2]} weapon compositions entered` : `已輸入 ${match[1]}/${match[2]} 把武器的組合`;
   if ((match = source.match(/^([\d,]+)条件$/))) return en ? `${match[1]} targets` : `${match[1]}個條件`;

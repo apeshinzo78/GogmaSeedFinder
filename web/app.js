@@ -123,7 +123,8 @@ const LORDS_SOUL_GROUP_INDEX = 13;
 const PRIORITY_GROUP_SKILL_INDICES = [LORDS_SOUL_GROUP_INDEX];
 const PRIORITY_SERIES_SKILL_INDICES = [11, 6, 5, 18];
 const SKILL_COUNTER_GATE = 54;
-const MAX_REGISTERED_TARGETS = 16;
+const MAX_REGISTERED_TARGETS = WEAPON_TYPES.length * ATTRIBUTES.length;
+const LARGE_REGISTERED_TARGET_COUNT = 16;
 const STORAGE_KEY = "gogma-seed-finder-state-v1";
 
 const SAMPLE_OBSERVATIONS = [
@@ -204,6 +205,7 @@ const bonusExFilterCountSelect = document.querySelector("#bonus-ex-filter-count"
 const addComparisonTargetButton = document.querySelector("#add-comparison-target");
 const clearComparisonTargetsButton = document.querySelector("#clear-comparison-targets");
 const comparisonTargetList = document.querySelector("#comparison-target-list");
+const comparisonTargetCapacity = document.querySelector("#comparison-target-capacity");
 const comparisonError = document.querySelector("#comparison-error");
 const comparisonTableWrap = document.querySelector("#comparison-table-wrap");
 const comparisonHeaderRow = document.querySelector("#comparison-header-row");
@@ -275,6 +277,7 @@ const skillTargetAttributeSelect = document.querySelector("#skill-target-attribu
 const addSkillTargetButton = document.querySelector("#add-skill-target");
 const clearSkillTargetsButton = document.querySelector("#clear-skill-targets");
 const skillTargetList = document.querySelector("#skill-target-list");
+const skillTargetCapacity = document.querySelector("#skill-target-capacity");
 const skillTargetError = document.querySelector("#skill-target-error");
 const bonusFutureKicker = document.querySelector("#bonus-future-kicker");
 const bonusOperationReset = document.querySelector("#bonus-operation-reset");
@@ -289,6 +292,7 @@ const artianBaseSeed = document.querySelector("#artian-base-seed");
 const artianBaseCurrentCounter = document.querySelector("#artian-base-current-counter");
 const artianBaseCounterSource = document.querySelector("#artian-base-counter-source");
 const artianCounterOverviewGrid = document.querySelector("#artian-counter-overview-grid");
+const saveStateArtianCounterOverviewGrid = document.querySelector("#save-state-artian-counter-overview-grid");
 const artianBaseWeaponSelect = document.querySelector("#artian-base-weapon-type");
 const artianBaseAttributeSelect = document.querySelector("#artian-base-attribute-force");
 const artianSearchWeaponSelect = document.querySelector("#artian-search-weapon-type");
@@ -376,6 +380,8 @@ let predictionRequestId = 0;
 let comparisonRollSets = [];
 let comparisonRequestId = 0;
 let skillPredictionRollSets = [];
+let skillPredictionRequestId = 0;
+let draggedComparisonTarget = null;
 let selectedSkillCounter = null;
 let skillObservedCount = 0;
 let currentSkillObservations = [];
@@ -2087,7 +2093,7 @@ async function beginKeepOptimization(target, bonusIds, completedRolls) {
     };
     comparisonTargets.push(profile);
   }
-  profile.keepCategories = bonusIds.map(bonusCategoryId);
+  profile.keepCategories = Array.from(bonusIds, bonusCategoryId);
   profile.keepSource = `${completedRolls}回先のリセット結果`;
   bonusPrediction.mode = "keep";
 
@@ -2428,6 +2434,216 @@ function uniqueTargetsByCombination(targets = comparisonTargets) {
   return [...unique.values()];
 }
 
+function reorderKey(target, groupByCombination) {
+  return groupByCombination ? comparisonCombinationKey(target) : comparisonTargetKey(target);
+}
+
+function moveReorderKey(keys, sourceKey, destinationKey, insertAfter) {
+  if (sourceKey === destinationKey) return keys;
+  const nextKeys = keys.filter((key) => key !== sourceKey);
+  const destinationIndex = nextKeys.indexOf(destinationKey);
+  if (destinationIndex < 0) return keys;
+  nextKeys.splice(destinationIndex + (insertAfter ? 1 : 0), 0, sourceKey);
+  return nextKeys;
+}
+
+function applyComparisonTargetOrder(visibleTargets, sourceTarget, destinationTarget, groupByCombination, insertAfter = false) {
+  const sourceKey = reorderKey(sourceTarget, groupByCombination);
+  const destinationKey = reorderKey(destinationTarget, groupByCombination);
+  const visibleKeys = visibleTargets.map((target) => reorderKey(target, groupByCombination));
+  const reorderedKeys = moveReorderKey(visibleKeys, sourceKey, destinationKey, insertAfter);
+  if (reorderedKeys === visibleKeys) return;
+
+  if (groupByCombination) {
+    const targetsByCombination = new Map();
+    for (const target of comparisonTargets) {
+      const key = comparisonCombinationKey(target);
+      if (!targetsByCombination.has(key)) targetsByCombination.set(key, []);
+      targetsByCombination.get(key).push(target);
+    }
+    comparisonTargets = reorderedKeys.flatMap((key) => targetsByCombination.get(key) ?? []);
+  } else {
+    const visibleIds = new Set(reorderedKeys);
+    const targetsById = new Map(comparisonTargets.map((target) => [comparisonTargetKey(target), target]));
+    let visibleIndex = 0;
+    comparisonTargets = comparisonTargets.map((target) => {
+      if (!visibleIds.has(comparisonTargetKey(target))) return target;
+      const reorderedTarget = targetsById.get(reorderedKeys[visibleIndex]);
+      visibleIndex += 1;
+      return reorderedTarget ?? target;
+    });
+  }
+
+  const targetIndex = new Map(comparisonTargets.map((target, index) => [comparisonTargetKey(target), index]));
+  comparisonRollSets.sort((left, right) =>
+    (targetIndex.get(comparisonTargetKey(left)) ?? Number.MAX_SAFE_INTEGER) -
+    (targetIndex.get(comparisonTargetKey(right)) ?? Number.MAX_SAFE_INTEGER)
+  );
+  skillPredictionRollSets.sort((left, right) =>
+    (targetIndex.get(comparisonTargetKey(left)) ?? Number.MAX_SAFE_INTEGER) -
+    (targetIndex.get(comparisonTargetKey(right)) ?? Number.MAX_SAFE_INTEGER)
+  );
+
+  persistAppState();
+  renderComparisonTargets();
+  if (comparisonRollSets.length > 0) renderComparisonTable();
+  if (skillPredictionRollSets.length > 0) renderSkillPredictionTable();
+}
+
+function clearComparisonTargetDragStyles() {
+  document.querySelectorAll(".target-reorderable.target-dragging, .target-reorderable.target-drag-over")
+    .forEach((element) => element.classList.remove("target-dragging", "target-drag-over"));
+}
+
+function makeTargetReorderable(element, handle, target, visibleTargets, groupByCombination) {
+  const targetName = comparisonTargetName(target);
+  const reorderLabel = `${targetName}: ${t("ドラッグして並び替え")}`;
+  element.classList.add("target-reorderable");
+  element.draggable = true;
+  element.dataset.reorderTargetId = comparisonTargetKey(target);
+  element.title = t("ドラッグして並び替え");
+  handle.classList.add("target-drag-handle");
+  handle.textContent = "⠿";
+  handle.tabIndex = 0;
+  handle.setAttribute("role", "button");
+  handle.setAttribute("aria-label", reorderLabel);
+  handle.title = t("ドラッグして並び替え");
+
+  const commitReorder = (destinationId, insertAfter = false) => {
+    const destination = visibleTargets.find(
+      (candidate) => comparisonTargetKey(candidate) === destinationId,
+    );
+    if (!destination) return;
+    applyComparisonTargetOrder(
+      visibleTargets,
+      target,
+      destination,
+      groupByCombination,
+      insertAfter,
+    );
+  };
+
+  element.addEventListener("dragstart", (event) => {
+    if (event.target instanceof Element && event.target.closest(".comparison-target-remove")) {
+      event.preventDefault();
+      return;
+    }
+    draggedComparisonTarget = {
+      id: comparisonTargetKey(target),
+      groupByCombination,
+    };
+    element.classList.add("target-dragging");
+    if (event.dataTransfer) {
+      event.dataTransfer.effectAllowed = "move";
+      event.dataTransfer.setData("text/plain", comparisonTargetKey(target));
+    }
+  });
+  element.addEventListener("dragover", (event) => {
+    if (!draggedComparisonTarget || draggedComparisonTarget.groupByCombination !== groupByCombination) return;
+    event.preventDefault();
+    element.classList.add("target-drag-over");
+    if (event.dataTransfer) event.dataTransfer.dropEffect = "move";
+  });
+  element.addEventListener("dragleave", () => element.classList.remove("target-drag-over"));
+  element.addEventListener("drop", (event) => {
+    if (!draggedComparisonTarget || draggedComparisonTarget.groupByCombination !== groupByCombination) return;
+    event.preventDefault();
+    const bounds = element.getBoundingClientRect();
+    const insertAfter = event.clientX >= bounds.left + bounds.width / 2;
+    const source = visibleTargets.find(
+      (candidate) => comparisonTargetKey(candidate) === draggedComparisonTarget.id,
+    );
+    if (source) {
+      applyComparisonTargetOrder(
+        visibleTargets,
+        source,
+        target,
+        groupByCombination,
+        insertAfter,
+      );
+    }
+    draggedComparisonTarget = null;
+    clearComparisonTargetDragStyles();
+  });
+  element.addEventListener("dragend", () => {
+    draggedComparisonTarget = null;
+    clearComparisonTargetDragStyles();
+  });
+
+  let touchDrag = null;
+  handle.addEventListener("pointerdown", (event) => {
+    if (event.pointerType === "mouse") return;
+    event.preventDefault();
+    touchDrag = {
+      pointerId: event.pointerId,
+      destinationId: comparisonTargetKey(target),
+      insertAfter: false,
+    };
+    handle.setPointerCapture?.(event.pointerId);
+    element.classList.add("target-dragging");
+  });
+  handle.addEventListener("pointermove", (event) => {
+    if (!touchDrag || event.pointerId !== touchDrag.pointerId) return;
+    event.preventDefault();
+    const destinationElement = document.elementFromPoint(event.clientX, event.clientY)
+      ?.closest(".target-reorderable[data-reorder-target-id]");
+    if (!destinationElement) return;
+    const destinationId = destinationElement.dataset.reorderTargetId;
+    if (!visibleTargets.some((candidate) => comparisonTargetKey(candidate) === destinationId)) return;
+    document.querySelectorAll(".target-reorderable.target-drag-over")
+      .forEach((candidate) => candidate.classList.remove("target-drag-over"));
+    destinationElement.classList.add("target-drag-over");
+    const bounds = destinationElement.getBoundingClientRect();
+    touchDrag.destinationId = destinationId;
+    touchDrag.insertAfter = event.clientX >= bounds.left + bounds.width / 2;
+  });
+  const finishTouchDrag = (event) => {
+    if (!touchDrag || event.pointerId !== touchDrag.pointerId) return;
+    event.preventDefault();
+    const { destinationId, insertAfter } = touchDrag;
+    touchDrag = null;
+    clearComparisonTargetDragStyles();
+    commitReorder(destinationId, insertAfter);
+  };
+  handle.addEventListener("pointerup", finishTouchDrag);
+  handle.addEventListener("pointercancel", () => {
+    touchDrag = null;
+    clearComparisonTargetDragStyles();
+  });
+  handle.addEventListener("keydown", (event) => {
+    if (event.key !== "ArrowLeft" && event.key !== "ArrowRight") return;
+    const targetKey = reorderKey(target, groupByCombination);
+    const currentIndex = visibleTargets.findIndex(
+      (candidate) => reorderKey(candidate, groupByCombination) === targetKey,
+    );
+    const direction = event.key === "ArrowLeft" ? -1 : 1;
+    const destination = visibleTargets[currentIndex + direction];
+    if (!destination) return;
+    event.preventDefault();
+    applyComparisonTargetOrder(
+      visibleTargets,
+      target,
+      destination,
+      groupByCombination,
+      direction > 0,
+    );
+  });
+}
+
+function createReorderableTargetHeader(target, visibleTargets, groupByCombination) {
+  const header = document.createElement("th");
+  const content = document.createElement("span");
+  const handle = document.createElement("span");
+  const label = document.createElement("span");
+  header.scope = "col";
+  content.className = "target-column-heading";
+  label.textContent = comparisonTargetName(target);
+  content.append(handle, label);
+  header.append(content);
+  makeTargetReorderable(header, handle, target, visibleTargets, groupByCombination);
+  return header;
+}
+
 function optionName(options, value) {
   return options.find(([optionValue]) => optionValue === value)?.[1] ?? String(value);
 }
@@ -2462,13 +2678,15 @@ function downloadCsv(filename, headers, rows) {
 }
 
 function renderComparisonTargets() {
-  const createItems = (targets) => targets.map((target) => {
+  const createItems = (targets, groupByCombination) => targets.map((target) => {
       const item = document.createElement("span");
+      const handle = document.createElement("span");
       const text = document.createElement("span");
       const removeButton = document.createElement("button");
       item.className = "comparison-target";
       text.textContent = comparisonTargetName(target);
       removeButton.type = "button";
+      removeButton.className = "comparison-target-remove";
       removeButton.textContent = "×";
       removeButton.setAttribute("aria-label", t(`${comparisonTargetName(target)}を比較対象から削除`));
       removeButton.addEventListener("click", () => {
@@ -2479,15 +2697,53 @@ function renderComparisonTargets() {
         persistAppState();
         void Promise.all([refreshComparisonPredictions(), refreshSkillPredictions()]);
       });
-      item.append(text, removeButton);
+      item.append(handle, text, removeButton);
+      makeTargetReorderable(item, handle, target, targets, groupByCombination);
       return item;
     });
-  comparisonTargetList.replaceChildren(...createItems(comparisonTargets));
-  skillTargetList.replaceChildren(...createItems(uniqueTargetsByCombination()));
+  comparisonTargetList.replaceChildren(...createItems(comparisonTargets, false));
+  skillTargetList.replaceChildren(...createItems(uniqueTargetsByCombination(), true));
+  const capacityText = `${comparisonTargets.length.toLocaleString("ja-JP")}/${MAX_REGISTERED_TARGETS.toLocaleString("ja-JP")}件`;
+  const capacityClass = comparisonTargets.length > LARGE_REGISTERED_TARGET_COUNT
+    ? "status-pill running"
+    : "status-pill";
+  comparisonTargetCapacity.textContent = capacityText;
+  comparisonTargetCapacity.className = capacityClass;
+  skillTargetCapacity.textContent = capacityText;
+  skillTargetCapacity.className = capacityClass;
   clearComparisonTargetsButton.disabled = comparisonTargets.length === 0;
   clearSkillTargetsButton.disabled = comparisonTargets.length === 0;
   renderKeepLayoutInputs();
   updateComparisonStatus();
+}
+
+function bonusRollCount(target) {
+  return Math.floor(target.rolls.length / 5);
+}
+
+function bonusRollAt(target, index) {
+  const start = index * 5;
+  return target.rolls.subarray(start, start + 5);
+}
+
+function bonusRollExCount(target, index) {
+  let count = 0;
+  for (const bonusId of bonusRollAt(target, index)) {
+    if (EX_BONUS_IDS.has(bonusId)) count += 1;
+  }
+  return count;
+}
+
+function skillRollAt(target, index) {
+  const tableIndex = target.rolls[index];
+  return {
+    seriesIndex: Math.floor(tableIndex / GROUP_SKILLS.length),
+    groupIndex: tableIndex % GROUP_SKILLS.length,
+  };
+}
+
+function yieldToMainThread() {
+  return new Promise((resolve) => setTimeout(resolve, 0));
 }
 
 function readComparisonCount() {
@@ -2520,15 +2776,20 @@ async function refreshComparisonPredictions() {
     if (predictionTargets.length === 0) {
       throw new Error("EX厳選する武器の現在5枠構成を入力してください。");
     }
-    const nextRollSets = predictionTargets.map((target) => {
+    const nextRollSets = [];
+    for (let index = 0; index < predictionTargets.length; index += 1) {
+      if (requestId !== comparisonRequestId) return;
+      const target = predictionTargets[index];
       const flattened = predictBonusRollsForTarget(target, count);
-      return {
+      nextRollSets.push({
         ...target,
-        rolls: Array.from({ length: count }, (_, index) =>
-          Array.from(flattened.slice(index * 5, index * 5 + 5)),
-        ),
-      };
-    });
+        rolls: flattened,
+      });
+      if ((index + 1) % 8 === 0 && index + 1 < predictionTargets.length) {
+        comparisonStatus.textContent = t("比較表を計算中") + " " + (index + 1) + "/" + predictionTargets.length;
+        await yieldToMainThread();
+      }
+    }
     if (requestId !== comparisonRequestId) return;
     comparisonRollSets = nextRollSets;
     resetTablePage("comparison");
@@ -2546,10 +2807,10 @@ function comparisonPredictionVisibility() {
     return { count: 0, minimumExCount: Number(bonusExFilterCountSelect.value), visibleIndices: [] };
   }
 
-  const count = comparisonRollSets[0].rolls.length;
+  const count = bonusRollCount(comparisonRollSets[0]);
   const minimumExCount = Number(bonusExFilterCountSelect.value);
   const rowMeetsExThreshold = (index) => comparisonRollSets.some((target) =>
-    target.rolls[index].filter((bonusId) => EX_BONUS_IDS.has(bonusId)).length >= minimumExCount
+    bonusRollExCount(target, index) >= minimumExCount
   );
   const visibleIndices = Array.from({ length: count }, (_, index) => index)
     .filter((index) => !bonusExFilterEnabled.checked || rowMeetsExThreshold(index));
@@ -2577,12 +2838,11 @@ function renderComparisonTable() {
   comparisonHeaderRow.replaceChildren(
     offsetHeader,
     continuationHeader,
-    ...comparisonRollSets.map((target) => {
-      const header = document.createElement("th");
-      header.scope = "col";
-      header.textContent = comparisonTargetName(target);
-      return header;
-    }),
+    ...comparisonRollSets.map((target) => createReorderableTargetHeader(
+      target,
+      comparisonRollSets,
+      bonusPrediction.mode !== "keep",
+    )),
   );
 
   const { count, minimumExCount, visibleIndices } = comparisonPredictionVisibility();
@@ -2632,7 +2892,7 @@ function exportVisibleBonusPredictionsCsv() {
   const rows = visibleIndices.map((index) => [
     index + 1,
     saveState.bonusCounter + index + 1,
-    ...comparisonRollSets.flatMap((target) => target.rolls[index].map((bonusId) =>
+    ...comparisonRollSets.flatMap((target) => Array.from(bonusRollAt(target, index), (bonusId) =>
       t(gogmaBonusName(target.weaponType, bonusId))
     )),
   ]);
@@ -2656,8 +2916,9 @@ function createComparisonRow(index) {
   for (const target of comparisonRollSets) {
     const cell = document.createElement("td");
     const bonusSet = document.createElement("div");
+    const roll = bonusRollAt(target, index);
     bonusSet.className = "comparison-bonus-set";
-    for (const bonusId of target.rolls[index]) {
+    for (const bonusId of roll) {
       const tag = document.createElement("span");
       tag.className = `bonus-tag compact ${bonusClassName(bonusId)}${EX_BONUS_IDS.has(bonusId) ? " ex" : ""}`;
       tag.textContent = compactGogmaBonusName(target.weaponType, bonusId);
@@ -2670,7 +2931,7 @@ function createComparisonRow(index) {
       keepButton.textContent = "この構成でEX厳選へ";
       keepButton.addEventListener("click", () => void beginKeepOptimization(
         target,
-        target.rolls[index],
+        roll,
         index + 1,
       ));
       bonusSet.append(keepButton);
@@ -2813,6 +3074,7 @@ async function verifySkillObservationPrefix(observations) {
 }
 
 async function refreshSkillPredictions() {
+  const requestId = ++skillPredictionRequestId;
   if (saveState.baseSeed === null || saveState.skillCounter === null) {
     clearSkillPredictionResults();
     skillFutureStatus.textContent = "基準seedとスキルカウンターを入力してください";
@@ -2830,7 +3092,11 @@ async function refreshSkillPredictions() {
   try {
     const predictionCount = readSkillPredictionCount();
     await ensurePredictionWasm();
-    skillPredictionRollSets = uniqueTargetsByCombination().map((target) => {
+    const predictionTargets = uniqueTargetsByCombination();
+    const nextRollSets = [];
+    for (let index = 0; index < predictionTargets.length; index += 1) {
+      if (requestId !== skillPredictionRequestId) return;
+      const target = predictionTargets[index];
       const tableIndices = predict_skill_rolls(
         saveState.baseSeed,
         target.weaponType,
@@ -2839,14 +3105,17 @@ async function refreshSkillPredictions() {
         SKILL_COUNTER_GATE,
         predictionCount,
       );
-      return {
+      nextRollSets.push({
         ...target,
-        rolls: Array.from(tableIndices, (tableIndex) => ({
-          seriesIndex: Math.floor(tableIndex / GROUP_SKILLS.length),
-          groupIndex: tableIndex % GROUP_SKILLS.length,
-        })),
-      };
-    });
+        rolls: tableIndices,
+      });
+      if ((index + 1) % 8 === 0 && index + 1 < predictionTargets.length) {
+        skillFutureStatus.textContent = t("スキル未来を計算中") + " " + (index + 1) + "/" + predictionTargets.length;
+        await yieldToMainThread();
+      }
+    }
+    if (requestId !== skillPredictionRequestId) return;
+    skillPredictionRollSets = nextRollSets;
     resetTablePage("skill");
     renderSkillPredictionTable();
   } catch (error) {
@@ -2891,6 +3160,13 @@ function skillRollMatchesFilter(roll, filter) {
     : groupMatches || seriesMatches;
 }
 
+function skillTableIndexMatchesFilter(tableIndex, filter) {
+  return skillRollMatchesFilter({
+    seriesIndex: Math.floor(tableIndex / GROUP_SKILLS.length),
+    groupIndex: tableIndex % GROUP_SKILLS.length,
+  }, filter);
+}
+
 function skillPredictionVisibility(filter = selectedSkillFilter()) {
   if (skillPredictionRollSets.length === 0) {
     return { count: 0, matchingRowCount: 0, visibleIndices: [] };
@@ -2899,7 +3175,7 @@ function skillPredictionVisibility(filter = selectedSkillFilter()) {
   const count = skillPredictionRollSets[0].rolls.length;
   const allIndices = Array.from({ length: count }, (_, index) => index);
   const rowMatchesFilter = (index) => skillPredictionRollSets.some((target) =>
-    skillRollMatchesFilter(target.rolls[index], filter)
+    skillTableIndexMatchesFilter(target.rolls[index], filter)
   );
   const matchingIndices = allIndices.filter(rowMatchesFilter);
   return {
@@ -2914,12 +3190,14 @@ function renderSkillPredictionTable() {
 
   const skillFilter = selectedSkillFilter();
   const highlightEnabled = skillHighlightEnabled.checked;
-  const isConditionMatch = (roll) => skillRollMatchesFilter(roll, skillFilter);
   const { count, matchingRowCount, visibleIndices } = skillPredictionVisibility(skillFilter);
-  const conditionMatchCount = skillPredictionRollSets.reduce(
-    (total, target) => total + target.rolls.filter(isConditionMatch).length,
-    0,
-  );
+  const conditionMatchCount = skillPredictionRollSets.reduce((total, target) => {
+    let targetMatches = 0;
+    for (const tableIndex of target.rolls) {
+      if (skillTableIndexMatchesFilter(tableIndex, skillFilter)) targetMatches += 1;
+    }
+    return total + targetMatches;
+  }, 0);
 
   const filterStatus = skillFilter.enabled
     ? `・条件一致${matchingRowCount.toLocaleString("ja-JP")}行`
@@ -2941,12 +3219,11 @@ function renderSkillPredictionTable() {
   skillPredictionHeaderRow.replaceChildren(
     offsetHeader,
     stateHeader,
-    ...skillPredictionRollSets.map((target) => {
-      const header = document.createElement("th");
-      header.scope = "col";
-      header.textContent = comparisonTargetName(target);
-      return header;
-    }),
+    ...skillPredictionRollSets.map((target) => createReorderableTargetHeader(
+      target,
+      skillPredictionRollSets,
+      true,
+    )),
   );
 
   if (visibleIndices.length === 0) {
@@ -2989,7 +3266,7 @@ function exportVisibleSkillPredictionsCsv() {
     index + 1,
     saveState.skillCounter + index + 1,
     ...skillPredictionRollSets.flatMap((target) => {
-      const roll = target.rolls[index];
+      const roll = skillRollAt(target, index);
       return [
         t(SERIES_SKILLS[roll.seriesIndex] ?? `シリーズ ${roll.seriesIndex}`),
         t(GROUP_SKILLS[roll.groupIndex] ?? `グループ ${roll.groupIndex}`),
@@ -3012,7 +3289,7 @@ function createSkillPredictionRow(index, skillFilter, highlightEnabled) {
   row.append(offsetCell, createSavedStateCell("skill", index + 1, null, true));
 
   for (const target of skillPredictionRollSets) {
-    const roll = target.rolls[index];
+    const roll = skillRollAt(target, index);
     const cell = document.createElement("td");
     const tags = document.createElement("div");
     const seriesTag = document.createElement("span");
@@ -3076,21 +3353,24 @@ function artianBaseCounterForWeapon(weaponType) {
   return Number.isSafeInteger(value) && value >= 0 && value <= 1_000_000 ? value : null;
 }
 
-function renderArtianCounterOverview() {
+function createArtianCounterOverviewItems(highlightSelectedWeapon) {
   const selectedWeaponType = Number(artianBaseWeaponSelect.value);
-  artianCounterOverviewGrid.replaceChildren(
-    ...WEAPON_TYPES.map(([weaponType, weaponName]) => {
+  return WEAPON_TYPES.map(([weaponType, weaponName]) => {
       const counter = artianBaseCounterForWeapon(weaponType);
       const item = document.createElement("div");
       const label = document.createElement("span");
       const value = document.createElement("strong");
-      item.className = `artian-counter-overview-item${weaponType === selectedWeaponType ? " selected" : ""}${counter === null ? " unknown" : ""}`;
+      item.className = `artian-counter-overview-item${highlightSelectedWeapon && weaponType === selectedWeaponType ? " selected" : ""}${counter === null ? " unknown" : ""}`;
       label.textContent = t(weaponName);
       value.textContent = counter === null ? t("未特定") : counter.toLocaleString("ja-JP");
       item.append(label, value);
       return item;
-    }),
-  );
+    });
+}
+
+function renderArtianCounterOverview() {
+  artianCounterOverviewGrid.replaceChildren(...createArtianCounterOverviewItems(true));
+  saveStateArtianCounterOverviewGrid.replaceChildren(...createArtianCounterOverviewItems(false));
 }
 
 function renderArtianBaseState() {

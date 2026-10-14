@@ -112,32 +112,6 @@ h1 {
   line-height: 1.8;
 }
 
-.notice {
-  display: flex;
-  gap: 14px;
-  align-items: flex-start;
-  margin: 28px 0 18px;
-  padding: 15px 18px;
-  border: 1px solid #564b2e;
-  border-radius: 12px;
-  background: rgb(94 77 35 / 18%);
-  color: #d4cfbd;
-}
-
-.notice p {
-  margin: 1px 0 0;
-  line-height: 1.65;
-}
-
-.notice-mark {
-  padding: 3px 8px;
-  border-radius: 999px;
-  background: var(--gold);
-  color: #17150d;
-  font-size: 0.72rem;
-  font-weight: 900;
-}
-
 .save-state-panel {
   margin: 18px 0;
   padding: clamp(20px, 4vw, 30px);
@@ -246,6 +220,10 @@ h1 {
   color: var(--muted);
   font-size: 0.78rem;
   line-height: 1.6;
+}
+
+.artian-save-counter-details .artian-counter-overview-grid {
+  margin-top: 12px;
 }
 
 .app-tabs {
@@ -2406,6 +2384,20 @@ button:disabled {
   margin-top: 14px;
 }
 
+.registration-load-note {
+  margin: 10px 0 0;
+  color: var(--muted);
+  font-size: 0.72rem;
+  line-height: 1.6;
+}
+
+.target-reorder-hint {
+  margin: 4px 0 0;
+  color: #9f9b89;
+  font-size: 0.68rem;
+  line-height: 1.5;
+}
+
 .comparison-target-list {
   display: flex;
   flex-wrap: wrap;
@@ -2425,6 +2417,47 @@ button:disabled {
   color: #e8e3d4;
   font-size: 0.72rem;
   font-weight: 800;
+  transition: border-color 120ms ease, background 120ms ease, opacity 120ms ease;
+}
+
+.target-reorderable {
+  cursor: grab;
+  user-select: none;
+}
+
+.target-reorderable:active,
+.target-reorderable.target-dragging {
+  cursor: grabbing;
+}
+
+.target-reorderable.target-dragging {
+  opacity: 0.48;
+}
+
+.target-reorderable.target-drag-over {
+  outline: 2px solid var(--gold-bright);
+  outline-offset: -2px;
+}
+
+.target-drag-handle {
+  display: inline-grid;
+  flex: 0 0 auto;
+  width: 18px;
+  height: 22px;
+  align-items: center;
+  justify-content: center;
+  color: #8f8b7c;
+  cursor: grab;
+  font-family: var(--font-ui);
+  font-size: 0.9rem;
+  line-height: 1;
+  touch-action: none;
+}
+
+.target-drag-handle:focus-visible {
+  border-radius: 4px;
+  outline: 2px solid var(--gold-bright);
+  outline-offset: 1px;
 }
 
 .comparison-target button {
@@ -2443,6 +2476,19 @@ button:disabled {
 .comparison-target button:hover {
   background: #4a4330;
   color: var(--gold-bright);
+}
+
+.target-column-heading {
+  display: flex;
+  gap: 4px;
+  align-items: center;
+  justify-content: center;
+}
+
+.target-column-heading .target-drag-handle {
+  width: 16px;
+  height: 18px;
+  font-size: 0.78rem;
 }
 
 .comparison-table {

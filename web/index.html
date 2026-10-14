@@ -28,14 +28,6 @@
         </label>
       </header>
 
-      <section class="notice" aria-label="現在の制限">
-        <span class="notice-mark">β</span>
-        <p>
-          現在は手入力版です。ゲーム画面と同じ名称を選んでください。
-          入力した検索データが外部へ送信されることはありません。
-        </p>
-      </section>
-
       <section class="save-state-panel" aria-labelledby="save-state-title">
         <div class="save-state-heading">
           <div>
@@ -62,6 +54,11 @@
           </article>
         </div>
         <p class="storage-note"><strong>メモ推奨</strong><span>基準seedと2つのカウンターはこのブラウザに自動保存されます。ブラウザのデータ削除や端末変更に備え、セーブ状態コードも別途控えてください。</span></p>
+        <details class="state-code-details artian-save-counter-details">
+          <summary>通常アーティアの作成カウンター</summary>
+          <p>武器種ごとに別のカウンターを使用します。同じ武器種の無属性・属性・状態異常では共通です。</p>
+          <div id="save-state-artian-counter-overview-grid" class="artian-counter-overview-grid"></div>
+        </details>
         <details class="state-code-details state-manual-details">
           <summary>基準seed・各カウンターを手入力で設定</summary>
           <p>
@@ -341,12 +338,14 @@
             </div>
           </section>
           <section class="comparison-section" aria-labelledby="comparison-title">
-            <div class="section-heading comparison-heading"><div><p class="step">REGISTERED TARGETS</p><h2 id="comparison-title">登録した武器種・属性を一覧比較</h2></div></div>
+            <div class="section-heading comparison-heading"><div><p class="step">REGISTERED TARGETS</p><h2 id="comparison-title">登録した武器種・属性を一覧比較</h2></div><p id="comparison-target-capacity" class="status-pill">0/140件</p></div>
             <p class="prediction-intro">リセット抽選は武器種・属性が同じなら同じ結果です。「ボーナスを同じ構成で再復元」でEXを厳選する場合は、同じ武器種・属性の別武器も表示名を付けて複数登録できます。</p>
             <div class="field-grid comparison-settings target-registration-grid">
               <label><span>表示名（任意）</span><input id="comparison-target-label" type="text" maxlength="24" placeholder="例：火太刀" /></label><label><span>武器種</span><select id="comparison-weapon-type"></select></label><label><span>属性</span><select id="comparison-attribute-force"></select></label><label><span>表示する回数</span><input id="comparison-count" type="number" min="1" max="10000" value="100" placeholder="1〜10,000" /></label>
             </div>
             <div class="comparison-actions"><button id="add-comparison-target" class="secondary small-button" type="button">この組み合わせを登録</button><button id="clear-comparison-targets" class="text-button" type="button">登録をすべて削除</button></div>
+            <p class="registration-load-note">最大140件まで登録できます。登録数や表示回数が多いほど、計算と表示に時間がかかります。</p>
+            <p class="target-reorder-hint">登録済みのタグまたは結果表の見出しをドラッグすると、表示順を変更できます。</p>
             <div id="comparison-target-list" class="comparison-target-list" aria-live="polite"></div><p id="comparison-error" class="error" role="alert" hidden></p>
             <div class="bonus-ex-filter-settings"><div><h3>EX数で絞り込む</h3><p>いずれかの登録武器が最低EX数を満たす行だけ表示します。</p></div><label><span>最低EX数</span><select id="bonus-ex-filter-count"><option value="1">1個以上</option><option value="2">2個以上</option><option value="3" selected>3個以上</option><option value="4">4個以上</option><option value="5">5個</option></select></label><label class="checkbox-label bonus-ex-filter-toggle"><input id="bonus-ex-filter-enabled" type="checkbox" /><span>条件に合う行だけ表示</span></label></div>
             <div class="prediction-export-actions bonus-export-actions"><button id="export-bonus-csv" class="secondary small-button" type="button" disabled>検索結果をCSV出力</button><p id="bonus-export-status" aria-live="polite">1カウンターを1行にし、登録武器ごとに5枠分の列を追加します。EX絞り込みがONの場合は、条件に合う行をすべて出力します。</p></div>
@@ -377,11 +376,13 @@
             </div><p id="skill-state-message" class="continuation-message" aria-live="polite"></p><p id="skill-state-error" class="error" role="alert" hidden></p>
           </section>
           <section class="comparison-section" aria-labelledby="skill-targets-title">
-            <div class="section-heading comparison-heading"><div><p class="step">REGISTERED TARGETS</p><h2 id="skill-targets-title">登録した武器種・属性を一覧比較</h2></div></div>
+            <div class="section-heading comparison-heading"><div><p class="step">REGISTERED TARGETS</p><h2 id="skill-targets-title">登録した武器種・属性を一覧比較</h2></div><p id="skill-target-capacity" class="status-pill">0/140件</p></div>
             <div class="field-grid comparison-settings target-registration-grid">
               <label><span>表示名（任意）</span><input id="skill-target-label" type="text" maxlength="24" placeholder="例：火太刀" /></label><label><span>武器種</span><select id="skill-target-weapon-type"></select></label><label><span>属性</span><select id="skill-target-attribute-force"></select></label><label><span>表示する回数</span><input id="skill-prediction-count" type="number" min="1" max="10000" value="100" placeholder="1〜10,000" /></label>
             </div>
             <div class="comparison-actions"><button id="add-skill-target" class="secondary small-button" type="button">この組み合わせを登録</button><button id="clear-skill-targets" class="text-button" type="button">登録をすべて削除</button></div>
+            <p class="registration-load-note">最大140件まで登録できます。登録数や表示回数が多いほど、計算と表示に時間がかかります。</p>
+            <p class="target-reorder-hint">登録済みのタグまたは結果表の見出しをドラッグすると、表示順を変更できます。</p>
             <div id="skill-target-list" class="comparison-target-list" aria-live="polite"></div><p id="skill-target-error" class="error" role="alert" hidden></p>
           </section>
           <section class="skill-filter-settings" aria-labelledby="skill-filter-title">
@@ -404,7 +405,7 @@
       <div class="tab-view" data-tab-view="artian-search" hidden>
         <section class="panel artian-base-section" aria-labelledby="artian-search-title">
           <div class="section-heading artian-base-heading">
-            <div><p class="step">BASE ARTIAN COUNTER SEARCH · BETA</p><h2 id="artian-search-title">通常アーティアカウンター特定</h2></div>
+            <div><p class="step">BASE ARTIAN COUNTER SEARCH</p><h2 id="artian-search-title">通常アーティアカウンター特定</h2></div>
             <p class="status-pill">レア8専用</p>
           </div>
           <div class="artian-beta-notice">
@@ -442,12 +443,8 @@
       <div class="tab-view" data-tab-view="artian-future" hidden>
         <section class="panel artian-base-section" aria-labelledby="artian-base-title">
           <div class="section-heading artian-base-heading">
-            <div><p class="step">BASE ARTIAN FORECAST · BETA</p><h2 id="artian-base-title">通常アーティア未来予測</h2></div>
+            <div><p class="step">BASE ARTIAN FORECAST</p><h2 id="artian-base-title">通常アーティア未来予測</h2></div>
             <p id="artian-base-status" class="status-pill">基準seedと作成カウンターを設定してください</p>
-          </div>
-          <div class="artian-beta-notice">
-            <strong>β版・検証範囲</strong>
-            <p>レア8専用です。大剣・ランス・弓・ヘビィボウガン・ライトボウガンの計28本で、作成カウンターと5枠の一致を確認しています。ほかの近接武器は同じ式で予測します。</p>
           </div>
           <p class="prediction-intro">通常アーティア武器の作成カウンターは、武器種ごとに別管理です。同じ武器種であれば、無属性・属性・状態異常で共通のカウンターを使用します。レア8武器を1本生産すると、その武器種のカウンターだけが1つ進みます。</p>
           <div class="artian-counter-jump">

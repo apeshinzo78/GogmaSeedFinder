@@ -184,7 +184,7 @@ therefore require repeated occurrences in the same result. Changing the
 prediction weapon or attribute retains the recovered base seed/counter but
 recomposes the effective seed and applies that weapon's candidate pool.
 
-The Web comparison view evaluates up to sixteen weapon profiles from
+The Web comparison view evaluates up to 140 weapon profiles from
 the same recovered save position. A single row therefore represents one shared
 number of Reset Bonuses operations but can contain different five-slot results
 for every pair. This supports a route such as accepting Fire Long Sword at
