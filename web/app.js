@@ -2491,8 +2491,19 @@ function applyComparisonTargetOrder(visibleTargets, sourceTarget, destinationTar
 }
 
 function clearComparisonTargetDragStyles() {
-  document.querySelectorAll(".target-reorderable.target-dragging, .target-reorderable.target-drag-over")
-    .forEach((element) => element.classList.remove("target-dragging", "target-drag-over"));
+  document.querySelectorAll(
+    ".target-reorderable.target-dragging, .target-reorderable.target-drop-before, .target-reorderable.target-drop-after",
+  ).forEach((element) => element.classList.remove(
+    "target-dragging",
+    "target-drop-before",
+    "target-drop-after",
+  ));
+}
+
+function showComparisonTargetInsertionMarker(element, insertAfter) {
+  document.querySelectorAll(".target-reorderable.target-drop-before, .target-reorderable.target-drop-after")
+    .forEach((candidate) => candidate.classList.remove("target-drop-before", "target-drop-after"));
+  element.classList.add(insertAfter ? "target-drop-after" : "target-drop-before");
 }
 
 function makeTargetReorderable(element, handle, target, visibleTargets, groupByCombination) {
@@ -2541,10 +2552,14 @@ function makeTargetReorderable(element, handle, target, visibleTargets, groupByC
   element.addEventListener("dragover", (event) => {
     if (!draggedComparisonTarget || draggedComparisonTarget.groupByCombination !== groupByCombination) return;
     event.preventDefault();
-    element.classList.add("target-drag-over");
+    const bounds = element.getBoundingClientRect();
+    showComparisonTargetInsertionMarker(element, event.clientX >= bounds.left + bounds.width / 2);
     if (event.dataTransfer) event.dataTransfer.dropEffect = "move";
   });
-  element.addEventListener("dragleave", () => element.classList.remove("target-drag-over"));
+  element.addEventListener("dragleave", (event) => {
+    if (event.relatedTarget instanceof Node && element.contains(event.relatedTarget)) return;
+    element.classList.remove("target-drop-before", "target-drop-after");
+  });
   element.addEventListener("drop", (event) => {
     if (!draggedComparisonTarget || draggedComparisonTarget.groupByCombination !== groupByCombination) return;
     event.preventDefault();
@@ -2590,12 +2605,10 @@ function makeTargetReorderable(element, handle, target, visibleTargets, groupByC
     if (!destinationElement) return;
     const destinationId = destinationElement.dataset.reorderTargetId;
     if (!visibleTargets.some((candidate) => comparisonTargetKey(candidate) === destinationId)) return;
-    document.querySelectorAll(".target-reorderable.target-drag-over")
-      .forEach((candidate) => candidate.classList.remove("target-drag-over"));
-    destinationElement.classList.add("target-drag-over");
     const bounds = destinationElement.getBoundingClientRect();
     touchDrag.destinationId = destinationId;
     touchDrag.insertAfter = event.clientX >= bounds.left + bounds.width / 2;
+    showComparisonTargetInsertionMarker(destinationElement, touchDrag.insertAfter);
   });
   const finishTouchDrag = (event) => {
     if (!touchDrag || event.pointerId !== touchDrag.pointerId) return;

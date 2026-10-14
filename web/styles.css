@@ -2421,6 +2421,7 @@ button:disabled {
 }
 
 .target-reorderable {
+  position: relative;
   cursor: grab;
   user-select: none;
 }
@@ -2434,9 +2435,26 @@ button:disabled {
   opacity: 0.48;
 }
 
-.target-reorderable.target-drag-over {
-  outline: 2px solid var(--gold-bright);
-  outline-offset: -2px;
+.target-reorderable.target-drop-before::before,
+.target-reorderable.target-drop-after::after {
+  position: absolute;
+  z-index: 4;
+  top: -5px;
+  bottom: -5px;
+  width: 3px;
+  border-radius: 999px;
+  background: var(--gold-bright);
+  box-shadow: 0 0 0 1px #171814, 0 0 8px rgba(239, 193, 73, 0.72);
+  content: "";
+  pointer-events: none;
+}
+
+.target-reorderable.target-drop-before::before {
+  left: -5px;
+}
+
+.target-reorderable.target-drop-after::after {
+  right: -5px;
 }
 
 .target-drag-handle {
