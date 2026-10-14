@@ -647,6 +647,7 @@ function translateTemplate(source, locale, fallback = source) {
   }
   if ((match = source.match(/^(復元ボーナスカウンター|スキルカウンター)([\d,]+)を新しい0地点にしました。$/))) return en ? `Set ${t(match[1])} ${match[2]} as the new origin (0).` : `已將${t(match[1])} ${match[2]}設為新的0點。`;
   if ((match = source.match(/^復元ボーナスカウンター ([\d,]+) を保存しました。$/))) return en ? `Saved Bonus Counter ${match[1]}.` : `已儲存復原加成計數器 ${match[1]}。`;
+  if ((match = source.match(/^スキルカウンター ([\d,]+) を保存しました。$/))) return en ? `Saved Skill Counter ${match[1]}.` : `已儲存技能計數器 ${match[1]}。`;
   if ((match = source.match(/^(.+)の武器構成「(.+)」をEX厳選用に保存しました。$/))) {
     const separator = en ? ", " : "、";
     const composition = match[2].split("・").map((category) => t(category)).join(separator);

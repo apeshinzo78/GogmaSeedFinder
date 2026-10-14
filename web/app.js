@@ -2378,7 +2378,9 @@ async function adoptSkillPosition(completedRolls) {
   setStateFromSkill(saveState.baseSeed, nextCounter, "予測結果");
   currentSkillObservations = [];
   skillObservedCount = 0;
-  skillStateMessage.textContent = `スキルカウンター${nextCounter.toLocaleString("ja-JP")}を新しい0地点にしました。`;
+  const message = `スキルカウンター ${nextCounter.toLocaleString("ja-JP")} を保存しました。`;
+  skillStateMessage.textContent = t(message);
+  showSaveFeedback(message, []);
   await Promise.all([
     refreshSkillPredictions(),
     selectedCandidate ? refreshPredictions() : Promise.resolve(),
