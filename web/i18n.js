@@ -169,6 +169,9 @@ const UI_TEXT = {
   "ゲーム内で再復元またはスキル再付与を行い、欲しい結果が出る「○回先」まで進めます。": ["In the game, repeat the relevant amendment or skill reset until the desired result's “rolls ahead” position.", "在遊戲中進行再次復原強化或重新附加技能，前進至出現目標結果的「○次後」。"],
   "欲しい結果を確認して採用し、セーブします。": ["Confirm and accept the desired result, then save.", "確認並採用目標結果後存檔。"],
   "その行の「ここを0にする」を押すと、セーブした位置から続きを予測できます。": ["Click “Set as 0” on that row to continue forecasting from the saved position.", "按下該列的「設為0」，即可從已存檔的位置繼續預測。"],
+  "保存しました": ["Saved", "已儲存"],
+  "EX厳選用に保存しました": ["Saved for EX Farming", "已儲存供EX嚴選使用"],
+  "通知を閉じる": ["Close notification", "關閉通知"],
   "複数武器を比較して、効率よく厳選する": ["Compare Multiple Weapons and Farm Efficiently", "比較多把武器，高效率嚴選"],
   "スキルカウンターは全武器で共有されます。先に複数の武器種・属性を登録し、欲しい結果が出る位置をまとめて確認すると、素材と時間を節約できます。": ["The Skill Counter is shared by all weapons. Register multiple weapon type and element combinations to compare where desired results appear and save materials and time.", "技能計數器由所有武器共用。先登錄多組武器種類與屬性，一次確認目標結果的位置，即可節省素材與時間。"],
   "スキル未来予測の出力例": ["Skill Forecast example", "技能未來預測輸出範例"],
@@ -643,6 +646,12 @@ function translateTemplate(source, locale, fallback = source) {
     return en ? `Copied save-state code to the ${destination}: ${match[2]}` : `已將存檔狀態代碼複製至${destination}：${match[2]}`;
   }
   if ((match = source.match(/^(復元ボーナスカウンター|スキルカウンター)([\d,]+)を新しい0地点にしました。$/))) return en ? `Set ${t(match[1])} ${match[2]} as the new origin (0).` : `已將${t(match[1])} ${match[2]}設為新的0點。`;
+  if ((match = source.match(/^復元ボーナスカウンターを([\d,]+)で保存しました。$/))) return en ? `Saved Bonus Counter ${match[1]}.` : `已儲存復原加成計數器 ${match[1]}。`;
+  if ((match = source.match(/^(.+)の武器構成「(.+)」を保存しました。$/))) {
+    const separator = en ? ", " : "、";
+    const composition = match[2].split("・").map((category) => t(category)).join(separator);
+    return en ? `Saved the ${match[1]} weapon composition: ${composition}.` : `已儲存${match[1]}的武器組合：${composition}。`;
+  }
   if ((match = source.match(/^作成カウンター([\d,]+)を新しい0地点にしました。$/))) return en ? `Set Forge Counter ${match[1]} as the new origin (0).` : `已將生產計數器${match[1]}設為新的0點。`;
   if ((match = source.match(/^作成カウンター([\d,]+)〜([\d,]+)を検索中…$/))) return en ? `Searching Forge Counters ${match[1]}–${match[2]}…` : `正在搜尋生產計數器${match[1]}～${match[2]}…`;
   if ((match = source.match(/^([\d,]+)件の候補が見つかりました。使用するカウンターを選んでください。$/))) return en ? `${match[1]} candidates found. Select the counter to use.` : `找到${match[1]}個候選，請選擇要使用的計數器。`;

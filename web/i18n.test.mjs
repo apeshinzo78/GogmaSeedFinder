@@ -49,6 +49,7 @@ const exampleState = {
   conditionMatchCount: 0, matchingRowCount: 0, targetName: "Custom Weapon", saveState: { skillCounter: 1000 },
   matches: [1, 2],
   comparisonTargetName: () => "Custom Weapon", gogmaBonusName: () => "基礎攻撃力強化Ⅱ",
+  profileName: "Custom Weapon", composition: "攻撃・攻撃・攻撃・攻撃・斬れ味",
 };
 
 // These fragments are assembled into larger messages or compact bonus labels.

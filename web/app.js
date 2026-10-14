@@ -217,6 +217,10 @@ const comparisonPageNext = document.querySelector("#comparison-page-next");
 const comparisonPageStatus = document.querySelector("#comparison-page-status");
 const exportBonusCsvButton = document.querySelector("#export-bonus-csv");
 const bonusExportStatus = document.querySelector("#bonus-export-status");
+const saveFeedback = document.querySelector("#save-feedback");
+const saveFeedbackTitle = document.querySelector("#save-feedback-title");
+const saveFeedbackMessages = document.querySelector("#save-feedback-messages");
+const closeSaveFeedbackButton = document.querySelector("#close-save-feedback");
 const continuationCodeInput = document.querySelector("#continuation-code");
 const openContinuationButton = document.querySelector("#open-continuation");
 const continuationMessage = document.querySelector("#continuation-message");
@@ -430,6 +434,7 @@ const tablePagers = {
 };
 
 wireTablePagers();
+closeSaveFeedbackButton.addEventListener("click", hideSaveFeedback);
 
 renderComparisonTargets();
 renderBonusOperation();
@@ -1146,6 +1151,25 @@ function keepCategoriesForWeapon(weaponType, attributeForce) {
   return GOGMA_BONUS_CATEGORIES
     .filter(([category]) => !(attributeForce === 0 && category === 2))
     .map(([category, name]) => [category, category === 3 ? "斬れ味" : name]);
+}
+
+function keepCategoryName(target, category) {
+  return keepCategoriesForWeapon(target.weaponType, target.attributeForce)
+    .find(([candidate]) => candidate === category)?.[1] ?? String(category);
+}
+
+function showSaveFeedback(title, messages) {
+  saveFeedbackTitle.textContent = t(title);
+  saveFeedbackMessages.replaceChildren(...messages.map((message) => {
+    const line = document.createElement("p");
+    line.textContent = t(message);
+    return line;
+  }));
+  saveFeedback.hidden = false;
+}
+
+function hideSaveFeedback() {
+  saveFeedback.hidden = true;
 }
 
 function keepLayoutProblem(target) {
@@ -2097,6 +2121,10 @@ async function beginKeepOptimization(target, bonusIds, completedRolls) {
   }
   profile.keepCategories = Array.from(bonusIds, bonusCategoryId);
   profile.keepSource = `${completedRolls}回先のリセット結果`;
+  const profileName = comparisonTargetName(profile);
+  const composition = profile.keepCategories
+    .map((category) => keepCategoryName(profile, category))
+    .join("・");
   bonusPrediction.mode = "keep";
 
   const nextCounter = saveState.bonusCounter + completedRolls;
@@ -2115,7 +2143,10 @@ async function beginKeepOptimization(target, bonusIds, completedRolls) {
   renderBonusOperation();
   renderPredictionFilters();
   updatePredictionPoolNote();
-  bonusStateMessage.textContent = `${comparisonTargetName(profile)}の${completedRolls}回先を採用した状態へ進み、「ボーナスを同じ構成で再復元」のEX厳選に切り替えました。`;
+  const counterMessage = `復元ボーナスカウンターを${nextCounter.toLocaleString("ja-JP")}で保存しました。`;
+  const compositionMessage = `${profileName}の武器構成「${composition}」を保存しました。`;
+  bonusStateMessage.textContent = [counterMessage, compositionMessage].map(t).join(" ");
+  showSaveFeedback("EX厳選用に保存しました", [counterMessage, compositionMessage]);
   await Promise.all([refreshPredictions(), refreshComparisonPredictions()]);
   setActiveTab("bonus-future");
 }
@@ -2329,7 +2360,9 @@ async function adoptBonusPosition(completedRolls) {
     observations: [],
   };
   predictionOrigin.textContent = "0";
-  bonusStateMessage.textContent = `復元ボーナスカウンター${nextCounter.toLocaleString("ja-JP")}を新しい0地点にしました。`;
+  const message = `復元ボーナスカウンターを${nextCounter.toLocaleString("ja-JP")}で保存しました。`;
+  bonusStateMessage.textContent = t(message);
+  showSaveFeedback("保存しました", [message]);
   await Promise.all([
     refreshPredictions(),
     refreshComparisonPredictions(),

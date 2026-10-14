@@ -1229,6 +1229,72 @@ h1 {
   font-size: 0.78rem;
 }
 
+.save-feedback {
+  position: fixed;
+  z-index: 1000;
+  right: max(18px, env(safe-area-inset-right));
+  bottom: max(18px, env(safe-area-inset-bottom));
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  gap: 12px;
+  align-items: start;
+  width: min(520px, calc(100vw - 36px));
+  padding: 15px 16px;
+  border: 1px solid #75956c;
+  border-radius: 12px;
+  background: #1d281b;
+  box-shadow: 0 16px 42px rgb(0 0 0 / 48%);
+  color: #f3efdf;
+}
+
+.save-feedback[hidden] {
+  display: none;
+}
+
+.save-feedback-icon {
+  display: grid;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  place-items: center;
+  background: var(--green);
+  color: #10160f;
+  font-weight: 900;
+}
+
+.save-feedback-copy {
+  min-width: 0;
+}
+
+.save-feedback-copy strong {
+  display: block;
+  margin-bottom: 5px;
+  color: #b8e4af;
+  font-size: 0.9rem;
+}
+
+.save-feedback-copy p {
+  margin: 2px 0 0;
+  color: #eee8d6;
+  font-size: 0.78rem;
+  line-height: 1.55;
+}
+
+.save-feedback-close {
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: #bbb9aa;
+  font-size: 1.1rem;
+  cursor: pointer;
+}
+
+.save-feedback-close:hover {
+  color: #fff8e4;
+}
+
 .dependency-state {
   display: flex;
   gap: 18px;
