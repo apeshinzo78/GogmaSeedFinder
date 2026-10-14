@@ -1172,6 +1172,16 @@ function hideSaveFeedback() {
   saveFeedback.hidden = true;
 }
 
+function savedCounterMessage(label, value) {
+  return `${label} ${value.toLocaleString("ja-JP")} を保存しました。`;
+}
+
+function showSavedCounters(messages, details = []) {
+  const [title, ...remainingMessages] = messages;
+  if (!title) return;
+  showSaveFeedback(title, [...remainingMessages, ...details]);
+}
+
 function keepLayoutProblem(target) {
   const categories = normalizeKeepCategories(target.keepCategories);
   if (categories.some((category) => category === null)) return "5枠の現在構成を入力してください。";
@@ -1271,6 +1281,10 @@ function applyManualSaveState() {
     };
     renderSaveState();
     manualStateMessage.textContent = "入力した値を現在のセーブ状態に設定しました。空欄のカウンターは未特定として扱います。";
+    showSavedCounters([
+      bonusCounter === null ? null : savedCounterMessage("復元ボーナスカウンター", bonusCounter),
+      skillCounter === null ? null : savedCounterMessage("スキルカウンター", skillCounter),
+    ].filter(Boolean));
   } catch (error) {
     manualStateError.textContent = error instanceof Error ? error.message : String(error);
     manualStateError.hidden = false;
@@ -1289,6 +1303,7 @@ async function applyBonusPredictionState() {
     );
     setStateFromBonus(baseSeed, bonusCounter, "手入力");
     predictionPanel.hidden = false;
+    showSavedCounters([savedCounterMessage("復元ボーナスカウンター", bonusCounter)]);
     await Promise.all([refreshPredictions(), refreshComparisonPredictions()]);
     bonusStateMessage.textContent = "入力した基準seedと復元ボーナスカウンターを0地点として予測しました。";
   } catch (error) {
@@ -1304,6 +1319,7 @@ async function applySkillPredictionState() {
     const baseSeed = readStateNumber(skillStateBaseSeedInput, "基準seed", 99_999_999);
     const skillCounter = readStateNumber(skillStateCounterInput, "スキルカウンター", 0xffffffff);
     setStateFromSkill(baseSeed, skillCounter, "手入力");
+    showSavedCounters([savedCounterMessage("スキルカウンター", skillCounter)]);
     await refreshSkillPredictions();
     skillStateMessage.textContent = "入力した基準seedとスキルカウンターを0地点として予測しました。";
   } catch (error) {
@@ -1412,6 +1428,12 @@ async function openContinuationCode() {
     renderComparisonTargets();
     renderPredictionFilters();
     predictionPanel.hidden = false;
+    showSavedCounters([
+      savedCounterMessage("復元ボーナスカウンター", parsedState.counter),
+      parsedState.skillCounter === null
+        ? null
+        : savedCounterMessage("スキルカウンター", parsedState.skillCounter),
+    ].filter(Boolean));
     await Promise.all([
       refreshPredictions(),
       refreshComparisonPredictions(),
@@ -1945,6 +1967,9 @@ async function selectCandidate(candidate) {
   updatePredictionPoolNote();
   predictionPanel.hidden = false;
   renderCandidates();
+  showSavedCounters([
+    savedCounterMessage("復元ボーナスカウンター", candidate.counter),
+  ]);
   await Promise.all([refreshPredictions(), refreshComparisonPredictions()]);
   setActiveTab("bonus-future");
 }
@@ -3071,6 +3096,9 @@ async function findSkillPosition() {
     skillObservedCount = observations.length;
     currentSkillObservations = observations;
     setStateFromSkill(saveState.baseSeed, selectedSkillCounter, "検索結果");
+    showSavedCounters([
+      savedCounterMessage("スキルカウンター", selectedSkillCounter),
+    ]);
     const observedTarget = {
       weaponType: Number(skillWeaponSelect.value),
       attributeForce: Number(skillAttributeSelect.value),
@@ -3486,6 +3514,10 @@ function applyArtianBaseCounter() {
   artianBaseState.sources[key] = "手入力";
   persistAppState();
   renderArtianBaseState();
+  const weaponName = optionName(WEAPON_TYPES, Number(artianBaseWeaponSelect.value));
+  showSavedCounters([
+    `${weaponName}の作成カウンター ${counter.toLocaleString("ja-JP")} を保存しました。`,
+  ]);
   refreshArtianBasePredictions();
 }
 
@@ -3667,6 +3699,10 @@ function adoptArtianBasePosition(completedCreations) {
   persistAppState();
   renderArtianBaseState();
   artianSearchMessage.textContent = `作成カウンター${nextCounter.toLocaleString("ja-JP")}を新しい0地点にしました。`;
+  const weaponName = optionName(WEAPON_TYPES, Number(artianBaseWeaponSelect.value));
+  showSavedCounters([
+    `${weaponName}の作成カウンター ${nextCounter.toLocaleString("ja-JP")} を保存しました。`,
+  ]);
   refreshArtianBasePredictions();
   setActiveTab("artian-future");
 }
@@ -3827,8 +3863,12 @@ function renderArtianCounterCandidates(matches) {
       artianBaseState.sources[key] = "検索結果";
       persistAppState();
       renderArtianBaseState();
-      refreshArtianBasePredictions();
       artianSearchMessage.textContent = `作成カウンター${counter.toLocaleString("ja-JP")}を現在位置に設定しました。`;
+      const weaponName = optionName(WEAPON_TYPES, Number(artianBaseWeaponSelect.value));
+      showSavedCounters([
+        `${weaponName}の作成カウンター ${counter.toLocaleString("ja-JP")} を保存しました。`,
+      ]);
+      refreshArtianBasePredictions();
     });
     return button;
   }));

@@ -50,6 +50,7 @@ const exampleState = {
   matches: [1, 2],
   comparisonTargetName: () => "Custom Weapon", gogmaBonusName: () => "基礎攻撃力強化Ⅱ",
   profileName: "Custom Weapon", composition: "攻撃・攻撃・攻撃・攻撃・斬れ味",
+  label: "復元ボーナスカウンター", value: 1000, weaponName: "太刀",
 };
 
 // These fragments are assembled into larger messages or compact bonus labels.
