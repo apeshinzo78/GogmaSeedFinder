@@ -189,7 +189,8 @@ const predictionPoolNote = document.querySelector("#prediction-pool-note");
 const predictionFilters = document.querySelector("#prediction-filters");
 const predictionIgnoreTier = document.querySelector("#prediction-ignore-tier");
 const predictionMatchesOnly = document.querySelector("#prediction-matches-only");
-const predictionFilterDescription = document.querySelector("#prediction-filter-description");
+const predictionFilterDescriptionText = document.querySelector("#prediction-filter-description-text");
+const predictionFilterArtianHint = document.querySelector("#prediction-filter-artian-hint");
 const predictionError = document.querySelector("#prediction-error");
 const predictionRows = document.querySelector("#prediction-rows");
 const predictionPager = document.querySelector("#prediction-pager");
@@ -1935,9 +1936,10 @@ function renderPredictionFilters(values = []) {
       ])
     : gogmaBonusesForWeapon(weaponType, attributeForce);
 
-  predictionFilterDescription.textContent = ignoreTier
+  predictionFilterDescriptionText.textContent = ignoreTier
     ? "「ボーナスをリセットして再復元」で欲しい系統構成を順不同で探します。例：攻撃×4＋斬れ味×1"
     : "Ⅱ・Ⅲ・EXまで含めて、欲しいボーナスを順不同で指定します。";
+  predictionFilterArtianHint.hidden = !ignoreTier;
 
   predictionFilters.replaceChildren(
     ...Array.from({ length: 5 }, (_, index) => {

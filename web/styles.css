@@ -339,6 +339,10 @@ h1 {
   white-space: normal;
 }
 
+#prediction-filter-artian-hint .artian-tip-link {
+  margin-left: 0;
+}
+
 .artian-route-copy h3 {
   margin: 0 0 7px;
   font-family: var(--font-ui);
