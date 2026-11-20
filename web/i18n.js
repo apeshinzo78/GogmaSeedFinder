@@ -130,7 +130,7 @@ const UI_TEXT = {
   "基準seed 86,315,169（例）": ["Base Seed 86,315,169 (example)", "基準seed 86,315,169（範例）"],
   "武器種・属性を組み合わせて、その組み合わせ専用の抽選列を作ります（結果例：火属性スラッシュアックス）": ["Each weapon type and element combination produces its own result stream (example: Fire Switch Axe).", "武器種類與屬性的組合會產生專用的抽選序列（結果範例：火屬性斬擊斧）。"],
   "復元ボーナス抽選列": ["Reinforcement Bonus Stream", "復原加成抽選序列"],
-  "シリーズ・グループスキル抽選列": ["Series / Group Skill Stream", "系列／團體技能抽選序列"],
+  "シリーズ・グループスキル抽選列": ["Series / Group Skill Stream", "系列／群組技能抽選序列"],
   "セーブデータに保存": ["Saved in save data", "保存在存檔資料中"],
   "復元専用の現在位置": ["Current bonus position", "復原專用的目前位置"],
   "スキル専用の現在位置": ["Current skill position", "技能專用的目前位置"],
@@ -163,7 +163,7 @@ const UI_TEXT = {
   "同じ武器で「ボーナスをリセットして再復元」を連続6回行い、各回の5枠を記録します。": ["Use Amend (Reset Bonuses) six consecutive times on the same weapon and record all five slots each time.", "使用同一把武器連續進行6次「重置加成並再次復原強化」，並記錄每次的5格結果。"],
   "セーブせずにゲームを終了し、「seed・復元カウンター検索」タブへ入力します。": ["Quit without saving, then enter the results in the Seed & Bonus Counter Search tab.", "不存檔並結束遊戲，再將結果輸入「seed與復原計數器搜尋」分頁。"],
   "同じ元セーブをロードします。": ["Load the same original save.", "載入相同的原始存檔。"],
-  "同じ武器で「スキル再付与」を連続2回以上行い、シリーズ・グループスキルを記録します。": ["Use Reset Skills at least twice consecutively on the same weapon and record the Series and Group Skills.", "使用同一把武器連續進行至少2次「重新附加技能」，並記錄系列與團體技能。"],
+  "同じ武器で「スキル再付与」を連続2回以上行い、シリーズ・グループスキルを記録します。": ["Use Reset Skills at least twice consecutively on the same weapon and record the Series and Group Skills.", "使用同一把武器連續進行至少2次「重新附加技能」，並記錄系列與群組技能。"],
   "セーブせずにゲームを終了し、「スキルカウンター特定」タブへ入力します。": ["Quit without saving, then enter the results in the Find Skill Counter tab.", "不存檔並結束遊戲，再將結果輸入「確定技能計數器」分頁。"],
   "「復元ボーナス未来予測」または「スキル未来予測」タブで、狙う武器種・属性を登録します。": ["Register the desired weapon types and elements in the Bonus Forecast or Skill Forecast tab.", "在「復原加成未來預測」或「技能未來預測」分頁中登錄目標武器種類與屬性。"],
   "ゲーム内で再復元またはスキル再付与を行い、欲しい結果が出る「○回先」まで進めます。": ["In the game, repeat the relevant amendment or skill reset until the desired result's “rolls ahead” position.", "在遊戲中進行再次復原強化或重新附加技能，前進至出現目標結果的「○次後」。"],
@@ -238,10 +238,10 @@ const UI_TEXT = {
   "候補": ["Candidates", "候選"],
   "入力を確認して検索を開始してください。": ["Check your input and start the search.", "請確認輸入內容並開始搜尋。"],
   "観測結果を入力してください": ["Enter observed results", "請輸入觀測結果"],
-  "現在の基準seedを使い、セーブ地点から連続して確認したシリーズ・グループスキルからスキルカウンターを特定します。復元ボーナスカウンターは変化しません。": ["Use the current base seed and consecutive Series / Group Skill results observed from the save point to identify the Skill Counter. The Bonus Counter does not change.", "使用目前的基準seed與從存檔點連續觀測到的系列／團體技能，確定技能計數器。復原加成計數器不會改變。"],
+  "現在の基準seedを使い、セーブ地点から連続して確認したシリーズ・グループスキルからスキルカウンターを特定します。復元ボーナスカウンターは変化しません。": ["Use the current base seed and consecutive Series / Group Skill results observed from the save point to identify the Skill Counter. The Bonus Counter does not change.", "使用目前的基準seed與從存檔點連續觀測到的系列／群組技能，確定技能計數器。復原加成計數器不會改變。"],
   "使用する基準seed": ["Base Seed to Use", "使用的基準seed"],
   "連続したスキル再付与結果": ["Consecutive Reset Skills Results", "連續的技能重新附加結果"],
-  "左がシリーズ、右がグループです。": ["Series is on the left; Group is on the right.", "左側為系列，右側為團體。"],
+  "左がシリーズ、右がグループです。": ["Series is on the left; Group is on the right.", "左側為系列，右側為群組。"],
   "スキル結果を1回追加": ["Add One Skill Result", "新增1次技能結果"],
   "スキルカウンターの探索範囲": ["Skill Counter Search Range", "技能計數器搜尋範圍"],
   "通常は変更不要です。候補0件の場合に範囲を広げます。": ["Normally no change is needed. Increase the range if there are no candidates.", "通常不需修改。候選為0時再擴大範圍。"],
@@ -317,7 +317,7 @@ const UI_TEXT = {
   "5枠目": ["Slot 5", "第5格"],
   "当たり強調・条件一致だけ表示": ["Highlight Hits / Show Matches Only", "強調目標／僅顯示符合結果"],
   "シリーズの複数選択はORで判定します。同じ条件を強調表示と行の絞り込みに使用します。": ["Multiple Series Skills are combined with OR. The same condition is used for highlighting and row filtering.", "選擇多個系列技能時以OR判定。同一條件用於強調顯示與列篩選。"],
-  "グループスキル": ["Group Skill", "團體技能"],
+  "グループスキル": ["Group Skill", "群組技能"],
   "シリーズスキル": ["Series Skill", "系列技能"],
   "カウンター位置": ["Counter Position", "計數器位置"],
   "シリーズ群との条件": ["Combine with Series", "與系列技能的條件"],
@@ -325,14 +325,14 @@ const UI_TEXT = {
   "OR（どちらか一致）": ["OR (Either Matches)", "OR（任一符合）"],
   "シリーズスキル（複数選択はOR）": ["Series Skills (Multiple Selections Use OR)", "系列技能（多選時為OR）"],
   "条件に合う要素だけ強調表示": ["Highlight Matching Skills", "僅強調符合條件的技能"],
-  "1カウンターを1行にし、登録武器ごとにシリーズ・グループの列を追加します。フィルターがONの場合は、条件に合う行をすべて出力します。": ["Exports one counter per row with Series and Group columns for each registered weapon. If filtering is on, all matching rows are exported.", "每個計數器輸出一列，並為每把已登錄武器增加系列與團體欄位。開啟篩選時，會輸出所有符合條件的列。"],
+  "1カウンターを1行にし、登録武器ごとにシリーズ・グループの列を追加します。フィルターがONの場合は、条件に合う行をすべて出力します。": ["Exports one counter per row with Series and Group columns for each registered weapon. If filtering is on, all matching rows are exported.", "每個計數器輸出一列，並為每把已登錄武器增加系列與群組欄位。開啟篩選時，會輸出所有符合條件的列。"],
   "スキル結果を採用してセーブした場合は、その行を新しい0地点にできます。復元ボーナスカウンターは維持されます。": ["After accepting and saving a skill result, you can set that row as the new origin. The Bonus Counter is preserved.", "採用技能結果並存檔後，可將該列設為新的0點。復原加成計數器會維持不變。"],
   "不具合や分かりにくい点があれば、": ["If you find a bug or anything unclear, let us know through ", "若發現錯誤或難以理解之處，請透過"],
   "でお知らせください。": [".", "告知我們。"],
   "選択してください": ["Select an option", "請選擇"],
   "指定なし": ["Any", "不指定"],
   "シリーズを選択": ["Select a Series Skill", "選擇系列技能"],
-  "グループを選択": ["Select a Group Skill", "選擇團體技能"],
+  "グループを選択": ["Select a Group Skill", "選擇群組技能"],
   "系統を選択": ["Select a Bonus Type", "選擇加成系統"],
   "現在構成を入力": ["Enter current composition", "輸入目前組合"],
   "コード": ["Code", "代碼"],
@@ -430,7 +430,7 @@ const UI_TEXT = {
   "観測結果と予測の先頭が一致しません。武器種・属性・候補を確認してください。": ["The observed results do not match the start of the forecast. Check the weapon type, element, and candidate.", "觀測結果與預測開頭不一致。請確認武器種類、屬性與候選。"],
   "EX厳選する武器の現在5枠構成を入力してください。": ["Enter the current five-slot composition of the weapon being farmed for EX.", "請輸入要嚴選EX武器目前的5格組合。"],
   "指定した構成は表示範囲内にありません。表示回数を増やしてください。": ["The specified composition is not in the displayed range. Increase the number of rolls.", "指定組合不在顯示範圍內，請增加顯示次數。"],
-  "指定したグループ・シリーズ条件に合う結果は表示範囲内にありません。表示回数を増やすか条件を変更してください。": ["No result in the displayed range matches the selected Group / Series conditions. Increase the number of rolls or change the conditions.", "顯示範圍內沒有符合指定團體／系列條件的結果。請增加顯示次數或更改條件。"],
+  "指定したグループ・シリーズ条件に合う結果は表示範囲内にありません。表示回数を増やすか条件を変更してください。": ["No result in the displayed range matches the selected Group / Series conditions. Increase the number of rolls or change the conditions.", "顯示範圍內沒有符合指定群組／系列條件的結果。請增加顯示次數或更改條件。"],
   "CSVへ出力できる復元ボーナス未来予測の結果がありません。": ["There are no Bonus Forecast results available for CSV export.", "沒有可匯出CSV的復原加成未來預測結果。"],
   "CSVへ出力できるスキル未来予測の結果がありません。": ["There are no Skill Forecast results available for CSV export.", "沒有可匯出CSV的技能未來預測結果。"],
   "この武器種・属性は登録済みです。EX未厳選の別武器は「ボーナスを同じ構成で再復元」を選んでから登録してください。": ["This weapon type and element are already registered. To add another weapon awaiting EX farming, select Amend (Keep Bonuses) first.", "此武器種類與屬性已登錄。若要加入另一把尚未嚴選EX的武器，請先選擇「保留加成組合並再次復原強化」。"],
@@ -576,7 +576,7 @@ function translateTemplate(source, locale, fallback = source) {
   if ((match = source.match(/^再付与 (\d+)$/))) return en ? `Reset ${match[1]}` : `重新附加 ${match[1]}`;
   if ((match = source.match(/^作成 (\d+)$/))) return en ? `Forge ${match[1]}` : `生產 ${match[1]}`;
   if ((match = source.match(/^再付与(\d+)のシリーズスキル$/))) return en ? `Reset ${match[1]} Series Skill` : `第${match[1]}次重新附加的系列技能`;
-  if ((match = source.match(/^再付与(\d+)のグループスキル$/))) return en ? `Reset ${match[1]} Group Skill` : `第${match[1]}次重新附加的團體技能`;
+  if ((match = source.match(/^再付与(\d+)のグループスキル$/))) return en ? `Reset ${match[1]} Group Skill` : `第${match[1]}次重新附加的群組技能`;
   if ((match = source.match(/^希望 (\d+)$/))) return en ? `Desired ${match[1]}` : `目標 ${match[1]}`;
   if ((match = source.match(/^(\d+)回先$/))) return en ? `${match[1]} rolls ahead` : `${match[1]}次後`;
   if ((match = source.match(/^(\d+)本先$/))) return en ? `${match[1]} weapons ahead` : `${match[1]}把之後`;
@@ -634,7 +634,7 @@ function translateTemplate(source, locale, fallback = source) {
   if ((match = source.match(/^抽選(\d+)の5枠がゲーム内の復元ボーナス上限に合いません。入力内容を確認してください。$/))) return en ? `The five slots of roll ${match[1]} violate the game's Reinforcement Bonus limits. Check your input.` : `抽選${match[1]}的5格不符合遊戲內的復原加成上限，請確認輸入內容。`;
   if ((match = source.match(/^探索を開始できませんでした: (.+)$/))) return en ? `Could not start the search: ${t(match[1])}` : `無法開始搜尋：${t(match[1])}`;
   if ((match = source.match(/^未対応の復元ボーナスIDです: (\d+)$/))) return en ? `Unsupported Reinforcement Bonus ID: ${match[1]}` : `不支援的復原加成ID：${match[1]}`;
-  if ((match = source.match(/^再付与(\d+)のシリーズとグループを選択してください。$/))) return en ? `Select the Series and Group Skills for reset ${match[1]}.` : `請選擇第${match[1]}次重新附加的系列與團體技能。`;
+  if ((match = source.match(/^再付与(\d+)のシリーズとグループを選択してください。$/))) return en ? `Select the Series and Group Skills for reset ${match[1]}.` : `請選擇第${match[1]}次重新附加的系列與群組技能。`;
   if ((match = source.match(/^(.+)は([\d,]+)〜([\d,]+)の整数で入力してください。$/))) return en ? `Enter ${t(match[1])} as an integer from ${match[2]} to ${match[3]}.` : `${t(match[1])}請輸入${match[2]}～${match[3]}的整數。`;
   if ((match = source.match(/^(\d+)件の武器に未選択の枠があります。各武器の5枠をすべて選択してください。$/))) return en ? `${match[1]} weapon(s) have unselected slots. Select all five slots for every weapon.` : `有${match[1]}把武器尚有未選擇的格位。請為每把武器選擇全部5格。`;
   if ((match = source.match(/^(\d+)\/(\d+) 構成入力済み$/))) return en ? `${match[1]}/${match[2]} compositions entered` : `已輸入 ${match[1]}/${match[2]} 組合`;
@@ -662,7 +662,7 @@ function translateTemplate(source, locale, fallback = source) {
   if ((match = source.match(/^(\d+)回先のリセット結果(?:から設定)?$/))) return en ? `Set from the Reset Bonuses result ${match[1]} rolls ahead` : `由${match[1]}次後的重置加成結果設定`;
   if ((match = source.match(/^EX厳選へ引き継ぐには、登録武器を(\d+)件未満にしてください。$/))) return en ? `To transfer to EX farming, keep fewer than ${match[1]} registered weapons.` : `若要轉移至EX嚴選，已登錄武器必須少於${match[1]}把。`;
   if ((match = source.match(/^予測対象は最大(\d+)件です。不要な武器を削除してください。$/))) return en ? `You can register up to ${match[1]} targets. Remove unneeded weapons.` : `最多可登錄${match[1]}個預測目標，請刪除不需要的武器。`;
-  if ((match = source.match(/^(シリーズ|グループ) ([\d,]+)$/))) return en ? `${match[1] === "シリーズ" ? "Series" : "Group"} ${match[2]}` : `${match[1] === "シリーズ" ? "系列" : "團體"} ${match[2]}`;
+  if ((match = source.match(/^(シリーズ|グループ) ([\d,]+)$/))) return en ? `${match[1] === "シリーズ" ? "Series" : "Group"} ${match[2]}` : `${match[1] === "シリーズ" ? "系列" : "群組"} ${match[2]}`;
   if ((match = source.match(/^セーブ状態コードをコピー: (.+)$/))) return en ? `Copy save-state code: ${match[1]}` : `複製存檔狀態代碼：${match[1]}`;
   if ((match = source.match(/^(.+)を比較対象から削除$/))) return en ? `Remove ${match[1]} from comparison` : `從比較目標中移除${match[1]}`;
   if ((match = source.match(/^現在の探索範囲: ([\d,]+)〜([\d,]+)（([\d,]+)候補）。(.+)$/))) {
